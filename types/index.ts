@@ -1,14 +1,17 @@
-import { ImageSource } from "expo-image";
+import { ImageSourcePropType } from "react-native";
 
 export interface WardrobeItemProps {
-  image: ImageSource;
+  image: ImageSourcePropType;
   type: string;
   onPress: () => void;
 }
 
 export interface ClothingItemType {
-  id: string;
-  image: ImageSource;
-  category: "Topwear" | "Bottomwear" | "Footwear";
+  id: number;
+  image: ImageSourcePropType;
+  category: string;
   type: string;
+  colors: string[];
+  occasions: string[];
+  temperatures: string[];
 }

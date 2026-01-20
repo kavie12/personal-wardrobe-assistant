@@ -23,9 +23,16 @@ export default function StackLayout() {
             }}
         />
         <Stack.Screen
-            name="[clothingItemId]"
+            name="[id]"
             options={{
                 title: "Clothing Item",
+                headerShown: true
+            }}
+        />
+        <Stack.Screen
+            name="add"
+            options={{
+                title: "Add Clothing Item",
                 headerShown: true
             }}
         />
