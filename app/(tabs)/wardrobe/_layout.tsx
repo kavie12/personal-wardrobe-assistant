@@ -26,7 +26,7 @@ export default function StackLayout() {
             name="[id]"
             options={{
                 title: "Clothing Item",
-                headerShown: true
+                headerShown: true,
             }}
         />
         <Stack.Screen

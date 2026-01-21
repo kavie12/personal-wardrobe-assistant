@@ -1,13 +1,15 @@
 import Chip from '@/components/chip';
 import { CLOTHING_CATEGORIES, CLOTHING_COLORS, CLOTHING_OCCASIONS, CLOTHING_TEMPERATURES, CLOTHING_TYPES } from '@/data';
 import { Ionicons } from '@expo/vector-icons';
+import axios from "axios";
 import { Image } from 'expo-image';
+import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 const AddClothingItemScreen = () => {
-    const [image, setImage] = useState<string | null>(null);
+    const [imageUri, setImageUri] = useState<string | null>(null);
 
     type SectionFields = "category" | "type" | "colors" | "occasions" | "temperatures";
     const sections: {
@@ -42,10 +44,34 @@ const AddClothingItemScreen = () => {
         }
     ];
 
-    if (!image) {
+    useEffect(() => {
+        if (imageUri) {
+            const formData = new FormData();
+
+            formData.append("clothing_item", {
+                uri: imageUri,
+                name: "upload.jpg",
+                type: "image/jpeg"
+            } as any);
+
+            axios.post("http://10.235.135.138:8000/wardrobe/add", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            })
+            .then(res => {
+                console.log(res.data);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        }
+    }, [imageUri]);
+
+    if (!imageUri) {
         return (
             <View className="flex-1 mt-8">
-                <UploadSection setImage={setImage} />
+                <UploadSection setImageUri={setImageUri} />
             </View>
         );
     };
@@ -53,7 +79,7 @@ const AddClothingItemScreen = () => {
     return (
         <View className="flex-1 my-8">
             <View className="items-center">
-                <Image source={{ uri: image }} style={{ width: 240, height: 240 }} />
+                <Image source={{ uri: imageUri }} style={{ width: 240, height: 240 }} />
             </View>
             
             <ScrollView className="mt-8" contentContainerClassName="px-8 gap-y-8">
@@ -69,7 +95,7 @@ const AddClothingItemScreen = () => {
     )
 };
 
-const UploadSection = ({ setImage }: { setImage: React.Dispatch<React.SetStateAction<string | null>> }) => {
+const UploadSection = ({ setImageUri }: { setImageUri: React.Dispatch<React.SetStateAction<string | null>> }) => {
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -79,34 +105,63 @@ const UploadSection = ({ setImage }: { setImage: React.Dispatch<React.SetStateAc
         }
 
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images', 'livePhotos'],
-            allowsEditing: true,
-            quality: 1,
+            mediaTypes: ['images'],
+            allowsEditing: true
         });
 
         if (!result.canceled) {
-            setImage(result.assets[0].uri);
+            const compressedImageUri = await getCompressedImageUri(result.assets[0].uri);
+            setImageUri(compressedImageUri);
         }
     };
 
+    const takePhoto = async () => {
+        const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+        if (!permissionResult.granted) {
+            Alert.alert('Permission required', 'Permission to access the camera is required.');
+            return;
+        }
+
+        let result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            quality: 0.7
+        });
+
+        if (!result.canceled) {
+            const compressedImageUri = await getCompressedImageUri(result.assets[0].uri);
+            setImageUri(compressedImageUri);
+        }
+    };
+
+    const getCompressedImageUri = async (imageUri: string): Promise<string> => {
+        const context = ImageManipulator.manipulate(imageUri).resize({ width: 800 })
+        const renderedImage = await context.renderAsync();
+        const result = await renderedImage.saveAsync({
+            compress: 0.7,
+            format: SaveFormat.JPEG
+        });
+        return result.uri;
+    };
+
     return (
-        <View className="px-4 w-full">
-        <TouchableOpacity
-            onPress={pickImage}
-            activeOpacity={0.8}
-            className="w-full aspect-square bg-gray-50 dark:bg-neutral-900 border-2 border-dashed border-gray-300 dark:border-neutral-700 rounded-3xl items-center justify-center"
+        <View
+            className="mx-4 flex-row aspect-square bg-gray-50 dark:bg-neutral-900 border-2 border-dashed border-gray-300 dark:border-neutral-700
+                        rounded-3xl items-center justify-center gap-x-24"
         >
-            <View className="bg-cyan-100 dark:bg-cyan-900/30 p-6 rounded-full mb-4">
-            <Ionicons name="cloud-upload-outline" size={48} color="#0891b2" />
-            </View>
-
-            <Text className="text-xl font-semibold text-gray-800 dark:text-gray-100">Upload Image</Text>
-            <Text className="text-sm text-gray-500 dark:text-gray-400 mt-1">PNG, JPG up to 10MB</Text>
-
-            <View className="mt-6 bg-cyan-600 px-6 py-2 rounded-full">
-            <Text className="text-white font-medium">Select File</Text>
-            </View>
-        </TouchableOpacity>
+            <TouchableOpacity onPress={takePhoto} activeOpacity={0.8} className="items-center">
+                <View className="bg-cyan-100 dark:bg-cyan-900/30 p-6 rounded-full mb-4">
+                    <Ionicons name="camera-outline" size={36} color="#0891b2" />
+                </View>
+                <Text className="text-md font-semibold text-gray-800 dark:text-gray-100">Take Photo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={pickImage} activeOpacity={0.8} className="items-center">
+                <View className="bg-cyan-100 dark:bg-cyan-900/30 p-6 rounded-full mb-4">
+                    <Ionicons name="cloud-upload-outline" size={36} color="#0891b2" />
+                </View>
+                <Text className="text-md font-semibold text-gray-800 dark:text-gray-100">Upload Image</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -114,7 +169,7 @@ const UploadSection = ({ setImage }: { setImage: React.Dispatch<React.SetStateAc
 const LabelSection = ({ title, labels }: { title: string, labels: string[] }) => {
     return (
         <View>
-            <Text className="text-xl font-bold mb-4">{title}</Text>
+            <Text className="text-xl font-bold mb-4 dark:text-white">{title}</Text>
             <View className="flex-row flex-wrap gap-2">
                 {labels.map((label) => (
                     <Chip 

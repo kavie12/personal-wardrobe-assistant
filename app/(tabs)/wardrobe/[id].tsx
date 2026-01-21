@@ -76,7 +76,7 @@ const ClothingItemScreen = () => {
 const LabelSection = ({ title, labels, selectedLabels }: { title: string, labels: string[], selectedLabels: string[] }) => {
     return (
         <View>
-            <Text className="text-xl font-bold mb-4">{title}</Text>
+            <Text className="text-xl font-bold mb-4 dark:text-white">{title}</Text>
             <View className="flex-row flex-wrap gap-2">
                 {labels.map((label) => (
                     <Chip 
