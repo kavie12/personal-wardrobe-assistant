@@ -1,19 +1,19 @@
 import Chip from '@/components/chip';
 import FloatingActionButton from '@/components/floating-action-button';
 import { CLOTHING_CATEGORIES, CLOTHING_ITEMS } from '@/data';
-import { WardrobeItemProps } from '@/types';
+import { ClothingCategory, WardrobeItemProps } from '@/types';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 const WardrobeScreen = () => {
-  const [category, setCategory] = useState("All");
+  const [category, setCategory] = useState<ClothingCategory | "All">("All");
   const [filteredItems, setFilteredItems] = useState(CLOTHING_ITEMS);
 
   const router = useRouter();
 
-  const selectCategory = (category: string) => setCategory(category);
+  const selectCategory = (category: ClothingCategory | "All") => setCategory(category);
 
   useEffect(() => {
     if (category === "All") {
@@ -29,7 +29,7 @@ const WardrobeScreen = () => {
     <View className="flex-1 my-8">
 
       {/* Category filters */}
-      <CategoryFilters activeCategory={category} selectCategory={selectCategory} />
+      <CategoryFilters selectedCategory={category} selectCategory={selectCategory} />
 
       {/* Clothing items list */}
       <FlatList
@@ -74,18 +74,18 @@ const WardrobeItem = ({ image, type, onPress }: WardrobeItemProps) => {
   )
 };
 
-const CategoryFilters = ({ activeCategory, selectCategory }: { activeCategory: string, selectCategory: (category: string) => void }) => {
+const CategoryFilters = ({ selectedCategory, selectCategory }: { selectedCategory: ClothingCategory | "All", selectCategory: (category: ClothingCategory | "All") => void }) => {
   return (
-    <View className="mx-4">
-      <FlatList
-        data={["All"].concat(CLOTHING_CATEGORIES)}
-        keyExtractor={item => item}
-        renderItem={({item}) => <Chip text={item} isActive={item === activeCategory} onSelect={selectCategory} />}
-        horizontal={true}
-        contentContainerClassName="gap-x-2"
-        showsHorizontalScrollIndicator={false}
-      />
-    </View>
+    <ScrollView className="mx-4" horizontal={true} contentContainerClassName="gap-x-2" showsHorizontalScrollIndicator={false}>
+      {["All"].concat(CLOTHING_CATEGORIES).map((category) => (
+        <Chip<ClothingCategory | "All">
+          key={category}
+          value={category}
+          isSelected={selectedCategory === category}
+          onSelect={(value) => selectCategory(value)}
+        />
+      ))}
+    </ScrollView>
   );
 };
 

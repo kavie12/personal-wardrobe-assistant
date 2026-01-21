@@ -1,3 +1,4 @@
+import { CLOTHING_CATEGORIES, CLOTHING_COLORS, CLOTHING_OCCASIONS, CLOTHING_TEMPERATURES, CLOTHING_TYPES } from "@/data";
 import { ImageSourcePropType } from "react-native";
 
 export interface WardrobeItemProps {
@@ -6,12 +7,14 @@ export interface WardrobeItemProps {
   onPress: () => void;
 }
 
-export interface ClothingItemType {
-  id: number;
-  image: ImageSourcePropType;
-  category: string;
-  type: string;
-  colors: string[];
-  occasions: string[];
-  temperatures: string[];
-}
+export type ClothingCategory = typeof CLOTHING_CATEGORIES[number];
+
+export type ClothingType = typeof CLOTHING_TYPES[number];
+
+export type ClothingColor = typeof CLOTHING_COLORS[number];
+
+export type ClothingOccasion = typeof CLOTHING_OCCASIONS[number];
+
+export type ClothingTemperature = typeof CLOTHING_TEMPERATURES[number];
+
+export type ClothingLabelKeys = "category" | "type" | "colors" | "occasions" | "temperatures";

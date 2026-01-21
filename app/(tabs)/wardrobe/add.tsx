@@ -1,48 +1,17 @@
 import Chip from '@/components/chip';
-import { CLOTHING_CATEGORIES, CLOTHING_COLORS, CLOTHING_OCCASIONS, CLOTHING_TEMPERATURES, CLOTHING_TYPES } from '@/data';
+import { CLOTHING_LABELS } from '@/data';
+import ClothingItem from '@/models/ClothingItem';
 import { Ionicons } from '@expo/vector-icons';
 import axios from "axios";
 import { Image } from 'expo-image';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
-import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 const AddClothingItemScreen = () => {
     const [imageUri, setImageUri] = useState<string | null>(null);
-
-    type SectionFields = "category" | "type" | "colors" | "occasions" | "temperatures";
-    const sections: {
-        title: string;
-        labels: string[];
-        field: SectionFields;
-    }[] = [
-        {
-            title: "Category",
-            labels: CLOTHING_CATEGORIES,
-            field: "category"
-        },
-        {
-            title: "Type",
-            labels: CLOTHING_TYPES,
-            field: "type"
-        },
-        {
-            title: "Colors",
-            labels: CLOTHING_COLORS,
-            field: "colors"
-        },
-        {
-            title: "Occasions",
-            labels: CLOTHING_OCCASIONS,
-            field: "occasions"
-        },
-        {
-            title: "Temperatures",
-            labels: CLOTHING_TEMPERATURES,
-            field: "temperatures"
-        }
-    ];
+    const [clothingItem, setClothingItem] = useState<ClothingItem | null>(null);
 
     useEffect(() => {
         if (imageUri) {
@@ -60,10 +29,20 @@ const AddClothingItemScreen = () => {
                 }
             })
             .then(res => {
-                console.log(res.data);
+                setClothingItem(
+                    new ClothingItem(
+                        Date.now(),
+                        { uri: imageUri },
+                        res.data.category,
+                        res.data.type,
+                        res.data.colors,
+                        res.data.occasions,
+                        res.data.temperatures
+                    )
+                );
             })
             .catch(err => {
-                console.log(err);
+                throw new Error("Image upload to server failed.");
             });
         }
     }, [imageUri]);
@@ -81,16 +60,30 @@ const AddClothingItemScreen = () => {
             <View className="items-center">
                 <Image source={{ uri: imageUri }} style={{ width: 240, height: 240 }} />
             </View>
+
+            {!clothingItem ?
+                <View className="flex-1 justify-center items-center py-20">
+                    <ActivityIndicator size="large" color="#0891b2" />
+                    <Text className="mt-8 text-lg font-medium text-gray-600 dark:text-gray-400">
+                        AI is classifying your item...
+                    </Text>
+                </View>
+                :
+                <ScrollView className="mt-8" contentContainerClassName="px-8 gap-y-4">
+                    {CLOTHING_LABELS.map((section, index) => {
+                        const value = clothingItem[section.key];
+                        const selectedLabels = Array.isArray(value) ? value : [value];
+                        return (
+                            <LabelSection
+                                title={section.title}
+                                labels={selectedLabels}
+                                key={index}
+                            />
+                        );
+                    })}
+                </ScrollView>
+            }
             
-            <ScrollView className="mt-8" contentContainerClassName="px-8 gap-y-8">
-                {sections.map((section, index) => (
-                    <LabelSection
-                        title={section.title}
-                        labels={section.labels}
-                        key={index}
-                    />
-                ))}
-            </ScrollView>
         </View>
     )
 };
@@ -169,13 +162,13 @@ const UploadSection = ({ setImageUri }: { setImageUri: React.Dispatch<React.SetS
 const LabelSection = ({ title, labels }: { title: string, labels: string[] }) => {
     return (
         <View>
-            <Text className="text-xl font-bold mb-4 dark:text-white">{title}</Text>
+            <Text className="text-xl font-bold mb-2 dark:text-white">{title}</Text>
             <View className="flex-row flex-wrap gap-2">
                 {labels.map((label) => (
                     <Chip 
                         key={label} 
-                        text={label} 
-                        isActive={false}
+                        value={label} 
+                        isSelected={false}
                         onSelect={() => {}} 
                     />
                 ))}

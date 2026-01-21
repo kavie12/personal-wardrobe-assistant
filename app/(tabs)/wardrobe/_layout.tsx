@@ -10,7 +10,7 @@ export default function StackLayout() {
             },
             headerTitleStyle: {
                 fontWeight: "bold",
-                fontSize: 28
+                fontSize: 24
             },
             headerShadowVisible: false
         }}

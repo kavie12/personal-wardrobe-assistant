@@ -16,7 +16,7 @@ export default function TabLayout() {
         },
         headerTitleStyle: {
           fontWeight: "bold",
-          fontSize: 28
+          fontSize: 24
         },
         headerShadowVisible: false
       }}>

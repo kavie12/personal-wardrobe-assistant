@@ -1,124 +1,143 @@
-import { ClothingItemType } from "@/types";
+import ClothingItem from "@/models/ClothingItem";
+import { ClothingLabelKeys } from "@/types";
 
-export const CLOTHING_ITEMS: ClothingItemType[] = [
-  {
-    id: 1,
-    image: require("@/assets/clothing_images/2.png"),
-    category: "Topwear",
-    type: "T-shirt",
-    colors: ["Black"],
-    occasions: ["Casual"],
-    temperatures: ["Hot", "Mild"]
-  },
-  {
-    id: 2,
-    image: require("@/assets/clothing_images/3.png"),
-    category: "Topwear",
-    type: "T-shirt",
-    colors: ["White"],
-    occasions: ["Casual"],
-    temperatures: ["Hot", "Mild"]
-  },
-  {
-    id: 3,
-    image: require("@/assets/clothing_images/4.png"),
-    category: "Topwear",
-    type: "T-shirt",
-    colors: ["Blue"],
-    occasions: ["Casual", "Sportswear"],
-    temperatures: ["Hot"]
-  },
-  {
-    id: 4,
-    image: require("@/assets/clothing_images/5.png"),
-    category: "Topwear",
-    type: "T-shirt",
-    colors: ["Red"],
-    occasions: ["Casual"],
-    temperatures: ["Hot"]
-  },
-  {
-    id: 5,
-    image: require("@/assets/clothing_images/9.png"),
-    category: "Topwear",
-    type: "T-shirt",
-    colors: ["Gray"],
-    occasions: ["Casual", "Work"],
-    temperatures: ["Mild"]
-  },
-  {
-    id: 6,
-    image: require("@/assets/clothing_images/13.png"),
-    category: "Bottomwear",
-    type: "Trousers",
-    colors: ["Black"],
-    occasions: ["Work", "Formal"],
-    temperatures: ["Mild", "Cold"]
-  },
-  {
-    id: 7,
-    image: require("@/assets/clothing_images/14.png"),
-    category: "Bottomwear",
-    type: "Trousers",
-    colors: ["Brown"],
-    occasions: ["Work"],
-    temperatures: ["Mild"]
-  },
-  {
-    id: 8,
-    image: require("@/assets/clothing_images/15.png"),
-    category: "Bottomwear",
-    type: "Trousers",
-    colors: ["Beige"],
-    occasions: ["Smart casual", "Work"],
-    temperatures: ["Mild"]
-  },
-  {
-    id: 9,
-    image: require("@/assets/clothing_images/17.png"),
-    category: "Bottomwear",
-    type: "Shorts",
-    colors: ["Blue"],
-    occasions: ["Casual"],
-    temperatures: ["Hot"]
-  },
-  {
-    id: 10,
-    image: require("@/assets/clothing_images/18.png"),
-    category: "Bottomwear",
-    type: "Shorts",
-    colors: ["Green"],
-    occasions: ["Casual", "Sportswear"],
-    temperatures: ["Hot"]
-  },
-  {
-    id: 11,
-    image: require("@/assets/clothing_images/23.png"),
-    category: "Footwear",
-    type: "Sneakers",
-    colors: ["White"],
-    occasions: ["Casual", "Sportswear"],
-    temperatures: ["Mild"]
-  },
-  {
-    id: 12,
-    image: require("@/assets/clothing_images/24.png"),
-    category: "Footwear",
-    type: "Sneakers",
-    colors: ["Black"],
-    occasions: ["Casual"],
-    temperatures: ["Mild", "Cold"]
-  }
+export const CLOTHING_ITEMS: ClothingItem[] = [
+  new ClothingItem(
+    1,
+    require("@/assets/clothing_images/2.png"),
+    "Topwear",
+    "T-shirt",
+    ["Black"],
+    ["Casual"],
+    ["Hot", "Mild"]
+  ),
+  new ClothingItem(
+    2,
+    require("@/assets/clothing_images/3.png"),
+    "Topwear",
+    "T-shirt",
+    ["White"],
+    ["Casual"],
+    ["Hot", "Mild"]
+  ),
+  new ClothingItem(
+    3,
+    require("@/assets/clothing_images/4.png"),
+    "Topwear",
+    "T-shirt",
+    ["Blue"],
+    ["Casual", "Sportswear"],
+    ["Hot"]
+  ),
+  new ClothingItem(
+    4,
+    require("@/assets/clothing_images/5.png"),
+    "Topwear",
+    "T-shirt",
+    ["Red"],
+    ["Casual"],
+    ["Hot"]
+  ),
+  new ClothingItem(
+    5,
+    require("@/assets/clothing_images/9.png"),
+    "Topwear",
+    "T-shirt",
+    ["Gray"],
+    ["Casual", "Work"],
+    ["Mild"]
+  ),
+  new ClothingItem(
+    6,
+    require("@/assets/clothing_images/13.png"),
+    "Bottomwear",
+    "Trousers",
+    ["Black"],
+    ["Work", "Formal"],
+    ["Mild", "Cold"]
+  ),
+  new ClothingItem(
+    7,
+    require("@/assets/clothing_images/14.png"),
+    "Bottomwear",
+    "Trousers",
+    ["Brown"],
+    ["Work"],
+    ["Mild"]
+  ),
+  new ClothingItem(
+    8,
+    require("@/assets/clothing_images/15.png"),
+    "Bottomwear",
+    "Trousers",
+    ["Beige"],
+    ["Smart casual", "Work"],
+    ["Mild"]
+  ),
+  new ClothingItem(
+    9,
+    require("@/assets/clothing_images/17.png"),
+    "Bottomwear",
+    "Shorts",
+    ["Blue"],
+    ["Casual"],
+    ["Hot"]
+  ),
+  new ClothingItem(
+    10,
+    require("@/assets/clothing_images/18.png"),
+    "Bottomwear",
+    "Shorts",
+    ["Green"],
+    ["Casual", "Sportswear"],
+    ["Hot"]
+  ),
+  new ClothingItem(
+    11,
+    require("@/assets/clothing_images/23.png"),
+    "Footwear",
+    "Sneakers",
+    ["White"],
+    ["Casual", "Sportswear"],
+    ["Mild"]
+  ),
+  new ClothingItem(
+    12,
+    require("@/assets/clothing_images/24.png"),
+    "Footwear",
+    "Sneakers",
+    ["Black"],
+    ["Casual"],
+    ["Mild", "Cold"]
+  )
 ];
 
 export const CLOTHING_CATEGORIES = ["Topwear", "Bottomwear", "One-piece", "Footwear"];
 
-export const CLOTHING_TYPES = ["T-shirt", "Shirt", "Polo shirt", "Hoodie", "Sweater", "Jacket", "Blazer", "Coat", "Jeans", "Trousers", "Shorts",
-                                        "Skirt", "Leggings","Joggers", "Dress", "Jumpsuit", "Romper", "Suit", "Sneakers", "Casual shoes",
-                                        "Formal shoes", "Sandals", "Flip-flops", "Boots", "Heels"];
+export const CLOTHING_TYPES = [
+  "T-shirt", "Shirt", "Polo shirt", "Hoodie", "Sweater", "Jacket", "Blazer", "Coat", 
+  "Jeans", "Trousers", "Shorts", "Skirt", "Leggings", "Joggers", "Dress", "Jumpsuit", 
+  "Romper", "Suit", "Sneakers", "Casual shoes", "Formal shoes", "Sandals", 
+  "Flip-flops", "Boots", "Heels"
+];
 
-export const CLOTHING_COLORS = ["Black", "White", "Gray", "Blue", "Red", "Green", "Yellow", "Brown", "Beige", "Pink", "Purple", "Orange"];
+export const CLOTHING_COLORS = [
+  "Black", "White", "Gray", "Blue", "Red", "Green", "Yellow", "Brown", "Beige", "Pink", "Purple", "Orange"
+];
 
-export const CLOTHING_OCCASIONS = ["Casual", "Smart casual", "Formal", "Sportswear", "Party", "Work"];
+export const CLOTHING_OCCASIONS = [
+  "Casual", "Smart casual", "Formal", "Sportswear", "Party", "Work"
+];
 
 export const CLOTHING_TEMPERATURES = ["Hot", "Mild", "Cold"];
+
+export const CLOTHING_LABELS: {
+    title: string;
+    key: ClothingLabelKeys;
+}[] = [
+  { title: "Category", key: "category" },
+  { title: "Type", key: "type" },
+  { title: "Colors", key: "colors" },
+  { title: "Occasions", key: "occasions" },
+  { title: "Temperatures", key: "temperatures" }
+];
