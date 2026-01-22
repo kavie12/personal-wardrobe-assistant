@@ -1,6 +1,6 @@
 import Chip from '@/components/chip';
 import FloatingActionButton from '@/components/floating-action-button';
-import { CLOTHING_CATEGORIES, CLOTHING_ITEMS } from '@/data';
+import { CLOTHING_CATEGORIES, SAMPLE_CLOTHING_ITEMS } from '@/data';
 import { ClothingCategory, WardrobeItemProps } from '@/types';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
@@ -9,7 +9,7 @@ import { FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native
 
 const WardrobeScreen = () => {
   const [category, setCategory] = useState<ClothingCategory | "All">("All");
-  const [filteredItems, setFilteredItems] = useState(CLOTHING_ITEMS);
+  const [filteredItems, setFilteredItems] = useState(SAMPLE_CLOTHING_ITEMS);
 
   const router = useRouter();
 
@@ -17,10 +17,10 @@ const WardrobeScreen = () => {
 
   useEffect(() => {
     if (category === "All") {
-      setFilteredItems(CLOTHING_ITEMS);
+      setFilteredItems(SAMPLE_CLOTHING_ITEMS);
     } else {
       setFilteredItems(
-        CLOTHING_ITEMS.filter(item => item.category === category)
+        SAMPLE_CLOTHING_ITEMS.filter(item => item.category === category)
       );
     }
   }, [category]);
@@ -41,7 +41,7 @@ const WardrobeScreen = () => {
             onPress={() => router.navigate({ pathname: "/wardrobe/[id]", params: { id: item.id } })}
           />
         )}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={item => item.id}
         numColumns={2}
         initialNumToRender={6}
         contentContainerClassName="px-4 gap-y-4" 
@@ -80,7 +80,7 @@ const CategoryFilters = ({ selectedCategory, selectCategory }: { selectedCategor
       {["All"].concat(CLOTHING_CATEGORIES).map((category) => (
         <Chip<ClothingCategory | "All">
           key={category}
-          value={category}
+          value={category as ClothingCategory | "All"}
           isSelected={selectedCategory === category}
           onSelect={(value) => selectCategory(value)}
         />

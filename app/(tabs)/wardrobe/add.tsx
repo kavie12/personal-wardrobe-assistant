@@ -1,20 +1,39 @@
 import Chip from '@/components/chip';
-import { CLOTHING_LABELS } from '@/data';
+import FloatingActionButton from '@/components/floating-action-button';
+import { CLOTHING_LABELS, SAMPLE_USER_ID } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
 import { Ionicons } from '@expo/vector-icons';
 import axios from "axios";
 import { Image } from 'expo-image';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 const AddClothingItemScreen = () => {
     const [imageUri, setImageUri] = useState<string | null>(null);
     const [clothingItem, setClothingItem] = useState<ClothingItem | null>(null);
+    const [isSaving, setIsSaving] = useState(false);
+
+    const router = useRouter();
+
+    const saveItem = () => {
+        setIsSaving(true);
+        axios.post("http://10.235.135.138:8000/wardrobe/save", {
+            item_id: clothingItem?.id,
+            user_id: SAMPLE_USER_ID
+        })
+        .then(res => {
+            router.back();
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    };
 
     useEffect(() => {
-        if (imageUri) {
+        if (imageUri && !clothingItem) {
             const formData = new FormData();
 
             formData.append("clothing_item", {
@@ -31,7 +50,8 @@ const AddClothingItemScreen = () => {
             .then(res => {
                 setClothingItem(
                     new ClothingItem(
-                        Date.now(),
+                        res.data.id,
+                        res.data.filename,
                         { uri: imageUri },
                         res.data.category,
                         res.data.type,
@@ -42,7 +62,7 @@ const AddClothingItemScreen = () => {
                 );
             })
             .catch(err => {
-                throw new Error("Image upload to server failed.");
+                throw new Error(err);
             });
         }
     }, [imageUri]);
@@ -69,19 +89,27 @@ const AddClothingItemScreen = () => {
                     </Text>
                 </View>
                 :
-                <ScrollView className="mt-8" contentContainerClassName="px-8 gap-y-4">
-                    {CLOTHING_LABELS.map((section, index) => {
-                        const value = clothingItem[section.key];
-                        const selectedLabels = Array.isArray(value) ? value : [value];
-                        return (
-                            <LabelSection
-                                title={section.title}
-                                labels={selectedLabels}
-                                key={index}
-                            />
-                        );
-                    })}
-                </ScrollView>
+                <>
+                    <ScrollView className="mt-8" contentContainerClassName="px-8 gap-y-4">
+                        {CLOTHING_LABELS.map((section, index) => {
+                            const value = clothingItem[section.key];
+                            const selectedLabels = Array.isArray(value) ? value : [value];
+                            return (
+                                <LabelSection
+                                    title={section.title}
+                                    labels={selectedLabels}
+                                    key={index}
+                                />
+                            );
+                        })}
+                    </ScrollView>
+                          <FloatingActionButton
+                            onPress={saveItem}
+                            iconName='save'
+                            disabled={isSaving}
+                            className="bg-cyan-600"
+                        />
+                </>
             }
             
         </View>

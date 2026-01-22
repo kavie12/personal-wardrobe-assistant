@@ -1,9 +1,10 @@
 import ClothingItem from "@/models/ClothingItem";
 import { ClothingLabelKeys } from "@/types";
 
-export const CLOTHING_ITEMS: ClothingItem[] = [
+export const SAMPLE_CLOTHING_ITEMS: ClothingItem[] = [
   new ClothingItem(
-    1,
+    "1",
+    "2.png",
     require("@/assets/clothing_images/2.png"),
     "Topwear",
     "T-shirt",
@@ -12,7 +13,8 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     ["Hot", "Mild"]
   ),
   new ClothingItem(
-    2,
+    "2",
+    "3.png",
     require("@/assets/clothing_images/3.png"),
     "Topwear",
     "T-shirt",
@@ -21,7 +23,8 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     ["Hot", "Mild"]
   ),
   new ClothingItem(
-    3,
+    "3",
+    "4.png",
     require("@/assets/clothing_images/4.png"),
     "Topwear",
     "T-shirt",
@@ -30,7 +33,8 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     ["Hot"]
   ),
   new ClothingItem(
-    4,
+    "4",
+    "5.png",
     require("@/assets/clothing_images/5.png"),
     "Topwear",
     "T-shirt",
@@ -39,7 +43,8 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     ["Hot"]
   ),
   new ClothingItem(
-    5,
+    "5",
+    "9.png",
     require("@/assets/clothing_images/9.png"),
     "Topwear",
     "T-shirt",
@@ -48,7 +53,8 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     ["Mild"]
   ),
   new ClothingItem(
-    6,
+    "6",
+    "13.png",
     require("@/assets/clothing_images/13.png"),
     "Bottomwear",
     "Trousers",
@@ -57,7 +63,8 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     ["Mild", "Cold"]
   ),
   new ClothingItem(
-    7,
+    "7",
+    "14.png",
     require("@/assets/clothing_images/14.png"),
     "Bottomwear",
     "Trousers",
@@ -66,7 +73,8 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     ["Mild"]
   ),
   new ClothingItem(
-    8,
+    "8",
+    "15.png",
     require("@/assets/clothing_images/15.png"),
     "Bottomwear",
     "Trousers",
@@ -75,7 +83,8 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     ["Mild"]
   ),
   new ClothingItem(
-    9,
+    "9",
+    "17.png",
     require("@/assets/clothing_images/17.png"),
     "Bottomwear",
     "Shorts",
@@ -84,7 +93,8 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     ["Hot"]
   ),
   new ClothingItem(
-    10,
+    "10",
+    "18.png",
     require("@/assets/clothing_images/18.png"),
     "Bottomwear",
     "Shorts",
@@ -93,7 +103,8 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     ["Hot"]
   ),
   new ClothingItem(
-    11,
+    "11",
+    "23.png",
     require("@/assets/clothing_images/23.png"),
     "Footwear",
     "Sneakers",
@@ -102,7 +113,8 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     ["Mild"]
   ),
   new ClothingItem(
-    12,
+    "12",
+    "24.png",
     require("@/assets/clothing_images/24.png"),
     "Footwear",
     "Sneakers",
@@ -112,24 +124,24 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
   )
 ];
 
-export const CLOTHING_CATEGORIES = ["Topwear", "Bottomwear", "One-piece", "Footwear"];
+export const CLOTHING_CATEGORIES = ["Topwear", "Bottomwear", "One-piece", "Footwear"] as const;
 
 export const CLOTHING_TYPES = [
   "T-shirt", "Shirt", "Polo shirt", "Hoodie", "Sweater", "Jacket", "Blazer", "Coat", 
   "Jeans", "Trousers", "Shorts", "Skirt", "Leggings", "Joggers", "Dress", "Jumpsuit", 
   "Romper", "Suit", "Sneakers", "Casual shoes", "Formal shoes", "Sandals", 
   "Flip-flops", "Boots", "Heels"
-];
+] as const;
 
 export const CLOTHING_COLORS = [
   "Black", "White", "Gray", "Blue", "Red", "Green", "Yellow", "Brown", "Beige", "Pink", "Purple", "Orange"
-];
+] as const;
 
 export const CLOTHING_OCCASIONS = [
   "Casual", "Smart casual", "Formal", "Sportswear", "Party", "Work"
-];
+] as const;
 
-export const CLOTHING_TEMPERATURES = ["Hot", "Mild", "Cold"];
+export const CLOTHING_TEMPERATURES = ["Hot", "Mild", "Cold"] as const;
 
 export const CLOTHING_LABELS: {
     title: string;
@@ -141,3 +153,5 @@ export const CLOTHING_LABELS: {
   { title: "Occasions", key: "occasions" },
   { title: "Temperatures", key: "temperatures" }
 ];
+
+export const SAMPLE_USER_ID = "ogL5STCYTnVebo9KP9RsY7nMHxC3";
