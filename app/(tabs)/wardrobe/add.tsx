@@ -3,6 +3,7 @@ import FloatingActionButton from '@/components/floating-action-button';
 import { CLOTHING_LABELS, SAMPLE_USER_ID } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
 import { Ionicons } from '@expo/vector-icons';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from "axios";
 import { Image } from 'expo-image';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
@@ -14,23 +15,25 @@ import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } fr
 const AddClothingItemScreen = () => {
     const [imageUri, setImageUri] = useState<string | null>(null);
     const [clothingItem, setClothingItem] = useState<ClothingItem | null>(null);
-    const [isSaving, setIsSaving] = useState(false);
 
     const router = useRouter();
+    const queryClient = useQueryClient()
 
-    const saveItem = () => {
-        setIsSaving(true);
-        axios.post("http://10.235.135.138:8000/wardrobe/save", {
+    const saveItem = async () => {
+        const res = await axios.post("http://10.235.135.138:8000/wardrobe/save", {
             item_id: clothingItem?.id,
             user_id: SAMPLE_USER_ID
-        })
-        .then(res => {
-            router.back();
-        })
-        .catch(err => {
-            console.log(err);
         });
+
+        router.back();
     };
+
+    const mutation = useMutation({
+        mutationFn: saveItem,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['wardrobe', SAMPLE_USER_ID] })
+        }
+    });
 
     useEffect(() => {
         if (imageUri && !clothingItem) {
@@ -51,7 +54,6 @@ const AddClothingItemScreen = () => {
                 setClothingItem(
                     new ClothingItem(
                         res.data.id,
-                        res.data.filename,
                         { uri: imageUri },
                         res.data.category,
                         res.data.type,
@@ -104,10 +106,10 @@ const AddClothingItemScreen = () => {
                         })}
                     </ScrollView>
                           <FloatingActionButton
-                            onPress={saveItem}
-                            iconName='save'
-                            disabled={isSaving}
-                            className="bg-cyan-600"
+                            onPress={() => mutation.mutate()}
+                            iconName="save"
+                            className={mutation.isPending ? "bg-gray-400" : "bg-cyan-600"}
+                            disabled={mutation.isPending}
                         />
                 </>
             }

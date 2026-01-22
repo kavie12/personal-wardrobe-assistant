@@ -3,7 +3,6 @@ import { ImageSourcePropType } from "react-native";
 
 class ClothingItem {
     id: string;
-    filename: string;
     image: ImageSourcePropType;
     category: ClothingCategory;
     type: ClothingType;
@@ -11,9 +10,8 @@ class ClothingItem {
     occasions: ClothingOccasion[];
     temperatures: ClothingTemperature[];
 
-    constructor(id: string, filename: string, image: ImageSourcePropType, category: ClothingCategory, type: ClothingType, colors: ClothingColor[], occasions: ClothingOccasion[], temperatures: ClothingTemperature[]) {
+    constructor(id: string, image: ImageSourcePropType, category: ClothingCategory, type: ClothingType, colors: ClothingColor[], occasions: ClothingOccasion[], temperatures: ClothingTemperature[]) {
         this.id = id;
-        this.filename = filename;
         this.image = image;
         this.category = category;
         this.type = type;

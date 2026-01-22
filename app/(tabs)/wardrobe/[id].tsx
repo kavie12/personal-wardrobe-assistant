@@ -1,5 +1,7 @@
 import Chip from '@/components/chip';
-import { CLOTHING_LABELS, SAMPLE_CLOTHING_ITEMS } from '@/data';
+import { CLOTHING_LABELS, SAMPLE_USER_ID } from '@/data';
+import { useWardrobe } from '@/hooks/use-wardrobe';
+import ClothingItem from '@/models/ClothingItem';
 import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
@@ -7,7 +9,8 @@ import { ScrollView, Text, View } from 'react-native';
 
 const ClothingItemScreen = () => {
     const { id } = useLocalSearchParams();
-    const clothingItem = SAMPLE_CLOTHING_ITEMS.find(item => item.id === id);
+    const query = useWardrobe(SAMPLE_USER_ID);
+    const clothingItem: ClothingItem = query.data.find((item: ClothingItem) => item.id === id);
 
     if (!clothingItem) {
         throw new Error("Clothing item selected not found.");

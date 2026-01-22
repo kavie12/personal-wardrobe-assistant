@@ -4,7 +4,6 @@ import { ClothingLabelKeys } from "@/types";
 export const SAMPLE_CLOTHING_ITEMS: ClothingItem[] = [
   new ClothingItem(
     "1",
-    "2.png",
     require("@/assets/clothing_images/2.png"),
     "Topwear",
     "T-shirt",
@@ -14,7 +13,6 @@ export const SAMPLE_CLOTHING_ITEMS: ClothingItem[] = [
   ),
   new ClothingItem(
     "2",
-    "3.png",
     require("@/assets/clothing_images/3.png"),
     "Topwear",
     "T-shirt",
@@ -24,7 +22,6 @@ export const SAMPLE_CLOTHING_ITEMS: ClothingItem[] = [
   ),
   new ClothingItem(
     "3",
-    "4.png",
     require("@/assets/clothing_images/4.png"),
     "Topwear",
     "T-shirt",
@@ -34,7 +31,6 @@ export const SAMPLE_CLOTHING_ITEMS: ClothingItem[] = [
   ),
   new ClothingItem(
     "4",
-    "5.png",
     require("@/assets/clothing_images/5.png"),
     "Topwear",
     "T-shirt",
@@ -44,7 +40,6 @@ export const SAMPLE_CLOTHING_ITEMS: ClothingItem[] = [
   ),
   new ClothingItem(
     "5",
-    "9.png",
     require("@/assets/clothing_images/9.png"),
     "Topwear",
     "T-shirt",
@@ -54,7 +49,6 @@ export const SAMPLE_CLOTHING_ITEMS: ClothingItem[] = [
   ),
   new ClothingItem(
     "6",
-    "13.png",
     require("@/assets/clothing_images/13.png"),
     "Bottomwear",
     "Trousers",
@@ -64,7 +58,6 @@ export const SAMPLE_CLOTHING_ITEMS: ClothingItem[] = [
   ),
   new ClothingItem(
     "7",
-    "14.png",
     require("@/assets/clothing_images/14.png"),
     "Bottomwear",
     "Trousers",
@@ -74,7 +67,6 @@ export const SAMPLE_CLOTHING_ITEMS: ClothingItem[] = [
   ),
   new ClothingItem(
     "8",
-    "15.png",
     require("@/assets/clothing_images/15.png"),
     "Bottomwear",
     "Trousers",
@@ -84,7 +76,6 @@ export const SAMPLE_CLOTHING_ITEMS: ClothingItem[] = [
   ),
   new ClothingItem(
     "9",
-    "17.png",
     require("@/assets/clothing_images/17.png"),
     "Bottomwear",
     "Shorts",
@@ -94,7 +85,6 @@ export const SAMPLE_CLOTHING_ITEMS: ClothingItem[] = [
   ),
   new ClothingItem(
     "10",
-    "18.png",
     require("@/assets/clothing_images/18.png"),
     "Bottomwear",
     "Shorts",
@@ -104,7 +94,6 @@ export const SAMPLE_CLOTHING_ITEMS: ClothingItem[] = [
   ),
   new ClothingItem(
     "11",
-    "23.png",
     require("@/assets/clothing_images/23.png"),
     "Footwear",
     "Sneakers",
@@ -114,7 +103,6 @@ export const SAMPLE_CLOTHING_ITEMS: ClothingItem[] = [
   ),
   new ClothingItem(
     "12",
-    "24.png",
     require("@/assets/clothing_images/24.png"),
     "Footwear",
     "Sneakers",
