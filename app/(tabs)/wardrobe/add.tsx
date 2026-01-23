@@ -1,6 +1,5 @@
-import Chip from '@/components/chip';
-import FloatingActionButton from '@/components/floating-action-button';
-import { CLOTHING_LABELS, SAMPLE_USER_ID } from '@/data';
+import { saveItem } from '@/api/server';
+import { SAMPLE_USER_ID } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -10,7 +9,8 @@ import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from 'react-native';
+import DefaultItemScreen from './default_item_screen';
 
 const AddClothingItemScreen = () => {
     const [imageUri, setImageUri] = useState<string | null>(null);
@@ -19,17 +19,16 @@ const AddClothingItemScreen = () => {
     const router = useRouter();
     const queryClient = useQueryClient()
 
-    const saveItem = async () => {
-        const res = await axios.post("http://10.235.135.138:8000/wardrobe/save", {
-            item_id: clothingItem?.id,
-            user_id: SAMPLE_USER_ID
-        });
-
-        router.back();
-    };
-
     const mutation = useMutation({
-        mutationFn: saveItem,
+        mutationFn: async (idCombination: { itemId: string, userId: string }) => {
+            if (!clothingItem) throw new Error("No clothing item found.");
+
+            const success = await saveItem(idCombination.itemId, idCombination.userId);
+            if (success)
+                router.back();
+            else
+                throw new Error("Save item failed.");
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['wardrobe', SAMPLE_USER_ID] })
         }
@@ -79,41 +78,21 @@ const AddClothingItemScreen = () => {
 
     return (
         <View className="flex-1 my-8">
-            <View className="items-center">
-                <Image source={{ uri: imageUri }} style={{ width: 240, height: 240 }} />
-            </View>
-
             {!clothingItem ?
-                <View className="flex-1 justify-center items-center py-20">
-                    <ActivityIndicator size="large" color="#0891b2" />
-                    <Text className="mt-8 text-lg font-medium text-gray-600 dark:text-gray-400">
-                        AI is classifying your item...
-                    </Text>
+                <View>
+                    <View className="items-center">
+                        <Image source={{ uri: imageUri }} style={{ width: 240, height: 240 }} />
+                    </View>
+                    <View className="flex-1 justify-center items-center py-20">
+                        <ActivityIndicator size="large" color="#0891b2" />
+                        <Text className="mt-8 text-lg font-medium text-gray-600 dark:text-gray-400">
+                            AI is classifying your item...
+                        </Text>
+                    </View>
                 </View>
                 :
-                <>
-                    <ScrollView className="mt-8" contentContainerClassName="px-8 gap-y-4">
-                        {CLOTHING_LABELS.map((section, index) => {
-                            const value = clothingItem[section.key];
-                            const selectedLabels = Array.isArray(value) ? value : [value];
-                            return (
-                                <LabelSection
-                                    title={section.title}
-                                    labels={selectedLabels}
-                                    key={index}
-                                />
-                            );
-                        })}
-                    </ScrollView>
-                          <FloatingActionButton
-                            onPress={() => mutation.mutate()}
-                            iconName="save"
-                            className={mutation.isPending ? "bg-gray-400" : "bg-cyan-600"}
-                            disabled={mutation.isPending}
-                        />
-                </>
+                <DefaultItemScreen clothingItem={clothingItem} mode="Edit" onSave={() => router.back()} />
             }
-            
         </View>
     )
 };
@@ -185,24 +164,6 @@ const UploadSection = ({ setImageUri }: { setImageUri: React.Dispatch<React.SetS
                 </View>
                 <Text className="text-md font-semibold text-gray-800 dark:text-gray-100">Upload Image</Text>
             </TouchableOpacity>
-        </View>
-    );
-};
-
-const LabelSection = ({ title, labels }: { title: string, labels: string[] }) => {
-    return (
-        <View>
-            <Text className="text-xl font-bold mb-2 dark:text-white">{title}</Text>
-            <View className="flex-row flex-wrap gap-2">
-                {labels.map((label) => (
-                    <Chip 
-                        key={label} 
-                        value={label} 
-                        isSelected={false}
-                        onSelect={() => {}} 
-                    />
-                ))}
-            </View>
         </View>
     );
 };

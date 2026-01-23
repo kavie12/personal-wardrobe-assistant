@@ -18,3 +18,5 @@ export type ClothingOccasion = typeof CLOTHING_OCCASIONS[number];
 export type ClothingTemperature = typeof CLOTHING_TEMPERATURES[number];
 
 export type ClothingLabelKeys = "category" | "type" | "colors" | "occasions" | "temperatures";
+
+export type ClothingItemScreenMode = "View" | "Edit";

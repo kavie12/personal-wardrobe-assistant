@@ -131,7 +131,7 @@ export const CLOTHING_OCCASIONS = [
 
 export const CLOTHING_TEMPERATURES = ["Hot", "Mild", "Cold"] as const;
 
-export const CLOTHING_LABELS: {
+export const CLOTHING_LABELS_SECTIONS: {
     title: string;
     key: ClothingLabelKeys;
 }[] = [
