@@ -58,9 +58,10 @@ const WardrobeScreen = () => {
 
       {/* Add FAB button */}
       <FloatingActionButton
+        iconName="add"
+        iconSize={32}
+        iconColor="white" 
         onPress={() => router.navigate("/wardrobe/add")}
-        iconName='add'
-        className="bg-cyan-600"
       />
     </View>
   )

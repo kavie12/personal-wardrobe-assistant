@@ -131,15 +131,16 @@ export const CLOTHING_OCCASIONS = [
 
 export const CLOTHING_TEMPERATURES = ["Hot", "Mild", "Cold"] as const;
 
-export const CLOTHING_LABELS_SECTIONS: {
+export const CLOTHING_LABELS: {
     title: string;
     key: ClothingLabelKeys;
+    labels: readonly string[];
 }[] = [
-  { title: "Category", key: "category" },
-  { title: "Type", key: "type" },
-  { title: "Colors", key: "colors" },
-  { title: "Occasions", key: "occasions" },
-  { title: "Temperatures", key: "temperatures" }
+  { title: "Category", key: "category", labels: CLOTHING_CATEGORIES },
+  { title: "Type", key: "type", labels: CLOTHING_TYPES },
+  { title: "Colors", key: "colors", labels: CLOTHING_COLORS },
+  { title: "Occasions", key: "occasions", labels: CLOTHING_OCCASIONS },
+  { title: "Temperatures", key: "temperatures", labels: CLOTHING_TEMPERATURES }
 ];
 
 export const SAMPLE_USER_ID = "ogL5STCYTnVebo9KP9RsY7nMHxC3";

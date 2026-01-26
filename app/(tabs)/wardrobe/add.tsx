@@ -1,9 +1,6 @@
-import { saveItem } from '@/api/server';
-import { SAMPLE_USER_ID } from '@/data';
+import { addItem } from '@/api/server';
 import ClothingItem from '@/models/ClothingItem';
 import { Ionicons } from '@expo/vector-icons';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from "axios";
 import { Image } from 'expo-image';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
@@ -17,53 +14,13 @@ const AddClothingItemScreen = () => {
     const [clothingItem, setClothingItem] = useState<ClothingItem | null>(null);
 
     const router = useRouter();
-    const queryClient = useQueryClient()
-
-    const mutation = useMutation({
-        mutationFn: async (idCombination: { itemId: string, userId: string }) => {
-            if (!clothingItem) throw new Error("No clothing item found.");
-
-            const success = await saveItem(idCombination.itemId, idCombination.userId);
-            if (success)
-                router.back();
-            else
-                throw new Error("Save item failed.");
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['wardrobe', SAMPLE_USER_ID] })
-        }
-    });
 
     useEffect(() => {
         if (imageUri && !clothingItem) {
-            const formData = new FormData();
-
-            formData.append("clothing_item", {
-                uri: imageUri,
-                name: "upload.jpg",
-                type: "image/jpeg"
-            } as any);
-
-            axios.post("http://10.235.135.138:8000/wardrobe/add", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
-            })
-            .then(res => {
-                setClothingItem(
-                    new ClothingItem(
-                        res.data.id,
-                        { uri: imageUri },
-                        res.data.category,
-                        res.data.type,
-                        res.data.colors,
-                        res.data.occasions,
-                        res.data.temperatures
-                    )
-                );
-            })
-            .catch(err => {
-                throw new Error(err);
+            addItem(imageUri).then((item) => {
+                setClothingItem(item);
+            }).catch(err => {
+                Alert.alert('Error', 'Failed to classify the clothing item. Please try again.');
             });
         }
     }, [imageUri]);
@@ -91,7 +48,7 @@ const AddClothingItemScreen = () => {
                     </View>
                 </View>
                 :
-                <DefaultItemScreen clothingItem={clothingItem} mode="Edit" onSave={() => router.back()} />
+                <DefaultItemScreen clothingItem={clothingItem} mode="Edit" isNewItem={true} onSave={() => router.back()} />
             }
         </View>
     )

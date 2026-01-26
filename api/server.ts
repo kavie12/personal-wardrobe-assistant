@@ -3,6 +3,32 @@ import axios from "axios";
 
 const BASE_URL = "http://10.235.135.138:8000";
 
+export const addItem = async (imageUri: string): Promise<ClothingItem> => {
+    const formData = new FormData();
+            
+    formData.append("clothing_item", {
+        uri: imageUri,
+        name: "upload.jpg",
+        type: "image/jpeg"
+    } as any);
+
+    const res = await axios.post("http://10.235.135.138:8000/wardrobe/add", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    });
+
+    return new ClothingItem(
+        res.data.id,
+        { uri: imageUri },
+        res.data.category,
+        res.data.type,
+        res.data.colors,
+        res.data.occasions,
+        res.data.temperatures
+    );
+};
+
 export const fetchWardrobe = async (userId: string): Promise<ClothingItem[]> => {
     const res = await axios.get(`${BASE_URL}/wardrobe/list/${userId}`);
 
@@ -19,10 +45,30 @@ export const fetchWardrobe = async (userId: string): Promise<ClothingItem[]> => 
     );
 };
 
-export const saveItem = async (itemId: string, userId: string): Promise<boolean> => {
+export const saveItem = async (item: ClothingItem, userId: string): Promise<boolean> => {
     const res = await axios.post(`${BASE_URL}/wardrobe/save`, {
-        item_id: itemId,
-        user_id: userId
+        item_id: item.id,
+        user_id: userId,
+        labels: {
+            category: item.category,
+            type: item.type,
+            colors: item.colors,
+            occasions: item.occasions,
+            temperatures: item.temperatures,
+        }
+    });
+    return res.data;
+};
+
+export const updateItem = async (item: ClothingItem): Promise<boolean> => {
+    const res = await axios.put(`${BASE_URL}/wardrobe/update/${item.id}`, {
+        labels: {
+            category: item.category,
+            type: item.type,
+            colors: item.colors,
+            occasions: item.occasions,
+            temperatures: item.temperatures
+        }
     });
     return res.data;
 };
