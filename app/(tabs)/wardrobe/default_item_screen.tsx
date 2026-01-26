@@ -1,4 +1,4 @@
-import { saveItem, updateItem } from '@/api/server';
+import { deleteItem, saveItem, updateItem } from '@/api/server';
 import Chip from '@/components/chip';
 import FloatingActionButton from '@/components/floating-action-button';
 import { CLOTHING_LABELS, SAMPLE_USER_ID } from '@/data';
@@ -7,7 +7,7 @@ import { ClothingItemScreenMode } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import React, { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 
 interface DefaultItemScreenProps {
     clothingItem: ClothingItem;
@@ -15,9 +15,10 @@ interface DefaultItemScreenProps {
     isNewItem?: boolean;
     setMode?: (mode: ClothingItemScreenMode) => void;
     onSave?: () => void;
+    onDelete?: () => void;
 }
 
-const DefaultItemScreen = ({ clothingItem, mode, isNewItem, setMode, onSave }: DefaultItemScreenProps) => {
+const DefaultItemScreen = ({ clothingItem, mode, isNewItem, setMode, onSave, onDelete }: DefaultItemScreenProps) => {
     const [editedItem, setEditedItem] = useState<ClothingItem>(clothingItem);
     const queryClient = useQueryClient();
 
@@ -25,7 +26,7 @@ const DefaultItemScreen = ({ clothingItem, mode, isNewItem, setMode, onSave }: D
         mutationFn: async () => {
             const success = await saveItem(editedItem, SAMPLE_USER_ID);
             if (!success)
-                throw new Error("Save item failed.");
+                Alert.alert("Error", "Failed to save item.");
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['wardrobe', SAMPLE_USER_ID] });
@@ -37,13 +38,46 @@ const DefaultItemScreen = ({ clothingItem, mode, isNewItem, setMode, onSave }: D
         mutationFn: async () => {
             const success = await updateItem(editedItem);
             if (!success)
-                throw new Error("Update item failed.");
+                Alert.alert("Error", "Failed to update item.");
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['wardrobe', SAMPLE_USER_ID] });
             if (onSave) onSave();
         }
     });
+
+    const mutationDelete = useMutation({
+        mutationFn: async () => {
+            const success = await deleteItem(editedItem.id);
+            if (!success)
+                Alert.alert("Error", "Failed to delete item.");
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['wardrobe', SAMPLE_USER_ID] });
+            if (onDelete) onDelete();
+        }
+    });
+
+    const handleDelete = () => {
+        Alert.alert(
+            "Delete Item",
+            "Are you sure you want to delete this item?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: () => mutationDelete.mutate()
+                }
+            ],
+            {
+                cancelable: true,
+            }
+        );
+    };
 
     const toggleLabel = (label: string, sectionKey: keyof ClothingItem) => {
         setEditedItem((prev) => {
@@ -103,13 +137,22 @@ const DefaultItemScreen = ({ clothingItem, mode, isNewItem, setMode, onSave }: D
 
             {
                 mode === "View" ?
-                    <FloatingActionButton
-                        iconName="edit"
-                        iconSize={24}
-                        iconColor="black"
-                        onPress={() => setMode && setMode("Edit")}
-                        className={`bg-gray-200 rounded-full`}
-                    />
+                    <>
+                        <FloatingActionButton
+                            iconName="edit"
+                            iconSize={24}
+                            iconColor="black"
+                            onPress={() => setMode && setMode("Edit")}
+                            className={`bg-gray-200 rounded-full`}
+                        />
+                        <FloatingActionButton
+                            iconName="delete"
+                            iconSize={16}
+                            iconColor="white"
+                            onPress={handleDelete}
+                            className={`bg-red-500 rounded-full mb-20`}
+                        />                        
+                    </>
                     :
                     <FloatingActionButton
                         iconName="save"

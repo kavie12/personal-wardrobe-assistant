@@ -6,6 +6,6 @@ export const useWardrobe = (userId: string) => {
     queryKey: ['wardrobe', userId],
     queryFn: () => fetchWardrobe(userId),
     staleTime: Infinity,
-    gcTime: Infinity,
+    gcTime: Infinity
   });
 };

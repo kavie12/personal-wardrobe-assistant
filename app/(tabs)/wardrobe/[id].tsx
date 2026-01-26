@@ -2,7 +2,7 @@ import { SAMPLE_USER_ID } from '@/data';
 import { useWardrobe } from '@/hooks/use-wardrobe';
 import ClothingItem from '@/models/ClothingItem';
 import { ClothingItemScreenMode } from '@/types';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import DefaultItemScreen from './default_item_screen';
@@ -14,6 +14,8 @@ const ClothingItemScreen = () => {
 
     const clothingItem: ClothingItem | undefined = query.data?.find((item: ClothingItem) => item.id === id);
 
+    const router = useRouter();
+
     return (
         <View className="flex-1 my-8">
             {clothingItem === undefined ?
@@ -21,7 +23,13 @@ const ClothingItemScreen = () => {
                     <ActivityIndicator size="large" color="#0891b2" />
                 </View>
                 :
-                <DefaultItemScreen clothingItem={clothingItem} mode={mode} setMode={setMode} onSave={() => setMode("View")} />
+                <DefaultItemScreen
+                    clothingItem={clothingItem}
+                    mode={mode}
+                    setMode={setMode}
+                    onSave={() => setMode("View")}
+                    onDelete={() => router.back()}
+                />
             }
         </View>
     );

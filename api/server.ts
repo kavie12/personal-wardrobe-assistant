@@ -72,3 +72,8 @@ export const updateItem = async (item: ClothingItem): Promise<boolean> => {
     });
     return res.data;
 };
+
+export const deleteItem = async (itemId: string): Promise<boolean> => {
+    const res = await axios.delete(`${BASE_URL}/wardrobe/delete/${itemId}`);
+    return res.data;
+};
