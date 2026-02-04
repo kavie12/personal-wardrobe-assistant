@@ -9,10 +9,10 @@ import DefaultItemScreen from './default_item_screen';
 
 const ClothingItemScreen = () => {
     const { id } = useLocalSearchParams();
-    const query = useWardrobe(SAMPLE_USER_ID);
+    const wardrobeData = useWardrobe(SAMPLE_USER_ID);
     const [mode, setMode] = useState<ClothingItemScreenMode>("View");
 
-    const clothingItem: ClothingItem | undefined = query.data?.find((item: ClothingItem) => item.id === id);
+    const clothingItem: ClothingItem | undefined = wardrobeData.items.find((item: ClothingItem) => item.id === id);
 
     const router = useRouter();
 

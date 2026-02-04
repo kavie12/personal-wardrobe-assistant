@@ -2,7 +2,6 @@ import Chip from '@/components/chip';
 import FloatingActionButton from '@/components/floating-action-button';
 import { CLOTHING_CATEGORIES, SAMPLE_USER_ID } from '@/data';
 import { useWardrobe } from '@/hooks/use-wardrobe';
-import ClothingItem from '@/models/ClothingItem';
 import { ClothingCategory, WardrobeItemProps } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -14,11 +13,8 @@ const WardrobeScreen = () => {
   const [category, setCategory] = useState<ClothingCategory | "All">("All");
   const router = useRouter();
   const selectCategory = (category: ClothingCategory | "All") => setCategory(category);
-  const query = useWardrobe(SAMPLE_USER_ID);
 
-  const items = query.data?.filter((item: ClothingItem) => 
-    category === "All" ? true : item.category === category
-  ) || [];
+  const wardrobeData = useWardrobe(SAMPLE_USER_ID);
 
   return (
     <View className="flex-1 my-8">
@@ -26,35 +22,27 @@ const WardrobeScreen = () => {
       {/* Category filters */}
       <CategoryFilters selectedCategory={category} selectCategory={selectCategory} />
 
-      {
-        query.isFetching ?
-
-          // Loading spinner
-          <View className="justify-center items-center mt-16">
-              <ActivityIndicator size="large" color="#0891b2" />
-          </View>
-
-          :
-
-          // Clothing items list
-          <FlatList
-            data={items}
-            renderItem={({item}) => (
-              <WardrobeItem
-                image={item.image}
-                type={item.type}
-                onPress={() => router.navigate({ pathname: "/wardrobe/[id]", params: { id: item.id } })}
-              />
-            )}
-            ListEmptyComponent={<EmptyWardrobe category={category} />}
-            keyExtractor={item => item.id}
-            numColumns={2}
-            initialNumToRender={6}
-            contentContainerClassName="px-4 gap-y-4" 
-            columnWrapperClassName="gap-x-4"
-            className="mt-8"
+      {/* Clothing items list */}
+      <FlatList
+        data={wardrobeData.items}
+        renderItem={({item}) => (
+          <WardrobeItem
+            image={item.image}
+            type={item.type}
+            onPress={() => router.navigate({ pathname: "/wardrobe/[id]", params: { id: item.id } })}
           />
-      }
+        )}
+        ListEmptyComponent={wardrobeData.query.isPending ? <ActivityIndicator size="large" color="#0891b2" /> : <EmptyWardrobe category={category} />}
+        onEndReachedThreshold={0.2}
+        onEndReached={() => wardrobeData.query.hasNextPage && !wardrobeData.query.isFetchingNextPage && wardrobeData.query.fetchNextPage()}
+        ListFooterComponent={wardrobeData.query.isFetchingNextPage ? <ActivityIndicator size="small" /> : null}
+        keyExtractor={item => item.id}
+        numColumns={2}
+        initialNumToRender={6}
+        contentContainerClassName="px-4 gap-y-4" 
+        columnWrapperClassName="gap-x-4"
+        className="mt-8"
+      />
 
       {/* Add FAB button */}
       <FloatingActionButton

@@ -1,4 +1,6 @@
+import { SAMPLE_USER_ID } from "@/data";
 import ClothingItem from "@/models/ClothingItem";
+import ClothingItemsResponse from "@/models/ClothingItemsResponse";
 import axios from "axios";
 
 const BASE_URL = "http://10.235.135.138:8000";
@@ -29,19 +31,28 @@ export const addItem = async (imageUri: string): Promise<ClothingItem> => {
     );
 };
 
-export const fetchWardrobe = async (userId: string): Promise<ClothingItem[]> => {
-    const res = await axios.get(`${BASE_URL}/wardrobe/list/${userId}`);
+export const fetchWardrobe = async ({ pageParam }: { pageParam: number }): Promise<ClothingItemsResponse> => {
+    const res = await axios.get(`${BASE_URL}/wardrobe/list/${SAMPLE_USER_ID}`, {
+        params: {
+            page: pageParam,
+            size: 10
+        }
+    });
 
-    return res.data.map((item: any) => 
-        new ClothingItem(
-            item.id,
-            { uri: `data:image/jpeg;base64,${item.image}` },
-            item.category,
-            item.type,
-            item.colors,
-            item.occasions,
-            item.temperatures
-        )
+    return new ClothingItemsResponse(
+        res.data.dataList.map((item: any) => 
+            new ClothingItem(
+                item.id,
+                { uri: `data:image/jpeg;base64,${item.image}` },
+                item.category,
+                item.type,
+                item.colors,
+                item.occasions,
+                item.temperatures
+            )
+        ),
+        res.data.dataCount,
+        res.data.dataCount > pageParam * 10 ? pageParam + 1 : null
     );
 };
 
