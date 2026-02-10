@@ -22,7 +22,7 @@ export default function StackLayout() {
             <Stack.Screen
                 name="index"
                 options={{
-                    title: "Wardrobe",
+                    title: "My Wardrobe",
                     headerShown: true,
                 }}
             />

@@ -15,6 +15,9 @@ const WardrobeScreen = () => {
   const selectCategory = (category: ClothingCategory | "All") => setCategory(category);
 
   const wardrobeData = useWardrobe(SAMPLE_USER_ID);
+  const wardrobeItems = wardrobeData.items.filter(item => 
+    category === "All" ? true : item.category === category
+  ) || [];
 
   return (
     <View className="flex-1 my-8">
@@ -24,7 +27,7 @@ const WardrobeScreen = () => {
 
       {/* Clothing items list */}
       <FlatList
-        data={wardrobeData.items}
+        data={wardrobeItems}
         renderItem={({item}) => (
           <WardrobeItem
             image={item.image}
