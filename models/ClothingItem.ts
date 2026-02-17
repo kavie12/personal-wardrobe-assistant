@@ -19,6 +19,6 @@ class ClothingItem {
         this.occasions = occasions;
         this.temperatures = temperatures;
     }
-}
+};
 
 export default ClothingItem;

@@ -10,6 +10,6 @@ class Outfit {
         this.bottomwear = bottomwear;
         this.footwear = footwear;
     }
-}
+};
 
 export default Outfit;

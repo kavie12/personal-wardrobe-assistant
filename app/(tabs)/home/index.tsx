@@ -2,6 +2,7 @@ import ClothingItem from '@/models/ClothingItem';
 import Outfit from '@/models/Outfit';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import { Link } from 'expo-router';
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -28,7 +29,7 @@ const HomeScreen = () => {
       <ScrollView contentContainerClassName="px-4">
         <Greeting className="mt-4" />
         <WeatherCard className="mt-8" />
-        <CalendarCard className="mt-8" />
+        <ScheduleCard className="mt-8" />
         <OutfitCard
           className="mt-8"
           description="Based on your 10:00 AM meeting and 24°C weather."
@@ -72,33 +73,38 @@ const WeatherCard = ({ className = "" }: { className?: string; }) => {
   );
 };
 
-const CalendarCard = ({ className = "" }: { className?: string; }) => {
+const ScheduleCard = ({ className = "" }: { className?: string; }) => {
   return (
     <View className={`bg-white p-8 rounded-2xl ${className}`}>
-      <View className="flex-row items-center gap-x-4">
-        <Ionicons name="calendar-outline" size={24} color="blue" />
-        <Text className="text-xl font-bold text-slate-500">CALENDAR</Text>
+      <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center gap-x-4">
+          <Ionicons name="calendar-outline" size={24} color="blue" />
+          <Text className="text-xl font-bold text-slate-500">SCHEDULE</Text>
+        </View>
+        <Link href="/home/scheduler">
+          <Ionicons name="open-outline" size={20}  />
+        </Link>
       </View>
       <View className="mt-8 gap-y-6">
-        <CalendarRecord date={new Date()} title="Supervisor meeting" usage="Formal" />
-        <CalendarRecord date={new Date()} title="Dayout" usage="Casual" />
+        <ScheduleRecord date={new Date()} title="Supervisor meeting" occasion="Formal" />
+        <ScheduleRecord date={new Date()} title="Dayout" occasion="Casual" />
       </View>
     </View>
   );
 };
 
-const USAGE_COLORS: Record<string, { bg: string; text: string; }> = {
+const OCCASION_COLORS: Record<string, { bg: string; text: string; }> = {
   FORMAL: { bg: 'bg-violet-100', text: 'text-violet-500' },
   CASUAL: { bg: 'bg-green-100', text: 'text-green-600' },
   DEFAULT: { bg: 'bg-slate-100', text: 'text-slate-500' }
 };
 
-const CalendarRecord = ({ date, title, usage }: { date: Date; title: string; usage: string; }) => {
+const ScheduleRecord = ({ date, title, occasion }: { date: Date; title: string; occasion: string; }) => {
 
   const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   const [time, ampm] = timeString.split(/\s+/);
 
-  const theme = USAGE_COLORS[usage.toUpperCase()] || USAGE_COLORS.DEFAULT;
+  const theme = OCCASION_COLORS[occasion.toUpperCase()] || OCCASION_COLORS.DEFAULT;
 
   return (
     <View className="flex-row items-center">
@@ -109,7 +115,7 @@ const CalendarRecord = ({ date, title, usage }: { date: Date; title: string; usa
       <View className="mx-6 w-[1px] h-full bg-slate-300"></View>
       <View className="gap-y-1">
         <Text numberOfLines={1} className="font-medium text-lg text-slate-800">{title}</Text>
-        <Text className={`${theme.bg} ${theme.text} font-semibold text-sm self-start px-3 py-1 rounded-full`}>{usage.toUpperCase()}</Text>
+        <Text className={`${theme.bg} ${theme.text} font-semibold text-sm self-start px-3 py-1 rounded-full`}>{occasion.toUpperCase()}</Text>
       </View>
     </View>
   );
@@ -124,7 +130,7 @@ const OutfitCard = ({ className = "", description, outfit }: { className: string
       </View>
       <View className="bg-blue-600 flex-row items-center gap-2 self-start px-3 py-1 rounded-full mt-8">
         <Ionicons name="chatbubble-outline" color="white" />
-        <Text className="text-white text-sm font-medium">AI Pick</Text>
+        <Text className="text-white text-sm">AI Pick</Text>
       </View>
       <Text className="text-slate-500 italic mt-4 font-medium">"{description}"</Text>
       <ScrollView horizontal contentContainerClassName="gap-x-4 pb-4" className="mt-4">

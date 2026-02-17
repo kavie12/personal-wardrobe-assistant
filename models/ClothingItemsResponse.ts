@@ -10,6 +10,6 @@ class ClothingItemsResponse {
         this.dataCount = dataCount;
         this.nextPage = nextPage;
     }
-}
+};
 
 export default ClothingItemsResponse;

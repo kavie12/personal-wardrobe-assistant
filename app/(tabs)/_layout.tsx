@@ -11,29 +11,20 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerStyle: {
-          backgroundColor: "transparent"
-        },
-        headerTitleStyle: {
-          fontWeight: "bold",
-          fontSize: 24
-        },
-        headerShadowVisible: false
+        headerShown: false
       }}>
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <MaterialIcons size={28} name="home" color={color} />,
-          headerShown: false
+          tabBarIcon: ({ color }) => <MaterialIcons size={28} name="home" color={color} />
         }}
       />
       <Tabs.Screen
         name="wardrobe"
         options={{
           title: 'Wardrobe',
-          tabBarIcon: ({ color }) => <MaterialIcons size={28} name="grid-view" color={color} />,
-          headerShown: false
+          tabBarIcon: ({ color }) => <MaterialIcons size={28} name="grid-view" color={color} />
         }}
       />
     </Tabs>
