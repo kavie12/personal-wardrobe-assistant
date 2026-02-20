@@ -42,7 +42,7 @@ const WardrobeScreen = () => {
         keyExtractor={item => item.id}
         numColumns={2}
         initialNumToRender={6}
-        contentContainerClassName="px-4 gap-y-4" 
+        contentContainerClassName="px-4 gap-y-4"
         columnWrapperClassName="gap-x-4"
         className="mt-8"
       />

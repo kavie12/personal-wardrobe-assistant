@@ -1,15 +1,18 @@
-import { CLOTHING_OCCASIONS } from "@/data";
+import { CLOTHING_OCCASIONS, SAMPLE_USER_ID } from "@/data";
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
+import Schedule from "@/models/Schedule";
+import { addSchedule, fetchSchedules } from "@/services/schedule_service";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Modal, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, Modal, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const Scheduler = () => {
 
+const Scheduler = () => {
   const [openAddModal, setOpenAddModal] = useState(false);
 
   return (
@@ -27,19 +30,34 @@ const Header = ({ openAddModal, className = "" }: { openAddModal: () => void; cl
   return (
     <View className={`flex-row items-center justify-between mx-4 ${className}`}>
       <View className="flex-row items-center gap-x-8">
-        <Ionicons name="arrow-back-outline" size={24} onPress={router.back} color={colorScheme === "dark" ? "white" : "black"} />
+        <TouchableOpacity activeOpacity={0.7}>
+          <Ionicons name="arrow-back-outline" size={24} onPress={router.back} color={colorScheme === "dark" ? "white" : "black"} />
+        </TouchableOpacity>
         <Text className="text-3xl font-bold dark:text-white">Scheduler</Text>
       </View>
-      <Ionicons name="add-outline" size={28} onPress={openAddModal} color={colorScheme === "dark" ? "white" : "black"} />
+      <TouchableOpacity activeOpacity={0.7}>
+        <Ionicons name="add-outline" size={28} onPress={openAddModal} color={colorScheme === "dark" ? "white" : "black"} />
+      </TouchableOpacity>
     </View>
   );
 };
 
 const ScheduleList = ({ className = "" }: { className?: string }) => {
+  const query = useQuery({
+    queryKey: ["schedule", SAMPLE_USER_ID],
+    queryFn: () => fetchSchedules(SAMPLE_USER_ID),
+    staleTime: Infinity,
+    gcTime: Infinity
+  });
+
   return (
     <View className={`flex-1 mx-4 gap-y-4 ${className}`}>
-      <ScheduleRecord date={new Date()} title="Supervisor meeting" occasion="Formal" />
-      <ScheduleRecord date={new Date()} title="Dayout" occasion="Casual" />
+      <FlatList
+        data={query.data}
+        renderItem={({item}) => <ScheduleRecord schedule={item} />}
+        ListEmptyComponent={query.isPending ? <ActivityIndicator size="large" color="#0891b2" /> : <EmptySchedule />}
+        contentContainerClassName="gap-y-4"
+      />
     </View>
   );
 };
@@ -50,23 +68,22 @@ const OCCASION_COLORS: Record<string, { bg: string; text: string; }> = {
   DEFAULT: { bg: 'bg-slate-100', text: 'text-slate-500' }
 };
 
-const ScheduleRecord = ({ date, title, occasion }: { date: Date; title: string; occasion: string; }) => {
-
-  const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+const ScheduleRecord = ({ schedule }: { schedule: Schedule; }) => {
+  const timeString = schedule.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   const [time, ampm] = timeString.split(/\s+/);
 
-  const theme = OCCASION_COLORS[occasion.toUpperCase()] || OCCASION_COLORS.DEFAULT;
+  const theme = OCCASION_COLORS[schedule.occasion.toUpperCase()] || OCCASION_COLORS.DEFAULT;
 
   return (
-    <Pressable className="flex-row items-center bg-white p-4 rounded-xl">
-      <View className="items-center">
+    <Pressable className="bg-white flex-row items-center p-4 rounded-xl">
+      <View className="items-center w-16">
         <Text className="font-bold text-lg">{time}</Text>
         <Text className="text-slate-400 text-sm font-medium">{ampm}</Text>
       </View>
       <View className="mx-6 w-[1px] h-full bg-slate-300"></View>
       <View className="gap-y-1">
-        <Text numberOfLines={1} className="font-medium text-lg text-slate-800">{title}</Text>
-        <Text className={`${theme.bg} ${theme.text} font-semibold text-sm self-start px-3 py-1 rounded-full`}>{occasion.toUpperCase()}</Text>
+        <Text numberOfLines={1} className="font-medium text-lg text-slate-800">{schedule.title}</Text>
+        <Text className={`${theme.bg} ${theme.text} font-semibold text-sm self-start px-3 py-1 rounded-full`}>{schedule.occasion.toUpperCase()}</Text>
       </View>
     </Pressable>
   );
@@ -77,22 +94,38 @@ const ScheduleModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
   const [occasion, setOccasion] = useState(CLOTHING_OCCASIONS[0]);
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
-
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async (schedule: Schedule) => {
+      setLoading(true);
+      return await addSchedule(schedule)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["schedule", SAMPLE_USER_ID] });
+    },
+    onSettled: () => {
+      setLoading(false);
+      onClose();
+    }
+  });
 
   return (
     <Modal animationType="fade" transparent visible={visible} onRequestClose={onClose}>
       {/* Backdrop */}
       <Pressable 
-        className="flex-1 bg-black/50 justify-center items-center px-6" 
+        className="flex-1 bg-black/40 justify-center items-center px-6" 
         onPress={onClose}
       >
         {/* Modal Card */}
         <Pressable className="bg-white w-full rounded-3xl p-8 shadow-xl" onPress={(e) => e.stopPropagation()}>
           <View className="flex-row justify-between items-center mb-6">
             <Text className="text-2xl font-bold text-slate-800">New Schedule</Text>
-            <TouchableOpacity onPress={onClose}>
+            <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
               <Ionicons name="close-circle" size={28} color="#94a3b8" />
             </TouchableOpacity>
           </View>
@@ -147,12 +180,11 @@ const ScheduleModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
           </View>
 
           {/* Action Button */}
-          <TouchableOpacity 
-            className="bg-blue-600 p-4 rounded-2xl items-center shadow-lg shadow-blue-300"
-            onPress={() => {
-              console.log("Saved:", { title, occasion, date, time });
-              onClose();
-            }}
+          <TouchableOpacity
+            className={`${loading ? "bg-slate-400" : "bg-blue-600"} p-4 rounded-2xl items-center shadow-lg shadow-blue-300`}
+            onPress={() => mutation.mutate(new Schedule(undefined, title, occasion, date, time))}
+            disabled={loading}
+            activeOpacity={0.7}
           >
             <Text className="text-white text-lg font-bold">Add to Schedule</Text>
           </TouchableOpacity>
@@ -177,6 +209,22 @@ const ScheduleModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
         />
       )}
     </Modal>
+  );
+};
+
+const EmptySchedule = () => {
+  return (
+    <View className="flex-1 items-center justify-center py-20 px-10">
+      <View className="bg-gray-100 dark:bg-neutral-800 p-6 rounded-full mb-4">
+        <Ionicons name="calendar-outline" size={48} color="#9ca3af" />
+      </View>
+      <Text className="text-xl font-semibold text-gray-800 dark:text-gray-100 text-center">
+        No schedules yet
+      </Text>
+      <Text className="text-gray-500 dark:text-gray-400 text-center mt-2">
+        Tap the "+" button to start adding schedules.
+      </Text>
+    </View>
   );
 };
 

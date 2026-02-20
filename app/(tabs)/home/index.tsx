@@ -5,7 +5,7 @@ import { getRecommendation } from '@/services/recommendation_service';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { Image } from 'expo-image';
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -77,6 +77,9 @@ const WeatherCard = ({ className = "" }: { className?: string; }) => {
 };
 
 const ScheduleCard = ({ className = "" }: { className?: string; }) => {
+
+  const router = useRouter();
+
   return (
     <View className={`bg-white p-8 rounded-2xl ${className}`}>
       <View className="flex-row items-center justify-between">
@@ -84,9 +87,9 @@ const ScheduleCard = ({ className = "" }: { className?: string; }) => {
           <Ionicons name="calendar-outline" size={24} color="blue" />
           <Text className="text-xl font-bold text-slate-500">SCHEDULE</Text>
         </View>
-        <Link href="/home/scheduler">
+        <TouchableOpacity onPress={() => router.navigate("/home/scheduler")} activeOpacity={0.7}>
           <Ionicons name="open-outline" size={20}  />
-        </Link>
+        </TouchableOpacity>
       </View>
       <View className="mt-8 gap-y-6">
         <ScheduleRecord date={new Date()} title="Supervisor meeting" occasion="Formal" />
