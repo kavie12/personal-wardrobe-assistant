@@ -47,12 +47,7 @@
           "cameraPermission": "The app accesses your camera."
         }
       ],
-      [
-        "expo-calendar",
-        {
-          "calendarPermission": "The app needs to access your calendar."
-        }
-      ]
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true,

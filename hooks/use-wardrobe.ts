@@ -1,4 +1,4 @@
-import { fetchWardrobe } from '@/api/server';
+import { fetchWardrobe } from '@/services/wardrobe_service';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 

@@ -1,21 +1,27 @@
+import { CLOTHING_OCCASIONS } from "@/data";
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import { Ionicons } from "@expo/vector-icons";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Modal, Pressable, Text, TextInput, View } from "react-native";
+import { Modal, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Scheduler = () => {
+
+  const [openAddModal, setOpenAddModal] = useState(false);
+
   return (
     <SafeAreaView className="flex-1">
-      <Header className="mt-4" />
+      <Header openAddModal={() => setOpenAddModal(true)} className="mt-4" />
       <ScheduleList className="mt-8" />
-      <ScheduleModal />
+      <ScheduleModal visible={openAddModal} onClose={() => setOpenAddModal(false)} />
     </SafeAreaView>
   );
 };
 
-const Header = ({ className = "" }: { className?: string }) => {
+const Header = ({ openAddModal, className = "" }: { openAddModal: () => void; className?: string; }) => {
   const router = useRouter();
   const colorScheme = useColorScheme();
   return (
@@ -24,7 +30,7 @@ const Header = ({ className = "" }: { className?: string }) => {
         <Ionicons name="arrow-back-outline" size={24} onPress={router.back} color={colorScheme === "dark" ? "white" : "black"} />
         <Text className="text-3xl font-bold dark:text-white">Scheduler</Text>
       </View>
-      <Ionicons name="add-outline" size={28} color={colorScheme === "dark" ? "white" : "black"} />
+      <Ionicons name="add-outline" size={28} onPress={openAddModal} color={colorScheme === "dark" ? "white" : "black"} />
     </View>
   );
 };
@@ -66,32 +72,111 @@ const ScheduleRecord = ({ date, title, occasion }: { date: Date; title: string; 
   );
 };
 
-const ScheduleModal = ({}: {}) => {
-
+const ScheduleModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
   const [title, setTitle] = useState("");
+  const [occasion, setOccasion] = useState(CLOTHING_OCCASIONS[0]);
   const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(new Date());
 
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   return (
-    <>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={true}
+    <Modal animationType="fade" transparent visible={visible} onRequestClose={onClose}>
+      {/* Backdrop */}
+      <Pressable 
+        className="flex-1 bg-black/50 justify-center items-center px-6" 
+        onPress={onClose}
       >
-        <View className="flex-1 justify-center items-center">
-          <View className="bg-white">
-            <TextInput
-              className="w-80"
-              placeholder="Title"
-              value={title}
-            />
-            <Text className="w-80" onPress={() => setShowDatePicker(true)}>{date.toLocaleDateString()}</Text>
+        {/* Modal Card */}
+        <Pressable className="bg-white w-full rounded-3xl p-8 shadow-xl" onPress={(e) => e.stopPropagation()}>
+          <View className="flex-row justify-between items-center mb-6">
+            <Text className="text-2xl font-bold text-slate-800">New Schedule</Text>
+            <TouchableOpacity onPress={onClose}>
+              <Ionicons name="close-circle" size={28} color="#94a3b8" />
+            </TouchableOpacity>
           </View>
-        </View>
-      </Modal>
-    </>
+
+          {/* Title Input */}
+          <View className="mb-6">
+            <Text className="text-slate-500 font-semibold mb-2 ml-1">EVENT TITLE</Text>
+            <TextInput
+              className="bg-slate-100 p-4 rounded-xl text-lg text-slate-800 font-medium"
+              placeholder="Meeting with..."
+              placeholderTextColor="#94a3b8"
+              value={title}
+              onChangeText={setTitle}
+            />
+          </View>
+
+          {/* Occasion Picker */}
+          <View className="mb-6">
+            <Text className="text-slate-500 font-semibold mb-2 ml-1">OCCASION</Text>
+            <View className="bg-slate-100 rounded-xl overflow-hidden">
+              <Picker
+                selectedValue={occasion}
+                onValueChange={(value) => setOccasion(value)}
+                style={{ height: 50 }}
+              >
+                {CLOTHING_OCCASIONS.map((item) => (
+                  <Picker.Item key={item} label={item} value={item} />
+                ))}
+              </Picker>
+            </View>
+          </View>
+
+          {/* Date & Time Selectors */}
+          <View className="flex-row gap-x-4 mb-8">
+            <TouchableOpacity 
+              onPress={() => setShowDatePicker(true)}
+              className="flex-1 bg-blue-50 p-4 rounded-xl items-center border border-blue-100"
+            >
+              <Ionicons name="calendar-outline" size={20} color="#2563eb" />
+              <Text className="text-blue-600 font-bold mt-1">{date.toLocaleDateString()}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              onPress={() => setShowTimePicker(true)}
+              className="flex-1 bg-blue-50 p-4 rounded-xl items-center border border-blue-100"
+            >
+              <Ionicons name="time-outline" size={20} color="#2563eb" />
+              <Text className="text-blue-600 font-bold mt-1">
+                {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Action Button */}
+          <TouchableOpacity 
+            className="bg-blue-600 p-4 rounded-2xl items-center shadow-lg shadow-blue-300"
+            onPress={() => {
+              console.log("Saved:", { title, occasion, date, time });
+              onClose();
+            }}
+          >
+            <Text className="text-white text-lg font-bold">Add to Schedule</Text>
+          </TouchableOpacity>
+        </Pressable>
+      </Pressable>
+
+      {showDatePicker && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          display="default"
+          onChange={(e, d) => { setShowDatePicker(false); if(d) setDate(d); }}
+        />
+      )}
+      {showTimePicker && (
+        <DateTimePicker
+          value={time}
+          mode="time"
+          is24Hour={false}
+          display="default"
+          onChange={(e, t) => { setShowTimePicker(false); if(t) setTime(t); }}
+        />
+      )}
+    </Modal>
   );
 };
 

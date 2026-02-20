@@ -1,8 +1,8 @@
-import { deleteItem, saveItem, updateItem } from '@/api/server';
 import Chip from '@/components/chip';
 import FloatingActionButton from '@/components/floating-action-button';
 import { CLOTHING_LABELS, SAMPLE_USER_ID } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
+import { deleteItem, saveItem, updateItem } from '@/services/wardrobe_service';
 import { ClothingItemScreenMode } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';

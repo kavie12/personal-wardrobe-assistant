@@ -1,10 +1,13 @@
+import { SAMPLE_USER_ID } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
 import Outfit from '@/models/Outfit';
+import { getRecommendation } from '@/services/recommendation_service';
 import { Ionicons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
 import React from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const HomeScreen = () => {
@@ -122,6 +125,14 @@ const ScheduleRecord = ({ date, title, occasion }: { date: Date; title: string; 
 };
 
 const OutfitCard = ({ className = "", description, outfit }: { className: string; description: string; outfit: Outfit }) => {
+
+  const query = useQuery({
+    queryKey: ["recommendation", SAMPLE_USER_ID],
+    queryFn: () => getRecommendation({ description: "Rainy", temperature: 20 }, "Supervisor Meeting, Formal"),
+    staleTime: Infinity,
+    gcTime: Infinity
+  });
+
   return (
     <View className={`bg-white p-8 rounded-2xl ${className}`}>
       <View className="flex-row items-center gap-x-4">
@@ -132,12 +143,20 @@ const OutfitCard = ({ className = "", description, outfit }: { className: string
         <Ionicons name="chatbubble-outline" color="white" />
         <Text className="text-white text-sm">AI Pick</Text>
       </View>
-      <Text className="text-slate-500 italic mt-4 font-medium">"{description}"</Text>
-      <ScrollView horizontal contentContainerClassName="gap-x-4 pb-4" className="mt-4">
-        <OutfitItem item={outfit.topwear} />
-        <OutfitItem item={outfit.bottomwear} />
-        <OutfitItem item={outfit.footwear} />
-      </ScrollView>
+
+      {
+        (query.isPending || !query.data) ? <ActivityIndicator className="my-4" /> :
+          <>    
+            <Text className="text-slate-500 italic mt-4 font-medium">"{query.data.reason}"</Text>
+            <ScrollView horizontal contentContainerClassName="gap-x-4 pb-4" className="mt-4">
+              <OutfitItem item={query.data.outfit.topwear} />
+              <OutfitItem item={query.data.outfit.bottomwear} />
+              <OutfitItem item={query.data.outfit.footwear} />
+              { query.data?.outfit.outerwear && <OutfitItem item={query.data?.outfit.outerwear} /> }
+            </ScrollView>
+          </>
+      }
+
       <View className="flex-row w-full gap-x-4 mt-4">
         <TouchableOpacity activeOpacity={0.8} className="bg-red-100 px-3 py-3 rounded-xl">
           <Ionicons name="close-outline" size={24} color="red" />

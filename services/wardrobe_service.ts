@@ -3,7 +3,7 @@ import ClothingItem from "@/models/ClothingItem";
 import ClothingItemsResponse from "@/models/ClothingItemsResponse";
 import axios from "axios";
 
-const BASE_URL = "http://10.235.135.138:8000";
+const BASE_URL = "http://10.225.145.138:8000/wardrobe";
 
 export const addItem = async (imageUri: string): Promise<ClothingItem> => {
     const formData = new FormData();
@@ -14,7 +14,7 @@ export const addItem = async (imageUri: string): Promise<ClothingItem> => {
         type: "image/jpeg"
     } as any);
 
-    const res = await axios.post("http://10.235.135.138:8000/wardrobe/add", formData, {
+    const res = await axios.post(`${BASE_URL}/add`, formData, {
         headers: {
             "Content-Type": "multipart/form-data"
         }
@@ -32,7 +32,7 @@ export const addItem = async (imageUri: string): Promise<ClothingItem> => {
 };
 
 export const fetchWardrobe = async ({ pageParam }: { pageParam: number }): Promise<ClothingItemsResponse> => {
-    const res = await axios.get(`${BASE_URL}/wardrobe/list/${SAMPLE_USER_ID}`, {
+    const res = await axios.get(`${BASE_URL}/list/${SAMPLE_USER_ID}`, {
         params: {
             page: pageParam,
             size: 10
@@ -57,7 +57,7 @@ export const fetchWardrobe = async ({ pageParam }: { pageParam: number }): Promi
 };
 
 export const saveItem = async (item: ClothingItem, userId: string): Promise<boolean> => {
-    const res = await axios.post(`${BASE_URL}/wardrobe/save`, {
+    const res = await axios.post(`${BASE_URL}/save`, {
         item_id: item.id,
         user_id: userId,
         labels: {
@@ -72,7 +72,7 @@ export const saveItem = async (item: ClothingItem, userId: string): Promise<bool
 };
 
 export const updateItem = async (item: ClothingItem): Promise<boolean> => {
-    const res = await axios.put(`${BASE_URL}/wardrobe/update/${item.id}`, {
+    const res = await axios.put(`${BASE_URL}/update/${item.id}`, {
         labels: {
             category: item.category,
             type: item.type,
@@ -85,6 +85,6 @@ export const updateItem = async (item: ClothingItem): Promise<boolean> => {
 };
 
 export const deleteItem = async (itemId: string): Promise<boolean> => {
-    const res = await axios.delete(`${BASE_URL}/wardrobe/delete/${itemId}`);
+    const res = await axios.delete(`${BASE_URL}/delete/${itemId}`);
     return res.data;
 };
