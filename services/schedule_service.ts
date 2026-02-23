@@ -26,6 +26,30 @@ export const fetchSchedules = async (userId: string): Promise<Schedule[]> => {
   ));
 };
 
+export const fetchLatestSchedule = async (userId: string): Promise<Schedule | null> => {
+  const res = await axios.get(`${BASE_URL}/latest/${userId}`);
+  
+  if (!res.data) return null;
+
+  return new Schedule(
+    res.data.id,
+    res.data.title,
+    res.data.occasion,
+    new Date(res.data.timestamp)
+  );
+};
+
+export const fetchLatestSchedules24H = async (userId: string): Promise<Schedule[]> => {
+  const res = await axios.get(`${BASE_URL}/latest-24h/${userId}`);
+  
+  return res.data.map((item: any) => new Schedule(
+    item.id,
+    item.title,
+    item.occasion,
+    new Date(item.timestamp)
+  ));
+};
+
 export const deleteSchedule = async (scheduleId: string): Promise<boolean> => {
   const res = await axios.delete(`${BASE_URL}/delete/${scheduleId}`);
   return res.data === "Deleted" || res.data === true;

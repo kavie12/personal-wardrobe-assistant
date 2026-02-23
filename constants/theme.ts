@@ -51,3 +51,15 @@ export const Fonts = Platform.select({
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
+
+export const OCCASION_CHIP_COLORS: Record<string, { bg: string; text: string }> = {
+  FORMAL: { bg: 'bg-violet-100', text: 'text-violet-500' },
+  CASUAL: { bg: 'bg-green-100', text: 'text-green-600' },
+
+  SMART_CASUAL: { bg: 'bg-blue-100', text: 'text-blue-600' },
+  SPORTSWEAR: { bg: 'bg-orange-100', text: 'text-orange-600' },
+  PARTY: { bg: 'bg-pink-100', text: 'text-pink-600' },
+  WORK: { bg: 'bg-indigo-100', text: 'text-indigo-600' },
+
+  DEFAULT: { bg: 'bg-slate-100', text: 'text-slate-500' }
+};

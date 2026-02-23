@@ -1,4 +1,3 @@
-import { SAMPLE_USER_ID } from '@/data';
 import { useWardrobe } from '@/hooks/use-wardrobe';
 import ClothingItem from '@/models/ClothingItem';
 import { ClothingItemScreenMode } from '@/types';
@@ -9,7 +8,7 @@ import DefaultItemScreen from './default_item_screen';
 
 const ClothingItemScreen = () => {
     const { id } = useLocalSearchParams();
-    const wardrobeData = useWardrobe(SAMPLE_USER_ID);
+    const wardrobeData = useWardrobe();
     const [mode, setMode] = useState<ClothingItemScreenMode>("View");
 
     const clothingItem: ClothingItem | undefined = wardrobeData.items.find((item: ClothingItem) => item.id === id);

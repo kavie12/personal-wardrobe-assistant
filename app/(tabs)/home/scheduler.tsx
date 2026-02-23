@@ -1,3 +1,5 @@
+import { HOME_RECOMMENDATION_KEY, SCHEDULE_LIST_KEY } from "@/constants/query_keys";
+import { OCCASION_CHIP_COLORS } from "@/constants/theme";
 import { CLOTHING_OCCASIONS, SAMPLE_USER_ID } from "@/data";
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import Schedule from "@/models/Schedule";
@@ -18,7 +20,7 @@ const Scheduler = () => {
     <SafeAreaView className="flex-1">
       <Header openAddModal={() => setOpenAddModal(true)} className="mt-4" />
       <ScheduleList className="mt-8" />
-      <ScheduleModal visible={openAddModal} onClose={() => setOpenAddModal(false)} />
+      <ScheduleAddModal visible={openAddModal} onClose={() => setOpenAddModal(false)} />
     </SafeAreaView>
   );
 };
@@ -43,7 +45,7 @@ const Header = ({ openAddModal, className = "" }: { openAddModal: () => void; cl
 
 const ScheduleList = ({ className = "" }: { className?: string }) => {
   const query = useQuery({
-    queryKey: ["schedule", SAMPLE_USER_ID],
+    queryKey: SCHEDULE_LIST_KEY,
     queryFn: () => fetchSchedules(SAMPLE_USER_ID),
     staleTime: Infinity,
     gcTime: Infinity
@@ -59,12 +61,6 @@ const ScheduleList = ({ className = "" }: { className?: string }) => {
       />
     </View>
   );
-};
-
-const OCCASION_COLORS: Record<string, { bg: string; text: string; }> = {
-  FORMAL: { bg: 'bg-violet-100', text: 'text-violet-500' },
-  CASUAL: { bg: 'bg-green-100', text: 'text-green-600' },
-  DEFAULT: { bg: 'bg-slate-100', text: 'text-slate-500' }
 };
 
 const getDateLabel = (date: Date) => {
@@ -98,7 +94,7 @@ const ScheduleRecord = ({ schedule }: { schedule: Schedule; }) => {
   const timeString = schedule.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   const dateLabel = getDateLabel(schedule.timestamp);
 
-  const theme = OCCASION_COLORS[schedule.occasion.toUpperCase()] || OCCASION_COLORS.DEFAULT;
+  const theme = OCCASION_CHIP_COLORS[schedule.occasion.toUpperCase()];
 
   const openDeleteAlert = () =>
     Alert.alert('Delete this schedule', 'Do you want to delete this schedule', [
@@ -106,15 +102,16 @@ const ScheduleRecord = ({ schedule }: { schedule: Schedule; }) => {
         text: 'Cancel',
         style: 'cancel',
       },
-      {text: 'OK', onPress: () => mutation.mutate()},
+      {text: 'OK', onPress: () => mutationDelete.mutate()},
     ]);
 
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const mutationDelete = useMutation({
     mutationFn: () => deleteSchedule(schedule.id as string),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedule", SAMPLE_USER_ID] });
+      queryClient.invalidateQueries({ queryKey: SCHEDULE_LIST_KEY });
+      queryClient.invalidateQueries({ queryKey: HOME_RECOMMENDATION_KEY });
     }
   });
 
@@ -141,7 +138,7 @@ const ScheduleRecord = ({ schedule }: { schedule: Schedule; }) => {
   );
 };
 
-const ScheduleModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
+const ScheduleAddModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
   const [title, setTitle] = useState("");
   const [occasion, setOccasion] = useState(CLOTHING_OCCASIONS[0]);
   const [date, setDate] = useState(new Date());
@@ -158,7 +155,8 @@ const ScheduleModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
       return await addSchedule(schedule)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedule", SAMPLE_USER_ID] });
+      queryClient.invalidateQueries({ queryKey: SCHEDULE_LIST_KEY });
+      queryClient.invalidateQueries({ queryKey: HOME_RECOMMENDATION_KEY });
     },
     onSettled: () => {
       setLoading(false);

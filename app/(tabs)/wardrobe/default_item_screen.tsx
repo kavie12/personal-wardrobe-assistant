@@ -1,5 +1,6 @@
 import Chip from '@/components/chip';
 import FloatingActionButton from '@/components/floating-action-button';
+import { WARDROBE_LIST_KEY } from '@/constants/query_keys';
 import { CLOTHING_LABELS, SAMPLE_USER_ID } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
 import { deleteItem, saveItem, updateItem } from '@/services/wardrobe_service';
@@ -29,7 +30,7 @@ const DefaultItemScreen = ({ clothingItem, mode, isNewItem, setMode, onSave, onD
                 Alert.alert("Error", "Failed to save item.");
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['wardrobe', SAMPLE_USER_ID] });
+            queryClient.invalidateQueries({ queryKey: WARDROBE_LIST_KEY });
             if (onSave) onSave();
         }
     });
@@ -41,7 +42,7 @@ const DefaultItemScreen = ({ clothingItem, mode, isNewItem, setMode, onSave, onD
                 Alert.alert("Error", "Failed to update item.");
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['wardrobe', SAMPLE_USER_ID] });
+            queryClient.invalidateQueries({ queryKey: WARDROBE_LIST_KEY });
             if (onSave) onSave();
         }
     });
@@ -53,7 +54,7 @@ const DefaultItemScreen = ({ clothingItem, mode, isNewItem, setMode, onSave, onD
                 Alert.alert("Error", "Failed to delete item.");
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['wardrobe', SAMPLE_USER_ID] });
+            queryClient.invalidateQueries({ queryKey: WARDROBE_LIST_KEY });
             if (onDelete) onDelete();
         }
     });

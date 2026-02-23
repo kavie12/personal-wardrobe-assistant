@@ -1,10 +1,11 @@
+import { WARDROBE_LIST_KEY } from '@/constants/query_keys';
 import { fetchWardrobe } from '@/services/wardrobe_service';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-export const useWardrobe = (userId: string) => {
+export const useWardrobe = () => {
   const query = useInfiniteQuery({
-    queryKey: ["wardrobe", userId],
+    queryKey: WARDROBE_LIST_KEY,
     queryFn: fetchWardrobe,
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage,

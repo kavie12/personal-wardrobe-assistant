@@ -1,6 +1,6 @@
 import Chip from '@/components/chip';
 import FloatingActionButton from '@/components/floating-action-button';
-import { CLOTHING_CATEGORIES, SAMPLE_USER_ID } from '@/data';
+import { CLOTHING_CATEGORIES } from '@/data';
 import { useWardrobe } from '@/hooks/use-wardrobe';
 import { ClothingCategory, WardrobeItemProps } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,7 +14,7 @@ const WardrobeScreen = () => {
   const router = useRouter();
   const selectCategory = (category: ClothingCategory | "All") => setCategory(category);
 
-  const wardrobeData = useWardrobe(SAMPLE_USER_ID);
+  const wardrobeData = useWardrobe();
   const wardrobeItems = wardrobeData.items.filter(item => 
     category === "All" ? true : item.category === category
   ) || [];
