@@ -1,16 +1,15 @@
 import { CLOTHING_OCCASIONS, SAMPLE_USER_ID } from "@/data";
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import Schedule from "@/models/Schedule";
-import { addSchedule, fetchSchedules } from "@/services/schedule_service";
+import { addSchedule, deleteSchedule, fetchSchedules } from "@/services/schedule_service";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, FlatList, Modal, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, FlatList, Modal, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 
 const Scheduler = () => {
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -51,12 +50,12 @@ const ScheduleList = ({ className = "" }: { className?: string }) => {
   });
 
   return (
-    <View className={`flex-1 mx-4 gap-y-4 ${className}`}>
+    <View className={`flex-1 gap-y-4 ${className}`}>
       <FlatList
         data={query.data}
         renderItem={({item}) => <ScheduleRecord schedule={item} />}
         ListEmptyComponent={query.isPending ? <ActivityIndicator size="large" color="#0891b2" /> : <EmptySchedule />}
-        contentContainerClassName="gap-y-4"
+        contentContainerClassName="gap-y-4 px-4"
       />
     </View>
   );
@@ -68,23 +67,76 @@ const OCCASION_COLORS: Record<string, { bg: string; text: string; }> = {
   DEFAULT: { bg: 'bg-slate-100', text: 'text-slate-500' }
 };
 
+const getDateLabel = (date: Date) => {
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+
+  const isSameDay = (d1: Date, d2: Date) =>
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate();
+
+  if (isSameDay(date, today)) return "Today";
+  if (isSameDay(date, tomorrow)) return "Tomorrow";
+
+  const options: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "short",
+  };
+
+  if (date.getFullYear() !== today.getFullYear()) {
+    options.year = "numeric";
+  }
+
+  return date.toLocaleDateString(undefined, options);
+};
+
 const ScheduleRecord = ({ schedule }: { schedule: Schedule; }) => {
+  const [selected, setSelected] = useState(false);
+
   const timeString = schedule.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-  const [time, ampm] = timeString.split(/\s+/);
+  const dateLabel = getDateLabel(schedule.timestamp);
 
   const theme = OCCASION_COLORS[schedule.occasion.toUpperCase()] || OCCASION_COLORS.DEFAULT;
 
+  const openDeleteAlert = () =>
+    Alert.alert('Delete this schedule', 'Do you want to delete this schedule', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {text: 'OK', onPress: () => mutation.mutate()},
+    ]);
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: () => deleteSchedule(schedule.id as string),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["schedule", SAMPLE_USER_ID] });
+    }
+  });
+
   return (
-    <Pressable className="bg-white flex-row items-center p-4 rounded-xl">
-      <View className="items-center w-16">
-        <Text className="font-bold text-lg">{time}</Text>
-        <Text className="text-slate-400 text-sm font-medium">{ampm}</Text>
+    <Pressable onLongPress={() => setSelected(!selected)} className={`${selected ? "bg-slate-200" : "bg-white"} flex-row items-center p-4 rounded-xl`}>
+      <View className="items-center w-20">
+        <Text className="text-slate-400 text-sm font-medium">{dateLabel}</Text>
+        <Text className="font-bold text-md">{timeString}</Text>
       </View>
       <View className="mx-6 w-[1px] h-full bg-slate-300"></View>
       <View className="gap-y-1">
         <Text numberOfLines={1} className="font-medium text-lg text-slate-800">{schedule.title}</Text>
         <Text className={`${theme.bg} ${theme.text} font-semibold text-sm self-start px-3 py-1 rounded-full`}>{schedule.occasion.toUpperCase()}</Text>
       </View>
+      {selected &&
+        <>
+          <View className="ms-auto mr-2 w-[1px] h-full bg-slate-300"></View>
+          <TouchableOpacity activeOpacity={0.7} onPress={openDeleteAlert}>
+            <Ionicons name="trash-outline" color="#b3b3b3" size={16} className="mr-2" />
+          </TouchableOpacity>
+        </>
+      }
     </Pressable>
   );
 };
