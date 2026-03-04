@@ -1,30 +1,48 @@
-import { HOME_RECOMMENDATION_KEY, HOME_SCHEDULE_LIST_KEY } from '@/constants/query_keys';
-import { OCCASION_CHIP_COLORS } from '@/constants/theme';
+import { HOME_CURRENT_WEATHER_KEY, HOME_RECOMMENDATION_KEY, HOME_SCHEDULE_LIST_KEY } from '@/constants/query_keys';
 import { CLOTHING_OCCASIONS, SAMPLE_USER_ID } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
 import Schedule from '@/models/Schedule';
+import Weather from '@/models/Weather';
 import { getRecommendation, getScheduleRecommendation } from '@/services/recommendation_service';
-import { fetchLatestSchedule, fetchLatestSchedules24H } from '@/services/schedule_service';
+import { fetchLatestSchedules24H } from '@/services/schedule_service';
+import { getCurrentWeather, getForecastWeather } from '@/services/weather_service';
 import { ClothingOccasion } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+const HomeContext = createContext<{ latestSchedulesQuery: UseQueryResult<Schedule[], Error>, weatherQuery: UseQueryResult<Weather | null, Error> } | null>(null);
+
 const HomeScreen = () => {
+  const latestSchedulesQuery = useQuery({
+    queryKey: HOME_SCHEDULE_LIST_KEY,
+    queryFn: () => fetchLatestSchedules24H(SAMPLE_USER_ID),
+    staleTime: Infinity,
+    gcTime: Infinity
+  });
+  const weatherQuery = useQuery({
+    queryKey: HOME_CURRENT_WEATHER_KEY,
+    queryFn: () => getCurrentWeather(6.9271, 79.8612),
+    staleTime: 3600000,
+    gcTime: 3600000
+  });
+
   return (
-    <SafeAreaView className="flex-1">
-      <ScrollView contentContainerClassName="px-4">
-        <Greeting className="mt-4" />
-        <WeatherCard className="mt-8" />
-        <ScheduleCard className="mt-8" />
-        <OutfitCard className="mt-8" />
-      </ScrollView>
-    </SafeAreaView>
+    <HomeContext.Provider value={{ latestSchedulesQuery, weatherQuery }}>
+      <SafeAreaView className="flex-1">
+        <ScrollView contentContainerClassName="px-4">
+          <Greeting className="mt-4" />
+          <WeatherCard className="mt-8" />
+          <ScheduleCard className="mt-8" />
+          <OutfitCard className="mt-8" />
+        </ScrollView>
+      </SafeAreaView>
+    </HomeContext.Provider>
   ) 
 };
 
@@ -43,6 +61,10 @@ const Greeting = ({ className = "" }: { className?: string; }) => {
 };
 
 const WeatherCard = ({ className = "" }: { className?: string; }) => {
+
+  const query = useContext(HomeContext)?.weatherQuery;
+  if (!query) return null;
+
   return (
     <View className={`bg-sky-600 flex-row items-center justify-between p-8 rounded-2xl ${className}`}>
       <View className="gap-y-2">
@@ -50,12 +72,11 @@ const WeatherCard = ({ className = "" }: { className?: string; }) => {
           <Ionicons name="sunny-outline" color="white" />
           <Text className="text-white font-medium text-sm">Today's Forecast</Text>
         </View>
-        <Text className="text-white text-4xl font-bold">24°</Text>
-        <Text className="text-white font-semibold text-lg">Partly Cloudy</Text>
+        <Text className="text-white text-4xl font-bold">{query.data?.temperature}°</Text>
+        <Text className="text-white font-semibold text-lg">{query.data?.description}</Text>
       </View>
       <View className="items-center bg-sky-500 p-4 rounded-xl gap-y-2">
-        <Ionicons name="cloud-outline" color="white" size={32} />
-        <Text className="text-white font-medium text-sm">Perfect for Layers</Text>
+        <Image source={query.data?.imgSrc} style={{ width: 64, height: 64 }} />
       </View>
     </View>
   );
@@ -64,12 +85,8 @@ const WeatherCard = ({ className = "" }: { className?: string; }) => {
 const ScheduleCard = ({ className = "" }: { className?: string; }) => {
   const router = useRouter();
 
-  const query = useQuery({
-    queryKey: HOME_SCHEDULE_LIST_KEY,
-    queryFn: () => fetchLatestSchedules24H(SAMPLE_USER_ID),
-    staleTime: Infinity,
-    gcTime: Infinity
-  });
+  const query = useContext(HomeContext)?.latestSchedulesQuery;
+  if (!query) return null;
 
   return (
     <View className={`bg-white p-8 rounded-2xl ${className}`}>
@@ -89,6 +106,16 @@ const ScheduleCard = ({ className = "" }: { className?: string; }) => {
       </View>
     </View>
   );
+};
+
+export const OCCASION_CHIP_COLORS: Record<string, { bg: string; text: string }> = {
+  FORMAL: { bg: 'bg-violet-100', text: 'text-violet-500' },
+  CASUAL: { bg: 'bg-green-100', text: 'text-green-600' },
+
+  SMART_CASUAL: { bg: 'bg-blue-100', text: 'text-blue-600' },
+  SPORTSWEAR: { bg: 'bg-orange-100', text: 'text-orange-600' },
+  PARTY: { bg: 'bg-pink-100', text: 'text-pink-600' },
+  WORK: { bg: 'bg-indigo-100', text: 'text-indigo-600' },
 };
 
 const ScheduleRecord = ({schedule}: {schedule: Schedule}) => {
@@ -114,41 +141,41 @@ const ScheduleRecord = ({schedule}: {schedule: Schedule}) => {
 };
 
 const OutfitCard = ({ className = "" }: { className: string; }) => {
-  const [schedule, setSchedule] = useState<Schedule | null>(null);
   const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion>("Formal");
 
-  const queryClient = useQueryClient();
+  const {latestSchedulesQuery, weatherQuery} = useContext(HomeContext)!;
+  const schedule = latestSchedulesQuery.data ? latestSchedulesQuery.data[0] : null;
 
+  const queryClient = useQueryClient();
   const query = useQuery({
     queryKey: HOME_RECOMMENDATION_KEY,
     queryFn: async () => {
       if (schedule) {
         const scheduleString = `${schedule.title} ${schedule.timestamp.toLocaleString()} ${schedule.occasion}`;
-        return await getScheduleRecommendation({ description: "Rainy", temperature: 20 }, scheduleString);
+        const weatherData = await getForecastWeather(6.9271, 79.8612, schedule.timestamp);
+        if (!weatherData) {
+          throw new Error("Weather data not available");
+        }
+        console.log("Schedule-based recommendation with weather data:", { description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
+        return await getScheduleRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
       } else {
-        return await getRecommendation({ description: "Rainy", temperature: 20 }, selectedOccasion);
+        if (!weatherQuery.data) {
+          throw new Error("Weather data not available");
+        }
+        console.log("General recommendation with weather data:", { description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
+        return await getRecommendation({ description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
       }
     },
     staleTime: Infinity,
     gcTime: Infinity,
     enabled: false
   });
-  
-  useEffect(() => {
-    fetchLatestSchedule(SAMPLE_USER_ID)
-      .then(data => {
-        setSchedule(data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }, []);
 
   useEffect(() => {
-    if (schedule !== null) {
+    if (schedule && weatherQuery.data) {
       query.refetch();
     }
-  }, [schedule]);
+  }, [schedule, weatherQuery.data]);
 
   return (
     <View className={`bg-white p-8 rounded-2xl ${className}`}>

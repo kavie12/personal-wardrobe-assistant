@@ -6,7 +6,7 @@ import axios from "axios";
 
 const BASE_URL = "http://10.225.145.138:8000/recommendation";
 
-export const getRecommendation = async (weatherData: any, occasion: string = "Casual"): Promise<OutfitResponse> => {
+export const getRecommendation = async (weatherData: { temperature: number, description: string }, occasion: string = "Casual"): Promise<OutfitResponse> => {
     const res = await axios.post(`${BASE_URL}/get-recommendation`, {
         user_id: SAMPLE_USER_ID,
         weather_data: weatherData,
@@ -58,7 +58,7 @@ export const getRecommendation = async (weatherData: any, occasion: string = "Ca
     );
 };
 
-export const getScheduleRecommendation = async (weatherData: any, scheduleEvent: string): Promise<OutfitResponse> => {
+export const getScheduleRecommendation = async (weatherData: { temperature: number, description: string }, scheduleEvent: string): Promise<OutfitResponse> => {
     const res = await axios.post(`${BASE_URL}/get-schedule-recommendation`, {
         user_id: SAMPLE_USER_ID,
         weather_data: weatherData,

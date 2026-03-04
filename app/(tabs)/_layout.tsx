@@ -25,10 +25,24 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
+          name="outfits"
+          options={{
+            title: 'Outfits',
+            tabBarIcon: ({ color }) => <MaterialIcons size={28} name="auto-awesome" color={color} />
+          }}
+        />
+        <Tabs.Screen
           name="wardrobe"
           options={{
             title: 'Wardrobe',
             tabBarIcon: ({ color }) => <MaterialIcons size={28} name="grid-view" color={color} />
+          }}
+        />
+        <Tabs.Screen
+          name="assistant"
+          options={{
+            title: 'Assistant',
+            tabBarIcon: ({ color }) => <MaterialIcons size={28} name="chat-bubble-outline" color={color} />
           }}
         />
       </Tabs>

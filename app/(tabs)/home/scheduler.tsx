@@ -1,5 +1,4 @@
 import { HOME_RECOMMENDATION_KEY, SCHEDULE_LIST_KEY } from "@/constants/query_keys";
-import { OCCASION_CHIP_COLORS } from "@/constants/theme";
 import { CLOTHING_OCCASIONS, SAMPLE_USER_ID } from "@/data";
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import Schedule from "@/models/Schedule";
@@ -86,6 +85,16 @@ const getDateLabel = (date: Date) => {
   }
 
   return date.toLocaleDateString(undefined, options);
+};
+
+export const OCCASION_CHIP_COLORS: Record<string, { bg: string; text: string }> = {
+  FORMAL: { bg: 'bg-violet-100', text: 'text-violet-500' },
+  CASUAL: { bg: 'bg-green-100', text: 'text-green-600' },
+
+  SMART_CASUAL: { bg: 'bg-blue-100', text: 'text-blue-600' },
+  SPORTSWEAR: { bg: 'bg-orange-100', text: 'text-orange-600' },
+  PARTY: { bg: 'bg-pink-100', text: 'text-pink-600' },
+  WORK: { bg: 'bg-indigo-100', text: 'text-indigo-600' },
 };
 
 const ScheduleRecord = ({ schedule }: { schedule: Schedule; }) => {
