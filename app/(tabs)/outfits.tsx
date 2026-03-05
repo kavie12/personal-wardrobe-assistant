@@ -1,11 +1,11 @@
 import { OUTFIT_LIST_KEY } from '@/constants/query_keys';
 import Outfit from '@/models/Outfit';
-import { fetchOutfits } from '@/services/outfits_service';
+import { deleteOutfit, fetchOutfits } from '@/services/outfits_service';
 import { Ionicons } from '@expo/vector-icons';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import React, { useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const OutfitsScreen = () => {
@@ -30,7 +30,7 @@ const OutfitsScreen = () => {
         <FlatList
           data={items}
           keyExtractor={(item) => item.id?.toString() as string}
-          renderItem={({ item }) => <OutfitCard outfit={item} onPress={() => {}}/>}
+          renderItem={({ item }) => <OutfitCard outfit={item} />}
           contentContainerClassName="px-4 gap-y-4"
           ListEmptyComponent={query.isPending ? <ActivityIndicator size="large" color="#0891b2" className="mt-20" /> : <EmptyOutfits />}
           className="mt-8"
@@ -47,20 +47,44 @@ const Header = ({ className = "" }: { className?: string; }) => {
   );
 };
 
-const OutfitCard = ({ outfit, onPress }: { outfit: Outfit, onPress: () => void }) => {
+const OutfitCard = ({ outfit }: { outfit: Outfit }) => {
   const [selected, setSelected] = useState(false);
 
   // Filter out null outerwear to decide grid layout
   const items = [outfit.topwear, outfit.bottomwear, outfit.footwear];
   if (outfit.outerwear) items.push(outfit.outerwear);
 
+  const queryClient = useQueryClient();
+
+  const handleDelete = () => {
+    Alert.alert('Delete Outfit', 'Are you sure you want to delete this outfit?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {text: 'OK', onPress: () => mutationDelete.mutate()},
+    ]);
+  }
+
+  const mutationDelete = useMutation({
+    mutationFn: () => deleteOutfit(outfit.id as string),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: OUTFIT_LIST_KEY }),
+  });
+
   return (
     <TouchableOpacity 
-      onPress={onPress}
+      onLongPress={() => setSelected(s => !s)}
       activeOpacity={0.9}
-      className={`bg-white dark:bg-neutral-800 rounded-lg p-4 shadow-sm border border-slate-100 dark:border-neutral-700`}
+      className={`${selected ? 'bg-slate-200 dark:bg-neutral-700' : 'bg-white dark:bg-neutral-800'} rounded-lg p-4 shadow-sm border border-slate-100 dark:border-neutral-700`}
     >
-      <Text className="text-slate-600 dark:text-slate-200 font-semibold mb-4">{outfit.occasion}</Text>
+      <View className="flex-row items-center justify-between mb-4">
+        <Text className="text-slate-600 dark:text-slate-200 font-semibold">{outfit.occasion}</Text>
+        { selected &&
+          <TouchableOpacity activeOpacity={0.7} onPress={handleDelete}>
+            <Ionicons name="trash-outline" size={18} color="#e0263c" />
+          </TouchableOpacity> 
+        }
+      </View>
 
       {/* Grid Layout for Outfit Items */}
       <View className="flex-row flex-wrap gap-2">

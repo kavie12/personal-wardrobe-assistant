@@ -97,7 +97,7 @@ const ScheduleCard = ({ className = "" }: { className?: string; }) => {
           <Text className="text-xl font-bold text-slate-500">SCHEDULE</Text>
         </View>
         <TouchableOpacity onPress={() => router.navigate("/home/scheduler")} activeOpacity={0.7}>
-          <Ionicons name="open-outline" size={20}  />
+          <Ionicons name="open-outline" size={20} />
         </TouchableOpacity>
       </View>
       <View className="mt-8 gap-y-6">
@@ -210,7 +210,7 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
             }}
             activeOpacity={0.7}
           >
-            <Ionicons name="refresh-outline" size={20}  />
+            <Ionicons name="refresh-outline" size={20} />
           </TouchableOpacity>
         }
       </View>

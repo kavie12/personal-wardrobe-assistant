@@ -124,7 +124,11 @@ const ScheduleRecord = ({ schedule }: { schedule: Schedule; }) => {
   });
 
   return (
-    <Pressable onLongPress={() => setSelected(!selected)} className={`${selected ? "bg-slate-200" : "bg-white"} flex-row items-center p-4 rounded-xl`}>
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onLongPress={() => setSelected(!selected)}
+      className={`${selected ? "bg-slate-200" : "bg-white"} flex-row items-center p-4 rounded-xl`}
+    >
       <View className="items-center w-20">
         <Text className="text-slate-400 text-sm font-medium">{dateLabel}</Text>
         <Text className="font-bold text-md">{timeString}</Text>
@@ -138,11 +142,11 @@ const ScheduleRecord = ({ schedule }: { schedule: Schedule; }) => {
         <>
           <View className="ms-auto mr-2 w-[1px] h-full bg-slate-300"></View>
           <TouchableOpacity activeOpacity={0.7} onPress={openDeleteAlert}>
-            <Ionicons name="trash-outline" color="#b3b3b3" size={16} className="mr-2" />
+            <Ionicons name="trash-outline" color="#e0263c" size={16} className="mr-2" />
           </TouchableOpacity>
         </>
       }
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 
