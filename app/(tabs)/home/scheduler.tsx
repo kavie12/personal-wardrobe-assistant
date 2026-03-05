@@ -88,13 +88,12 @@ const getDateLabel = (date: Date) => {
 };
 
 export const OCCASION_CHIP_COLORS: Record<string, { bg: string; text: string }> = {
-  FORMAL: { bg: 'bg-violet-100', text: 'text-violet-500' },
-  CASUAL: { bg: 'bg-green-100', text: 'text-green-600' },
-
-  SMART_CASUAL: { bg: 'bg-blue-100', text: 'text-blue-600' },
-  SPORTSWEAR: { bg: 'bg-orange-100', text: 'text-orange-600' },
-  PARTY: { bg: 'bg-pink-100', text: 'text-pink-600' },
-  WORK: { bg: 'bg-indigo-100', text: 'text-indigo-600' },
+  "Formal": { bg: 'bg-violet-100', text: 'text-violet-500' },
+  "Casual": { bg: 'bg-green-100', text: 'text-green-600' },
+  "Smart casual": { bg: 'bg-blue-100', text: 'text-blue-600' },
+  "Sportswear": { bg: 'bg-orange-100', text: 'text-orange-600' },
+  "Part": { bg: 'bg-pink-100', text: 'text-pink-600' },
+  "Work": { bg: 'bg-indigo-100', text: 'text-indigo-600' },
 };
 
 const ScheduleRecord = ({ schedule }: { schedule: Schedule; }) => {
@@ -103,7 +102,7 @@ const ScheduleRecord = ({ schedule }: { schedule: Schedule; }) => {
   const timeString = schedule.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   const dateLabel = getDateLabel(schedule.timestamp);
 
-  const theme = OCCASION_CHIP_COLORS[schedule.occasion.toUpperCase()];
+  const theme = OCCASION_CHIP_COLORS[schedule.occasion];
 
   const openDeleteAlert = () =>
     Alert.alert('Delete this schedule', 'Do you want to delete this schedule', [

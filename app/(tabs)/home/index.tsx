@@ -1,19 +1,20 @@
-import { HOME_CURRENT_WEATHER_KEY, HOME_RECOMMENDATION_KEY, HOME_SCHEDULE_LIST_KEY } from '@/constants/query_keys';
+import { HOME_CURRENT_WEATHER_KEY, HOME_RECOMMENDATION_KEY, HOME_SCHEDULE_LIST_KEY, OUTFIT_LIST_KEY } from '@/constants/query_keys';
 import { CLOTHING_OCCASIONS, SAMPLE_USER_ID } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
 import Schedule from '@/models/Schedule';
 import Weather from '@/models/Weather';
+import { saveOutfit } from '@/services/outfits_service';
 import { getRecommendation, getScheduleRecommendation } from '@/services/recommendation_service';
-import { fetchLatestSchedules24H } from '@/services/schedule_service';
+import { fetchLatestSchedulesByHours } from '@/services/schedule_service';
 import { getCurrentWeather, getForecastWeather } from '@/services/weather_service';
 import { ClothingOccasion } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
-import { useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const HomeContext = createContext<{ latestSchedulesQuery: UseQueryResult<Schedule[], Error>, weatherQuery: UseQueryResult<Weather | null, Error> } | null>(null);
@@ -21,7 +22,7 @@ const HomeContext = createContext<{ latestSchedulesQuery: UseQueryResult<Schedul
 const HomeScreen = () => {
   const latestSchedulesQuery = useQuery({
     queryKey: HOME_SCHEDULE_LIST_KEY,
-    queryFn: () => fetchLatestSchedules24H(SAMPLE_USER_ID),
+    queryFn: () => fetchLatestSchedulesByHours(SAMPLE_USER_ID, 48),
     staleTime: Infinity,
     gcTime: Infinity
   });
@@ -75,8 +76,8 @@ const WeatherCard = ({ className = "" }: { className?: string; }) => {
         <Text className="text-white text-4xl font-bold">{query.data?.temperature}°</Text>
         <Text className="text-white font-semibold text-lg">{query.data?.description}</Text>
       </View>
-      <View className="items-center bg-sky-500 p-4 rounded-xl gap-y-2">
-        <Image source={query.data?.imgSrc} style={{ width: 64, height: 64 }} />
+      <View className="items-center rounded-xl gap-y-2">
+        <Image source={query.data?.imgSrc} style={{ width: 96, height: 96 }} />
       </View>
     </View>
   );
@@ -102,20 +103,19 @@ const ScheduleCard = ({ className = "" }: { className?: string; }) => {
       <View className="mt-8 gap-y-6">
         { query.isFetching && <ActivityIndicator size="small" color="#0891b2" /> }
         { query.data && query.data.map((item, i) => <ScheduleRecord schedule={item} key={i} />) }
-        { query.data && query.data.length === 0 && <Text className="text-center text-slate-500 italic font-medium">No schedules for next 24 hours!</Text> }
+        { query.data && query.data.length === 0 && <Text className="text-center text-slate-500 italic font-medium">No schedules for next 48 hours!</Text> }
       </View>
     </View>
   );
 };
 
 export const OCCASION_CHIP_COLORS: Record<string, { bg: string; text: string }> = {
-  FORMAL: { bg: 'bg-violet-100', text: 'text-violet-500' },
-  CASUAL: { bg: 'bg-green-100', text: 'text-green-600' },
-
-  SMART_CASUAL: { bg: 'bg-blue-100', text: 'text-blue-600' },
-  SPORTSWEAR: { bg: 'bg-orange-100', text: 'text-orange-600' },
-  PARTY: { bg: 'bg-pink-100', text: 'text-pink-600' },
-  WORK: { bg: 'bg-indigo-100', text: 'text-indigo-600' },
+  "Formal": { bg: 'bg-violet-100', text: 'text-violet-500' },
+  "Casual": { bg: 'bg-green-100', text: 'text-green-600' },
+  "Smart casual": { bg: 'bg-blue-100', text: 'text-blue-600' },
+  "Sportswear": { bg: 'bg-orange-100', text: 'text-orange-600' },
+  "Part": { bg: 'bg-pink-100', text: 'text-pink-600' },
+  "Work": { bg: 'bg-indigo-100', text: 'text-indigo-600' },
 };
 
 const ScheduleRecord = ({schedule}: {schedule: Schedule}) => {
@@ -123,7 +123,7 @@ const ScheduleRecord = ({schedule}: {schedule: Schedule}) => {
   const timeString = schedule.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   const [time, ampm] = timeString.split(/\s+/);
 
-  const theme = OCCASION_CHIP_COLORS[schedule.occasion.toUpperCase()];
+  const theme = OCCASION_CHIP_COLORS[schedule.occasion];
 
   return (
     <View className="flex-row items-center">
@@ -171,6 +171,20 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
     enabled: false
   });
 
+  const mutationSave = useMutation({
+    mutationFn: async () => {
+      if (!query.data) return false;
+      return await saveOutfit(query.data?.outfit, schedule?.occasion || selectedOccasion);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: OUTFIT_LIST_KEY });
+      Alert.alert("Success", "Outfit saved successfully.");
+    },
+    onError: () => {
+      Alert.alert("Error", "Failed to save outfit.");
+    }
+  });
+
   useEffect(() => {
     if (schedule && weatherQuery.data) {
       query.refetch();
@@ -200,14 +214,6 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
           </TouchableOpacity>
         }
       </View>
-      
-      {
-        query.isFetched &&
-        <View className="bg-blue-600 flex-row items-center gap-2 self-start px-3 py-1 rounded-full mt-8">
-          <Ionicons name="chatbubble-outline" color="white" />
-          <Text className="text-white text-sm">AI Pick</Text>
-        </View>
-      }
 
       {
         !schedule && !query.isFetched &&
@@ -217,6 +223,7 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
           </Text>
 
           <View className="flex-row items-center gap-x-3">
+            {/* Select Occasion */}
             <View className="flex-1 bg-slate-100 rounded-xl">
               <Picker
                 selectedValue={selectedOccasion}
@@ -232,6 +239,7 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
               </Picker>
             </View>
 
+            {/* Generate button */}
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => query.refetch()}
@@ -246,27 +254,42 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
       {
         query.data &&
         <>
+          <View className="flex-row mt-8 items-center justify-between">
+            {/* AI Pick decorator */}
+            <View className="bg-blue-600 flex-row items-center gap-2 self-start px-3 py-1 rounded-full">
+              <Ionicons name="chatbubble-outline" color="white" />
+              <Text className="text-white text-sm">AI Pick</Text>
+            </View>
+
+            {/* Save outfit button */}
+            <TouchableOpacity onPress={() => mutationSave.mutate()} activeOpacity={0.7} className="flex-row items-center gap-x-2 border border-blue-600 px-3 py-1 rounded-lg">
+              <Ionicons name="save-outline" size={16} color="#2563eb" />
+              <Text className="text-blue-600 font-medium text-sm">Save Outfit</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Reason text */}
           <Text className="text-slate-500 italic mt-4 font-medium">"{query.data.reason}"</Text>
+
+          {/* Outfit items */}
           <ScrollView horizontal contentContainerClassName="gap-x-4 pb-4" className="mt-4">
             <OutfitItem item={query.data.outfit.topwear} />
             <OutfitItem item={query.data.outfit.bottomwear} />
             <OutfitItem item={query.data.outfit.footwear} />
             { query.data?.outfit.outerwear && <OutfitItem item={query.data?.outfit.outerwear} /> }
           </ScrollView>
-        </>
-      }
 
-      {
-        query.data &&
-        <View className="flex-row w-full gap-x-4 mt-4">
-          <TouchableOpacity activeOpacity={0.8} className="bg-red-100 px-3 py-3 rounded-xl">
-            <Ionicons name="close-outline" size={24} color="red" />
-          </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8} className="flex-row items-center bg-slate-800 px-3 py-3 rounded-xl gap-x-4 flex-grow justify-center">
-            <Ionicons name="checkmark-outline" size={24} color="white" />
-            <Text className="text-white font-medium text-lg">Wear This</Text>
-          </TouchableOpacity>
-        </View>
+          {/* Outfit accept / reject buttons */}
+          <View className="flex-row w-full gap-x-4 mt-4">
+            <TouchableOpacity activeOpacity={0.8} className="bg-red-100 px-3 py-3 rounded-xl">
+              <Ionicons name="close-outline" size={24} color="red" />
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.8} className="flex-row items-center bg-slate-800 px-3 py-3 rounded-xl gap-x-4 flex-grow justify-center">
+              <Ionicons name="checkmark-outline" size={24} color="white" />
+              <Text className="text-white font-medium text-lg">Wear This</Text>
+            </TouchableOpacity>
+          </View>
+        </>
       }
 
       { query.isFetching && <ActivityIndicator className="my-4" /> }

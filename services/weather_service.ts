@@ -26,7 +26,7 @@ export const getCurrentWeather = async (lat: number, lon: number): Promise<Weath
             `data:image/jpeg;base64,${base64}`
         );
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching current weather:", error);
         return null;
     }
 };
@@ -79,7 +79,7 @@ export const getForecastWeather = async (lat: number, lon: number, targetDate: D
             `data:image/jpeg;base64,${base64}`
         );
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching forecast weather:", error);
         return null;
     }
 };

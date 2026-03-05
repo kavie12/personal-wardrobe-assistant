@@ -1,16 +1,26 @@
 import ClothingItem from "./ClothingItem";
 
 class Outfit {
-    topwear: Partial<ClothingItem>;
-    bottomwear: Partial<ClothingItem>;
-    footwear: Partial<ClothingItem>;
-    outerwear: Partial<ClothingItem> | null;
+    id?: string;
+    topwear: ClothingItem;
+    bottomwear: ClothingItem;
+    footwear: ClothingItem;
+    outerwear: ClothingItem | null;
+    occasion?: string;
 
-    constructor(topwear: Partial<ClothingItem>, bottomwear: Partial<ClothingItem>, footwear: Partial<ClothingItem>, outerwear?: Partial<ClothingItem> | null) {
+    constructor(topwear: ClothingItem, bottomwear: ClothingItem, footwear: ClothingItem, outerwear?: ClothingItem | null) {
         this.topwear = topwear;
         this.bottomwear = bottomwear;
         this.footwear = footwear;
         if (outerwear) { this.outerwear = outerwear } else { this.outerwear = null };
+    }
+
+    setId(id: string) {
+        this.id = id;
+    }
+
+    setOccasion(occasion: string) {
+        this.occasion = occasion;
     }
 };
 

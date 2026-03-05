@@ -1,6 +1,6 @@
 import Outfit from "./Outfit";
 
-class OutfitResponse {
+class OutfitGenerationResponse {
     outfit: Outfit;
     reason: string
 
@@ -10,4 +10,4 @@ class OutfitResponse {
     }
 };
 
-export default OutfitResponse;
+export default OutfitGenerationResponse;
