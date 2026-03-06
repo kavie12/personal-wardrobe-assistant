@@ -142,6 +142,7 @@ const ScheduleRecord = ({schedule}: {schedule: Schedule}) => {
 
 const OutfitCard = ({ className = "" }: { className: string; }) => {
   const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion>("Formal");
+  const [accepeted, setAccepted] = useState(false);
 
   const {latestSchedulesQuery, weatherQuery} = useContext(HomeContext)!;
   const schedule = latestSchedulesQuery.data ? latestSchedulesQuery.data[0] : null;
@@ -185,6 +186,18 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
     }
   });
 
+  const handleAccept = () => {
+    setAccepted(true);
+  };
+
+  const handleRetry = () => {
+    if (schedule) {
+      query.refetch();
+    } else {
+      queryClient.resetQueries({ queryKey: HOME_RECOMMENDATION_KEY });
+    }
+  };
+
   useEffect(() => {
     if (schedule && weatherQuery.data) {
       query.refetch();
@@ -193,26 +206,9 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
 
   return (
     <View className={`bg-white p-8 rounded-2xl ${className}`}>
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-x-4">
-          <Ionicons name="shirt-outline" size={24} color="blue" />
-          <Text className="text-xl font-bold text-slate-500">OUTFIT OF THE DAY</Text>
-        </View>
-        {
-          query.isFetched &&
-          <TouchableOpacity
-            onPress={() => {
-              if (schedule) {
-                query.refetch();
-              } else {
-                queryClient.resetQueries({ queryKey: HOME_RECOMMENDATION_KEY });
-              }
-            }}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="refresh-outline" size={20} />
-          </TouchableOpacity>
-        }
+      <View className="flex-row items-center gap-x-4">
+        <Ionicons name="shirt-outline" size={24} color="blue" />
+        <Text className="text-xl font-bold text-slate-500">OUTFIT OF THE DAY</Text>
       </View>
 
       {
@@ -252,7 +248,7 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
       }
 
       {
-        query.data &&
+        !query.isFetching && query.data &&
         <>
           <View className="flex-row mt-8 items-center justify-between">
             {/* AI Pick decorator */}
@@ -279,16 +275,19 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
             { query.data?.outfit.outerwear && <OutfitItem item={query.data?.outfit.outerwear} /> }
           </ScrollView>
 
-          {/* Outfit accept / reject buttons */}
-          <View className="flex-row w-full gap-x-4 mt-4">
-            <TouchableOpacity activeOpacity={0.8} className="bg-red-100 px-3 py-3 rounded-xl">
-              <Ionicons name="close-outline" size={24} color="red" />
-            </TouchableOpacity>
-            <TouchableOpacity activeOpacity={0.8} className="flex-row items-center bg-slate-800 px-3 py-3 rounded-xl gap-x-4 flex-grow justify-center">
-              <Ionicons name="checkmark-outline" size={24} color="white" />
-              <Text className="text-white font-medium text-lg">Wear This</Text>
-            </TouchableOpacity>
-          </View>
+          {
+            /* Outfit accept / retry buttons */
+            !accepeted &&
+            <View className="flex-row w-full gap-x-4 mt-4">
+              <TouchableOpacity activeOpacity={0.8} onPress={handleRetry} className="bg-red-100 px-3 py-3 rounded-xl">
+                <Ionicons name="refresh-outline" size={24} color="red" />
+              </TouchableOpacity>
+              <TouchableOpacity activeOpacity={0.8} onPress={handleAccept} className="flex-row items-center bg-slate-800 px-3 py-3 rounded-xl gap-x-4 flex-grow justify-center">
+                <Ionicons name="checkmark-outline" size={24} color="white" />
+                <Text className="text-white font-medium text-lg">Wear This</Text>
+              </TouchableOpacity>
+            </View>
+          }
         </>
       }
 
