@@ -3,6 +3,7 @@ import { CLOTHING_OCCASIONS, SAMPLE_USER_ID } from "@/data";
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import Schedule from "@/models/Schedule";
 import { addSchedule, deleteSchedule, fetchSchedules } from "@/services/schedule_service";
+import { getDateLabel } from "@/utils";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
@@ -60,31 +61,6 @@ const ScheduleList = ({ className = "" }: { className?: string }) => {
       />
     </View>
   );
-};
-
-const getDateLabel = (date: Date) => {
-  const today = new Date();
-  const tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1);
-
-  const isSameDay = (d1: Date, d2: Date) =>
-    d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate();
-
-  if (isSameDay(date, today)) return "Today";
-  if (isSameDay(date, tomorrow)) return "Tomorrow";
-
-  const options: Intl.DateTimeFormatOptions = {
-    day: "2-digit",
-    month: "short",
-  };
-
-  if (date.getFullYear() !== today.getFullYear()) {
-    options.year = "numeric";
-  }
-
-  return date.toLocaleDateString(undefined, options);
 };
 
 export const OCCASION_CHIP_COLORS: Record<string, { bg: string; text: string }> = {
