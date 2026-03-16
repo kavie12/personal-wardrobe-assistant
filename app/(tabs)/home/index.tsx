@@ -1,11 +1,10 @@
-import { HOME_CURRENT_WEATHER_KEY, HOME_SCHEDULE_LIST_KEY, OUTFIT_LIST_KEY } from '@/constants/query_keys';
+import { HOME_CURRENT_WEATHER_KEY, HOME_RECOMMENDATION_KEY, HOME_SCHEDULE_LIST_KEY, OUTFIT_LIST_KEY } from '@/constants/query_keys';
 import { CLOTHING_OCCASIONS, SAMPLE_USER_ID } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
-import OutfitGenerationResponse from '@/models/OutfitGenerationResponse';
 import Schedule from '@/models/Schedule';
 import Weather from '@/models/Weather';
 import { saveOutfit } from '@/services/outfits_service';
-import { acceptOutfit, getRecommendation, getScheduleRecommendation, recordRejection } from '@/services/recommendation_service';
+import { getRecommendation, getScheduleRecommendation } from '@/services/recommendation_service';
 import { fetchLatestSchedulesByHours } from '@/services/schedule_service';
 import { getCurrentWeather, getForecastWeather } from '@/services/weather_service';
 import { ClothingOccasion } from '@/types';
@@ -143,47 +142,41 @@ const ScheduleRecord = ({schedule}: {schedule: Schedule}) => {
 };
 
 const OutfitCard = ({ className = "" }: { className: string; }) => {
-  const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion>("Casual");
-  const [accepted, setAccepted] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const [history, setHistory] = useState<OutfitGenerationResponse[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(-1);
+  const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion>("Formal");
+  const [accepeted, setAccepted] = useState(false);
 
   const {latestSchedulesQuery, weatherQuery} = useContext(HomeContext)!;
   const schedule = latestSchedulesQuery.data ? latestSchedulesQuery.data[0] : null;
-  const currentContext = schedule ? `${schedule.title} ${schedule.occasion}` : selectedOccasion;
-
-  const currentOutfit = currentIndex >= 0 && currentIndex < history.length ? history[currentIndex] : undefined;
-
-  const generateRecommendation = async (isRetry = false) => {
-    setLoading(true);
-
-    let weatherData;
-    if (schedule) {
-      weatherData = await getForecastWeather(6.9271, 79.8612, schedule.timestamp);
-    } else {
-      weatherData = weatherQuery.data;
-    }
-
-    if (!weatherData) throw new Error("Weather missing");
-
-    const result = schedule 
-      ? await getScheduleRecommendation(weatherData, currentContext, isRetry)
-      : await getRecommendation(weatherData, currentContext, isRetry);
-
-    // Update history
-    setHistory(prev => [...prev, result]);
-    setCurrentIndex(prev => prev + 1);
-
-    setLoading(false);
-  };
 
   const queryClient = useQueryClient();
+  const query = useQuery({
+    queryKey: HOME_RECOMMENDATION_KEY,
+    queryFn: async () => {
+      if (schedule) {
+        const scheduleString = `${schedule.title} ${schedule.timestamp.toLocaleString()} ${schedule.occasion}`;
+        const weatherData = await getForecastWeather(6.9271, 79.8612, schedule.timestamp);
+        if (!weatherData) {
+          throw new Error("Weather data not available");
+        }
+        console.log("Schedule-based recommendation with weather data:", { description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
+        return await getScheduleRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
+      } else {
+        if (!weatherQuery.data) {
+          throw new Error("Weather data not available");
+        }
+        console.log("General recommendation with weather data:", { description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
+        return await getRecommendation({ description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
+      }
+    },
+    staleTime: Infinity,
+    gcTime: Infinity,
+    enabled: false
+  });
+
   const mutationSave = useMutation({
     mutationFn: async () => {
-      if (!currentOutfit) return false;
-      return await saveOutfit(currentOutfit.outfit, schedule?.occasion || selectedOccasion);
+      if (!query.data) return false;
+      return await saveOutfit(query.data?.outfit, schedule?.occasion || selectedOccasion);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: OUTFIT_LIST_KEY });
@@ -194,34 +187,23 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
     }
   });
 
-  const handleRetry = async () => {
-    if (!currentOutfit) return;
-    
-    if (history.length >= 6) {
-      Alert.alert("Limit Reached", "You've reached the maximum retries for this session.");
-      return;
-    }
-
-    // Record the rejection to the backend for learning
-    const weather = weatherQuery.data!;
-    await recordRejection(weather, currentContext, currentOutfit.outfit, currentOutfit.reason);
-
-    // Fetch a new one
-    generateRecommendation(true);
+  const handleAccept = () => {
+    setAccepted(true);
   };
 
-  const handleAccept = async () => {
-    if (!currentOutfit) return;
-    const weather = weatherQuery.data!;
-    await acceptOutfit(weather, currentContext, currentOutfit.outfit, currentOutfit.reason);
-    setAccepted(true);
-    Alert.alert("Stylist Noted!", "I'll remember you liked this look.");
+  const handleRetry = () => {
+    if (schedule) {
+      query.refetch();
+    } else {
+      queryClient.resetQueries({ queryKey: HOME_RECOMMENDATION_KEY });
+    }
   };
 
   useEffect(() => {
-    if (schedule)
-      generateRecommendation(false);
-  }, []);
+    if (schedule && weatherQuery.data) {
+      query.refetch();
+    }
+  }, [schedule, weatherQuery.data]);
 
   return (
     <View className={`bg-white p-8 rounded-2xl ${className}`}>
@@ -231,34 +213,33 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
       </View>
 
       {
-        history.length === 0 && !schedule &&
+        !schedule && !query.isFetched &&
         <View className="mt-8 gap-y-6">
-          <Text className="text-slate-500 font-medium">Generate today's outfit.</Text>
-          
+          <Text className="text-slate-500 font-medium">
+            Generate today's outfit.
+          </Text>
+
           <View className="flex-row items-center gap-x-3">
-            {
-              /* Select Occasion */
-              !schedule &&
-              <View className="flex-1 bg-slate-100 rounded-xl">
-                <Picker
-                  selectedValue={selectedOccasion}
-                  onValueChange={(itemValue) => setSelectedOccasion(itemValue)}
-                >
-                  {CLOTHING_OCCASIONS.map((occasion) => (
-                    <Picker.Item
-                      key={occasion}
-                      label={occasion}
-                      value={occasion}
-                    />
-                  ))}
-                </Picker>
-              </View>
-            }
+            {/* Select Occasion */}
+            <View className="flex-1 bg-slate-100 rounded-xl">
+              <Picker
+                selectedValue={selectedOccasion}
+                onValueChange={(itemValue) => setSelectedOccasion(itemValue)}
+              >
+                {CLOTHING_OCCASIONS.map((occasion) => (
+                  <Picker.Item
+                    key={occasion}
+                    label={occasion}
+                    value={occasion}
+                  />
+                ))}
+              </Picker>
+            </View>
 
             {/* Generate button */}
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() => generateRecommendation(false)}
+              onPress={() => query.refetch()}
               className="bg-slate-800 p-4 rounded-xl items-center shadow-lg justify-center"
             >
               <Text className="text-white text-lg font-medium">Generate Outfit</Text>
@@ -268,13 +249,13 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
       }
 
       {
-        currentOutfit &&
+        !query.isFetching && query.data &&
         <>
           <View className="flex-row mt-8 items-center justify-between">
             {/* AI Pick decorator */}
             <View className="bg-blue-600 flex-row items-center gap-2 self-start px-3 py-1 rounded-full">
               <Ionicons name="chatbubble-outline" color="white" />
-              <Text className="text-white text-sm">AI Pick {currentIndex + 1}/{history.length}</Text>
+              <Text className="text-white text-sm">AI Pick</Text>
             </View>
 
             {/* Save outfit button */}
@@ -285,41 +266,19 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
           </View>
 
           {/* Reason text */}
-          <Text className="text-slate-500 italic mt-4 font-medium">"{currentOutfit.reason}"</Text>
+          <Text className="text-slate-500 italic mt-4 font-medium">"{query.data.reason}"</Text>
 
           {/* Outfit items */}
           <ScrollView horizontal contentContainerClassName="gap-x-4 pb-4" className="mt-4">
-            <OutfitItem item={currentOutfit.outfit.topwear} />
-            <OutfitItem item={currentOutfit.outfit.bottomwear} />
-            <OutfitItem item={currentOutfit.outfit.footwear} />
-            { currentOutfit.outfit.outerwear && <OutfitItem item={currentOutfit.outfit.outerwear} /> }
+            <OutfitItem item={query.data.outfit.topwear} />
+            <OutfitItem item={query.data.outfit.bottomwear} />
+            <OutfitItem item={query.data.outfit.footwear} />
+            { query.data?.outfit.outerwear && <OutfitItem item={query.data?.outfit.outerwear} /> }
           </ScrollView>
 
           {
-            /* History navigation */
-
-            history.length >= 1 &&
-            <View className="flex-row gap-x-4 my-2 ms-auto">
-              <TouchableOpacity 
-                onPress={() => setCurrentIndex(i => i - 1)} 
-                disabled={currentIndex === 0}
-                className={currentIndex === 0 ? "opacity-20" : ""}
-              >
-                <Ionicons name="arrow-back-circle" size={32} color="#1e293b" />
-              </TouchableOpacity>
-              <TouchableOpacity 
-                onPress={() => setCurrentIndex(i => i + 1)} 
-                disabled={currentIndex === history.length - 1}
-                className={currentIndex === history.length - 1 ? "opacity-20" : ""}
-              >
-                <Ionicons name="arrow-forward-circle" size={32} color="#1e293b" />
-              </TouchableOpacity>
-            </View>
-          }
-
-          {
             /* Outfit accept / retry buttons */
-            !accepted &&
+            !accepeted &&
             <View className="flex-row w-full gap-x-4 mt-4">
               <TouchableOpacity activeOpacity={0.8} onPress={handleRetry} className="bg-red-100 px-3 py-3 rounded-xl">
                 <Ionicons name="refresh-outline" size={24} color="red" />
@@ -333,7 +292,7 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
         </>
       }
 
-      { loading && <ActivityIndicator className="my-4" /> }
+      { query.isFetching && <ActivityIndicator className="my-4" /> }
     </View>
   );
 };
