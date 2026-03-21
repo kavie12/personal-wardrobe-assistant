@@ -6,7 +6,7 @@ import axios from "axios";
 
 const BASE_URL = "http://10.225.145.138:8000/recommendation";
 
-export const getRecommendation = async (weatherData: { temperature: number, description: string }, occasion: string = "Casual"): Promise<OutfitGenerationResponse> => {
+export const getRecommendation = async (weatherData: { temperature: number, description: string }, occasion: string): Promise<OutfitGenerationResponse> => {
     try {
         const res = await axios.post(`${BASE_URL}/get-recommendation`, {
             user_id: SAMPLE_USER_ID,
@@ -15,6 +15,7 @@ export const getRecommendation = async (weatherData: { temperature: number, desc
         });
 
         return new OutfitGenerationResponse(
+            res.data.id,
             new Outfit (
                 new ClothingItem(
                     res.data.outfit.topwear.id,
@@ -72,6 +73,7 @@ export const getScheduleRecommendation = async (weatherData: { temperature: numb
         });
 
         return new OutfitGenerationResponse(
+            res.data.id,
             new Outfit (
                 new ClothingItem(
                     res.data.outfit.topwear.id,
@@ -117,5 +119,27 @@ export const getScheduleRecommendation = async (weatherData: { temperature: numb
     } catch (error) {
         console.error("Error fetching schedule recommendation:", error);
         throw error;
+    }
+};
+
+export const acceptOutfit = async (id: string): Promise<void> => {
+    try {
+        await axios.post(`${BASE_URL}/accept-outfit`, {
+            user_id: SAMPLE_USER_ID,
+            outfit_id: id
+        });
+    } catch (error) {
+        console.error("Error accepting outfit:", error);
+    }
+};
+
+export const rejectOutfit = async (id: string): Promise<void> => {
+    try {
+        await axios.post(`${BASE_URL}/reject-outfit`, {
+            user_id: SAMPLE_USER_ID,
+            outfit_id: id
+        });
+    } catch (error) {
+        console.error("Error rejecting outfit:", error);
     }
 };

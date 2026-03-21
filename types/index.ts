@@ -1,4 +1,5 @@
 import { CLOTHING_CATEGORIES, CLOTHING_COLORS, CLOTHING_OCCASIONS, CLOTHING_TEMPERATURES, CLOTHING_TYPES } from "@/data";
+import Outfit from "@/models/Outfit";
 import { ImageSourcePropType } from "react-native";
 
 export interface WardrobeItemProps {
@@ -20,3 +21,9 @@ export type ClothingTemperature = typeof CLOTHING_TEMPERATURES[number];
 export type ClothingLabelKeys = "category" | "type" | "colors" | "occasions" | "temperatures";
 
 export type ClothingItemScreenMode = "View" | "Edit";
+
+export interface Message {
+  type: "user" | "system" | "outfit",
+  content: string,
+  outfit?: Outfit
+}

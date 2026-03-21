@@ -4,7 +4,7 @@ import ClothingItem from '@/models/ClothingItem';
 import Schedule from '@/models/Schedule';
 import Weather from '@/models/Weather';
 import { saveOutfit } from '@/services/outfits_service';
-import { getRecommendation, getScheduleRecommendation } from '@/services/recommendation_service';
+import { acceptOutfit, getRecommendation, getScheduleRecommendation, rejectOutfit } from '@/services/recommendation_service';
 import { fetchLatestSchedulesByHours } from '@/services/schedule_service';
 import { getCurrentWeather, getForecastWeather } from '@/services/weather_service';
 import { ClothingOccasion } from '@/types';
@@ -142,7 +142,7 @@ const ScheduleRecord = ({schedule}: {schedule: Schedule}) => {
 };
 
 const OutfitCard = ({ className = "" }: { className: string; }) => {
-  const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion>("Formal");
+  const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion>("Casual");
   const [accepeted, setAccepted] = useState(false);
 
   const {latestSchedulesQuery, weatherQuery} = useContext(HomeContext)!;
@@ -187,11 +187,18 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
     }
   });
 
-  const handleAccept = () => {
+  const handleAccept = async () => {
+    if (!query.data) return;
+
     setAccepted(true);
+    await acceptOutfit(query.data?.id);
   };
 
-  const handleRetry = () => {
+  const handleRetry = async () => {
+    if (!query.data) return;
+
+    await rejectOutfit(query.data?.id);
+
     if (schedule) {
       query.refetch();
     } else {
@@ -280,7 +287,7 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
             /* Outfit accept / retry buttons */
             !accepeted &&
             <View className="flex-row w-full gap-x-4 mt-4">
-              <TouchableOpacity activeOpacity={0.8} onPress={handleRetry} className="bg-red-100 px-3 py-3 rounded-xl">
+              <TouchableOpacity activeOpacity={0.8} onPress={handleRetry} className="bg-red-100 px-6 py-3 rounded-xl">
                 <Ionicons name="refresh-outline" size={24} color="red" />
               </TouchableOpacity>
               <TouchableOpacity activeOpacity={0.8} onPress={handleAccept} className="flex-row items-center bg-slate-800 px-3 py-3 rounded-xl gap-x-4 flex-grow justify-center">
@@ -300,7 +307,7 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
 const OutfitItem = ({ item }: { item: Partial<ClothingItem> }) => {
   return (
     <View className="items-center gap-y-2">
-      <Image source={item.image} style={{ width: 160, height: 160, borderRadius: 12 }} />
+      <Image source={item.image} style={{ width: 120, height: 120, borderRadius: 12 }} />
       <Text className="font-semibold text-slate-500">{item.type}</Text>
     </View>
   );
