@@ -31,19 +31,20 @@ const AssistantScreen = () => {
 
     try {
       const res = await chat(SAMPLE_USER_ID, content);
+
+      setMessages(prev => [...prev, {
+        type: "system",
+        content: res.message
+      }]);
+
       if (res.readyToGenerate) {
         if (!res.time || !res.context || !res.formality) return;
 
         const outfitRes = await generateOutfit(res.time, res.context, res.formality);
         setMessages(prev => [...prev, {
           type: "outfit",
-          content: res.message,
+          content: outfitRes.reason,
           outfit: outfitRes.outfit
-        }]);
-      } else {
-        setMessages(prev => [...prev, {
-          type: "system",
-          content: res.message
         }]);
       }
     } catch (err) {
@@ -57,7 +58,7 @@ const AssistantScreen = () => {
     const weatherData = await getForecastWeather(6.9271, 79.8612, timestamp);
     if (!weatherData) throw new Error("Weather data not available");
 
-    const fullContext = `${context} ${timestamp.toLocaleString()} ${formality}`;
+    const fullContext = `${context} | ${timestamp.toLocaleString()} | ${formality}`;
     return await getScheduleRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, fullContext);
   };
 
@@ -158,22 +159,11 @@ const AIOutfitResponse = ({ reason, outfit }: { reason: string, outfit: Outfit }
         {/* Outfit items */}
         <View className="bg-white rounded-xl shadow-sm border border-slate-100 mt-4">
           <ScrollView horizontal contentContainerClassName="gap-x-4 pb-2 px-2" className="mt-4">
-            <OutfitItem item={outfit.topwear} />
-            <OutfitItem item={outfit.bottomwear} />
-            <OutfitItem item={outfit.footwear} />
-            { outfit.outerwear && <OutfitItem item={outfit.outerwear} /> }
+            <OutfitClothingItem item={outfit.topwear} />
+            <OutfitClothingItem item={outfit.bottomwear} />
+            <OutfitClothingItem item={outfit.footwear} />
+            { outfit.outerwear && <OutfitClothingItem item={outfit.outerwear} /> }
           </ScrollView>
-        </View>
-
-        {/* Feedback buttons */}
-        <View className="flex-row w-full gap-x-2 mt-4">
-          <TouchableOpacity activeOpacity={0.8} onPress={() => {}} className="bg-red-100 px-4 py-2 rounded-xl">
-            <Ionicons name="refresh-outline" size={24} color="red" />
-          </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8} onPress={() => {}} className="flex-row items-center bg-slate-800 px-2 py-2 rounded-xl gap-x-4 flex-grow justify-center">
-            <Ionicons name="checkmark-outline" size={24} color="white" />
-            <Text className="text-white font-medium text-lg">Wear This</Text>
-          </TouchableOpacity>
         </View>
 
       </View>
@@ -181,7 +171,7 @@ const AIOutfitResponse = ({ reason, outfit }: { reason: string, outfit: Outfit }
   );
 };
 
-const OutfitItem = ({ item }: { item: ClothingItem }) => {
+const OutfitClothingItem = ({ item }: { item: ClothingItem }) => {
   return (
     <View className="items-center gap-y-2">
       <Image source={item.image} style={{ width: 120, height: 120, borderRadius: 12 }} />

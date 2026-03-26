@@ -1,6 +1,7 @@
-import { HOME_CURRENT_WEATHER_KEY, HOME_RECOMMENDATION_KEY, HOME_SCHEDULE_LIST_KEY, OUTFIT_LIST_KEY } from '@/constants/query_keys';
+import { HOME_CURRENT_WEATHER_KEY, HOME_MANUAL_RECOMMENDATION_KEY, HOME_SCHEDULE_LIST_KEY, HOME_SCHEDULE_RECOMMENDATION_KEY, OUTFIT_LIST_KEY } from '@/constants/query_keys';
 import { CLOTHING_OCCASIONS, SAMPLE_USER_ID } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
+import OutfitGenerationResponse from '@/models/OutfitGenerationResponse';
 import Schedule from '@/models/Schedule';
 import Weather from '@/models/Weather';
 import { saveOutfit } from '@/services/outfits_service';
@@ -14,8 +15,8 @@ import { Picker } from '@react-native-picker/picker';
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Animated, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const HomeContext = createContext<{ latestSchedulesQuery: UseQueryResult<Schedule[], Error>, weatherQuery: UseQueryResult<Weather | null, Error> } | null>(null);
@@ -141,50 +142,104 @@ const ScheduleRecord = ({schedule}: {schedule: Schedule}) => {
   );
 };
 
-const OutfitCard = ({ className = "" }: { className: string; }) => {
-  const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion>("Casual");
-  const [accepeted, setAccepted] = useState(false);
+const outfitCardModes = ["Manual", "Schedule", "Create"];
 
-  const {latestSchedulesQuery, weatherQuery} = useContext(HomeContext)!;
+const OutfitCard = ({ className = "" }: { className: string; }) => {
+  const [activeMode, setActiveMode] = useState(0);
+  const underlineX = useRef(new Animated.Value(0)).current;
+  const [tabBarWidth, setTabBarWidth] = useState(0);
+  const modeWidth = tabBarWidth / outfitCardModes.length;
+
+  const {latestSchedulesQuery} = useContext(HomeContext)!;
   const schedule = latestSchedulesQuery.data ? latestSchedulesQuery.data[0] : null;
+
+  const changeMode = (index: number) => {
+    setActiveMode(index);
+    Animated.spring(underlineX, {
+      toValue: index * modeWidth,
+      useNativeDriver: true,
+      tension: 120,
+      friction: 10,
+    }).start();
+  };
+
+  useEffect(() => {
+    if (schedule && tabBarWidth > 0) {
+      changeMode(1);
+    }
+  }, [schedule, tabBarWidth]);
+
+  return (
+    <View className={`bg-white p-8 rounded-2xl ${className}`}>
+      {/* Header */}
+      <View className="flex-row items-center gap-x-4">
+        <Ionicons name="shirt-outline" size={24} color="blue" />
+        <Text className="text-xl font-bold text-slate-500">OUTFIT OF THE DAY</Text>
+      </View>
+
+      {/* Mode Tabs UI */}
+      <View
+        className="flex-row border-b border-gray-200 relative mt-4"
+        onLayout={(e) => setTabBarWidth(e.nativeEvent.layout.width)}
+      >
+        {outfitCardModes.map((mode, index) => (
+          <TouchableOpacity
+            key={index}
+            className="flex-1 py-3.5 items-center"
+            onPress={() => changeMode(index)}
+            activeOpacity={0.7}
+          >
+            <Text
+              className={`text-[15px] ${
+                activeMode === index
+                  ? 'text-blue-600 font-semibold'
+                  : 'text-gray-400 font-normal'
+              }`}
+            >
+              {mode}
+            </Text>
+          </TouchableOpacity>
+        ))}
+        <Animated.View
+          className="absolute bottom-0 h-[3px] bg-blue-600 rounded-full"
+          style={{
+            width: modeWidth * 0.7,
+            marginLeft: modeWidth * 0.15,
+            transform: [{ translateX: underlineX }],
+          }}
+        />
+      </View>
+
+      {
+        // Outfit Section
+        activeMode === 0 ?
+          <ManualOutfit />
+          :
+          <ScheduleOutfit />
+      }
+    </View>
+  );
+};
+
+const ManualOutfit = () => {
+  const [accepted, setAccepted] = useState(false);
+
+  const {weatherQuery} = useContext(HomeContext)!;
+  const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion>("Casual");
 
   const queryClient = useQueryClient();
   const query = useQuery({
-    queryKey: HOME_RECOMMENDATION_KEY,
+    queryKey: HOME_MANUAL_RECOMMENDATION_KEY,
     queryFn: async () => {
-      if (schedule) {
-        const scheduleString = `${schedule.title} ${schedule.timestamp.toLocaleString()} ${schedule.occasion}`;
-        const weatherData = await getForecastWeather(6.9271, 79.8612, schedule.timestamp);
-        if (!weatherData) {
-          throw new Error("Weather data not available");
-        }
-        console.log("Schedule-based recommendation with weather data:", { description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
-        return await getScheduleRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
-      } else {
-        if (!weatherQuery.data) {
-          throw new Error("Weather data not available");
-        }
-        console.log("General recommendation with weather data:", { description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
-        return await getRecommendation({ description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
+      if (!weatherQuery.data) {
+        throw new Error("Weather data not available");
       }
+      console.log("General recommendation with weather data:", { description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
+      return await getRecommendation({ description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
     },
     staleTime: Infinity,
     gcTime: Infinity,
     enabled: false
-  });
-
-  const mutationSave = useMutation({
-    mutationFn: async () => {
-      if (!query.data) return false;
-      return await saveOutfit(query.data?.outfit, schedule?.occasion || selectedOccasion);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: OUTFIT_LIST_KEY });
-      Alert.alert("Success", "Outfit saved successfully.");
-    },
-    onError: () => {
-      Alert.alert("Error", "Failed to save outfit.");
-    }
   });
 
   const handleAccept = async () => {
@@ -198,29 +253,13 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
     if (!query.data) return;
 
     await rejectOutfit(query.data?.id);
-
-    if (schedule) {
-      query.refetch();
-    } else {
-      queryClient.resetQueries({ queryKey: HOME_RECOMMENDATION_KEY });
-    }
+    queryClient.resetQueries({ queryKey: HOME_MANUAL_RECOMMENDATION_KEY });
   };
 
-  useEffect(() => {
-    if (schedule && weatherQuery.data) {
-      query.refetch();
-    }
-  }, [schedule, weatherQuery.data]);
-
   return (
-    <View className={`bg-white p-8 rounded-2xl ${className}`}>
-      <View className="flex-row items-center gap-x-4">
-        <Ionicons name="shirt-outline" size={24} color="blue" />
-        <Text className="text-xl font-bold text-slate-500">OUTFIT OF THE DAY</Text>
-      </View>
-
+    <>
       {
-        !schedule && !query.isFetched &&
+        !query.isFetched &&
         <View className="mt-8 gap-y-6">
           <Text className="text-slate-500 font-medium">
             Generate today's outfit.
@@ -255,8 +294,106 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
         </View>
       }
 
+      <OutfitItemView
+        isFetching={query.isFetching}
+        data={query.data}
+        occasion={selectedOccasion}
+        accepted={accepted}
+        handleAccept={handleAccept}
+        handleRetry={handleRetry}
+      />
+
+      { query.isFetching && <ActivityIndicator className="my-4" /> }
+    </>
+  );
+};
+
+const ScheduleOutfit = () => {
+  const [accepted, setAccepted] = useState(false);
+
+  const {latestSchedulesQuery} = useContext(HomeContext)!;
+  const schedule = latestSchedulesQuery.data ? latestSchedulesQuery.data[0] : null;
+
+  const query = useQuery({
+    queryKey: HOME_SCHEDULE_RECOMMENDATION_KEY,
+    queryFn: async () => {
+      if (!schedule) throw new Error("Schedule data not available.");
+
+      const scheduleString = `${schedule.title} | ${schedule.timestamp.toLocaleString()} | ${schedule.occasion}`;
+      const weatherData = await getForecastWeather(6.9271, 79.8612, schedule.timestamp);
+      if (!weatherData) throw new Error("Weather data not available");
+
+      console.log("Schedule-based recommendation with weather data:", { description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
+
+      return await getScheduleRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
+    },
+    staleTime: Infinity,
+    gcTime: Infinity,
+    enabled: !!schedule
+  });
+
+  const handleAccept = async () => {
+    if (!query.data) return;
+
+    setAccepted(true);
+    await acceptOutfit(query.data?.id);
+  };
+
+  const handleRetry = async () => {
+    if (!query.data) return;
+
+    await rejectOutfit(query.data?.id);
+    query.refetch();
+  };
+
+  if (query.isFetching) return <ActivityIndicator className="my-4" />;
+
+  return (
+    <>
       {
-        !query.isFetching && query.data &&
+         !schedule ?
+          <Text className="text-slate-500 font-medium mt-8">No schedules for next 48 hours!</Text>
+          :
+          <OutfitItemView
+            isFetching={query.isFetching}
+            data={query.data}
+            occasion={schedule.occasion}
+            accepted={accepted}
+            handleAccept={handleAccept}
+            handleRetry={handleRetry}
+          />
+      }
+    </>
+  );
+};
+
+const OutfitItemView = ({ isFetching, data, occasion, handleAccept, handleRetry, accepted } : {
+  isFetching: boolean;
+  data: OutfitGenerationResponse | undefined;
+  occasion: string;
+  accepted: boolean;
+  handleAccept: () => void;
+  handleRetry: () => void;
+}) => {
+  const queryClient = useQueryClient();
+  const mutationSave = useMutation({
+    mutationFn: async () => {
+      if (!data) return false;
+      return await saveOutfit(data?.outfit, occasion);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: OUTFIT_LIST_KEY });
+      Alert.alert("Success", "Outfit saved successfully.");
+    },
+    onError: () => {
+      Alert.alert("Error", "Failed to save outfit.");
+    }
+  });
+
+  return (
+    <>
+      {
+        !isFetching && data &&
         <>
           <View className="flex-row mt-8 items-center justify-between">
             {/* AI Pick decorator */}
@@ -273,19 +410,19 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
           </View>
 
           {/* Reason text */}
-          <Text className="text-slate-500 italic mt-4 font-medium">"{query.data.reason}"</Text>
+          <Text className="text-slate-500 italic mt-4 font-medium">"{data.reason}"</Text>
 
           {/* Outfit items */}
           <ScrollView horizontal contentContainerClassName="gap-x-4 pb-4" className="mt-4">
-            <OutfitItem item={query.data.outfit.topwear} />
-            <OutfitItem item={query.data.outfit.bottomwear} />
-            <OutfitItem item={query.data.outfit.footwear} />
-            { query.data?.outfit.outerwear && <OutfitItem item={query.data?.outfit.outerwear} /> }
+            <OutfitClothingItem item={data.outfit.topwear} />
+            <OutfitClothingItem item={data.outfit.bottomwear} />
+            <OutfitClothingItem item={data.outfit.footwear} />
+            { data?.outfit.outerwear && <OutfitClothingItem item={data?.outfit.outerwear} /> }
           </ScrollView>
 
           {
             /* Outfit accept / retry buttons */
-            !accepeted &&
+            !accepted &&
             <View className="flex-row w-full gap-x-4 mt-4">
               <TouchableOpacity activeOpacity={0.8} onPress={handleRetry} className="bg-red-100 px-6 py-3 rounded-xl">
                 <Ionicons name="refresh-outline" size={24} color="red" />
@@ -298,13 +435,11 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
           }
         </>
       }
-
-      { query.isFetching && <ActivityIndicator className="my-4" /> }
-    </View>
+    </>
   );
-};
+}
 
-const OutfitItem = ({ item }: { item: Partial<ClothingItem> }) => {
+const OutfitClothingItem = ({ item }: { item: Partial<ClothingItem> }) => {
   return (
     <View className="items-center gap-y-2">
       <Image source={item.image} style={{ width: 120, height: 120, borderRadius: 12 }} />
