@@ -1,4 +1,4 @@
-import { HOME_RECOMMENDATION_KEY, SCHEDULE_LIST_KEY } from "@/constants/query_keys";
+import { HOME_SCHEDULE_RECOMMENDATION_KEY, SCHEDULE_LIST_KEY } from "@/constants/query_keys";
 import { CLOTHING_OCCASIONS, SAMPLE_USER_ID } from "@/data";
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import Schedule from "@/models/Schedule";
@@ -95,7 +95,7 @@ const ScheduleRecord = ({ schedule }: { schedule: Schedule; }) => {
     mutationFn: () => deleteSchedule(schedule.id as string),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SCHEDULE_LIST_KEY });
-      queryClient.invalidateQueries({ queryKey: HOME_RECOMMENDATION_KEY });
+      queryClient.invalidateQueries({ queryKey: HOME_SCHEDULE_RECOMMENDATION_KEY });
     }
   });
 
@@ -144,7 +144,7 @@ const ScheduleAddModal = ({ visible, onClose }: { visible: boolean; onClose: () 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SCHEDULE_LIST_KEY });
-      queryClient.invalidateQueries({ queryKey: HOME_RECOMMENDATION_KEY });
+      queryClient.invalidateQueries({ queryKey: HOME_SCHEDULE_RECOMMENDATION_KEY });
     },
     onSettled: () => {
       setLoading(false);

@@ -50,13 +50,14 @@ const HomeScreen = () => {
 };
 
 const Greeting = ({ className = "" }: { className?: string; }) => {
+  const router = useRouter()
   return (
     <View className={`flex-row justify-between items-center ${className}`}>
       <View className="gap-y-1">
         <Text className="text-md font-medium text-slate-500 dark:text-slate-400">GOOD MORNING,</Text>
         <Text className="text-3xl font-bold text-slate-800 dark:text-slate-200">Kaveesha</Text>
       </View>
-      <TouchableOpacity activeOpacity={0.7} className="bg-blue-200 rounded-full w-14 h-14 justify-center items-center">
+      <TouchableOpacity onPress={() => router.navigate("/profile")} activeOpacity={0.7} className="bg-blue-200 rounded-full w-14 h-14 justify-center items-center">
         <Text className="text-lg font-bold text-blue-600">KD</Text>
       </TouchableOpacity>
     </View>
