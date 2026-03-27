@@ -2,7 +2,7 @@ import { HOME_SCHEDULE_RECOMMENDATION_KEY, SCHEDULE_LIST_KEY } from "@/constants
 import { CLOTHING_OCCASIONS, SAMPLE_USER_ID } from "@/data";
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import Schedule from "@/models/Schedule";
-import { addSchedule, deleteSchedule, fetchSchedules } from "@/services/schedule_service";
+import { addSchedule, deleteSchedule, fetchSchedules } from "@/services/schedule-service";
 import { getDateLabel } from "@/utils";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from '@react-native-community/datetimepicker';

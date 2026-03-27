@@ -1,6 +1,6 @@
 import { OUTFIT_LIST_KEY } from '@/constants/query_keys';
 import Outfit from '@/models/Outfit';
-import { deleteOutfit, fetchOutfits } from '@/services/outfits_service';
+import { deleteOutfit, fetchOutfits } from '@/services/outfits-service';
 import { Ionicons } from '@expo/vector-icons';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';

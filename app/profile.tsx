@@ -28,41 +28,35 @@ const ProfileScreen = () => {
                 </View>
 
                 {/* Preferences */}
-                <View className="mt-10 gap-y-2">
+                {/* <View className="mt-10 gap-y-2">
                     <Text className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1 ml-1">
                         Preferences
                     </Text>
-                    <View className="bg-gray-200 dark:bg-slate-800 px-4 py-3 rounded-2xl">
-                        <View className="flex-row items-center gap-x-3">
-                            <Ionicons name="thermometer-outline" size={20} color="#64748b" />
-                            <Text className="text-[15px] font-medium text-slate-700 dark:text-slate-200 flex-1">
-                                Temperature Scale
-                            </Text>
-                            <View className="flex-row bg-slate-300 dark:bg-slate-700 rounded-xl p-1 gap-x-1">
-                                {(["C", "F"] as TemperatureScale[]).map((scale) => (
-                                    <TouchableOpacity
-                                        key={scale}
-                                        onPress={() => setTempScale(scale)}
-                                        activeOpacity={0.7}
-                                        className={`px-3 py-1 rounded-lg ${
-                                            tempScale === scale
-                                            ? "bg-white dark:bg-slate-500"
-                                            : ""
-                                        }`}
-                                    >
-                                        <Text className={`text-sm font-medium ${
-                                            tempScale === scale
-                                            ? "text-slate-800 dark:text-white"
-                                            : "text-slate-500"
-                                        }`}>
-                                            {scale === "C" ? "°C" : "°F"}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
+                    <SettingsItem icon="thermometer-outline" label="Temperature Scale">
+                        <View className="flex-row bg-slate-300 dark:bg-slate-700 rounded-xl p-1 gap-x-1">
+                            {(["C", "F"] as TemperatureScale[]).map((scale) => (
+                                <TouchableOpacity
+                                    key={scale}
+                                    onPress={() => setTempScale(scale)}
+                                    activeOpacity={0.7}
+                                    className={`px-3 py-1 rounded-lg ${
+                                        tempScale === scale
+                                        ? "bg-white dark:bg-slate-500"
+                                        : ""
+                                    }`}
+                                >
+                                    <Text className={`text-sm font-medium ${
+                                        tempScale === scale
+                                        ? "text-slate-800 dark:text-white"
+                                        : "text-slate-500"
+                                    }`}>
+                                        {scale === "C" ? "°C" : "°F"}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
                         </View>
-                    </View>
-                </View>
+                    </SettingsItem>
+                </View> */}
 
                 {/* Account */}
                 <View className="mt-6 gap-y-2">
@@ -72,17 +66,19 @@ const ProfileScreen = () => {
                     <SettingsItem
                         icon="lock-closed-outline"
                         label="Change Password"
+                        showViewIcon
                         onPress={() => setPasswordModalVisible(true)}
                     />
                     <SettingsItem
                         icon="log-out-outline"
                         label="Log Out"
+                        showViewIcon
                         onPress={() => {}}
                     />
                     <SettingsItem
                         icon="trash-outline"
                         label="Delete Account"
-                        destructive
+                        textRed
                         onPress={() => {}}
                     />
                 </View>
@@ -168,14 +164,16 @@ const ChangePasswordModal = ({ visible, onClose, onSave }: {
   );
 };
 
-const SettingsItem = ({ icon, label, destructive = false, onPress }: {
+const SettingsItem = ({ icon, label, textRed = false, showViewIcon = false, onPress = () => {}, children = <></> }: {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
-  destructive?: boolean;
-  onPress: () => void;
+  textRed?: boolean;
+  showViewIcon?: boolean;
+  onPress?: () => void;
+  children?: React.ReactNode;
 }) => {
   const colorScheme = useColorScheme();
-  const iconColor = destructive
+  const iconColor = textRed
     ? "#ef4444"
     : colorScheme === "dark" ? "#94a3b8" : "#64748b";
 
@@ -185,19 +183,20 @@ const SettingsItem = ({ icon, label, destructive = false, onPress }: {
       onPress={onPress}
       className="flex-row items-center justify-between bg-gray-200 dark:bg-slate-800 px-4 py-4 rounded-2xl"
     >
-      <View className="flex-row items-center gap-x-3">
-        <Ionicons name={icon} size={20} color={iconColor} />
-        <Text className={`text-[15px] font-medium ${destructive ? "text-red-500" : "text-slate-700 dark:text-slate-200"}`}>
-          {label}
-        </Text>
-      </View>
-      {!destructive && (
-        <Ionicons
-          name="chevron-forward"
-          size={16}
-          color={colorScheme === "dark" ? "#475569" : "#cbd5e1"}
-        />
-      )}
+        <View className="flex-row items-center gap-x-3">
+            <Ionicons name={icon} size={20} color={iconColor} />
+            <Text className={`text-[15px] font-medium ${textRed ? "text-red-500" : "text-slate-700 dark:text-slate-200"}`}>
+                {label}
+            </Text>
+        </View>
+        { children }
+        {showViewIcon &&
+            <Ionicons
+                name="chevron-forward"
+                size={16}
+                color={colorScheme === "dark" ? "#475569" : "#a8b2bd"}
+            />
+        }
     </TouchableOpacity>
   );
 };

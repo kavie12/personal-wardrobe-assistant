@@ -3,7 +3,7 @@ import FloatingActionButton from '@/components/floating-action-button';
 import { WARDROBE_LIST_KEY } from '@/constants/query_keys';
 import { CLOTHING_LABELS, SAMPLE_USER_ID } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
-import { deleteItem, saveItem, updateItem } from '@/services/wardrobe_service';
+import { deleteItem, saveItem, updateItem } from '@/services/wardrobe-service';
 import { ClothingItemScreenMode } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';

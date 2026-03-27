@@ -1,5 +1,5 @@
 import { WARDROBE_LIST_KEY } from '@/constants/query_keys';
-import { fetchWardrobe } from '@/services/wardrobe_service';
+import { fetchWardrobe } from '@/services/wardrobe-service';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 

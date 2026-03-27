@@ -1,5 +1,5 @@
 import ClothingItem from '@/models/ClothingItem';
-import { addItem } from '@/services/wardrobe_service';
+import { addItem } from '@/services/wardrobe-service';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';

@@ -1,9 +1,9 @@
 import { SAMPLE_USER_ID } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
 import Outfit from '@/models/Outfit';
-import { chat } from '@/services/assistant_service';
-import { getScheduleRecommendation } from '@/services/recommendation_service';
-import { getForecastWeather } from '@/services/weather_service';
+import { chat } from '@/services/assistant-service';
+import { getScheduleRecommendation } from '@/services/recommendation-service';
+import { getForecastWeather } from '@/services/weather-service';
 import { Message } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
