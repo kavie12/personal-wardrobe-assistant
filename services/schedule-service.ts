@@ -1,13 +1,11 @@
-import { SAMPLE_USER_ID } from "@/data";
+import { serverApi } from "@/config/serverApi";
 import Schedule from "@/models/Schedule";
-import axios from "axios";
 
-const BASE_URL = "http://10.225.145.138:8000/schedule";
+const SERVICE = "schedule";
 
 export const addSchedule = async (schedule: Schedule): Promise<boolean> => {
   try {
-    const res = await axios.post(`${BASE_URL}/add`, {
-      user_id: SAMPLE_USER_ID,
+    const res = await serverApi.post(`${SERVICE}/add`, {
       title: schedule.title,
       occasion: schedule.occasion,
       timestamp: schedule.timestamp.toISOString(),
@@ -20,9 +18,9 @@ export const addSchedule = async (schedule: Schedule): Promise<boolean> => {
   }
 };
 
-export const fetchSchedules = async (userId: string): Promise<Schedule[]> => {
+export const fetchSchedules = async (): Promise<Schedule[]> => {
   try {
-    const res = await axios.get(`${BASE_URL}/list/${userId}`);
+    const res = await serverApi.get(`${SERVICE}/list`);
     
     return res.data.map((item: any) => new Schedule(
       item.id,
@@ -36,9 +34,9 @@ export const fetchSchedules = async (userId: string): Promise<Schedule[]> => {
   }
 };
 
-export const fetchLatestSchedulesByHours = async (userId: string, hours: number): Promise<Schedule[]> => {
+export const fetchLatestSchedulesByHours = async (hours: number): Promise<Schedule[]> => {
   try {
-    const res = await axios.get(`${BASE_URL}/latest-by-hours/${userId}/${hours}`);
+    const res = await serverApi.get(`${SERVICE}/latest-by-hours/${hours}`);
     
     return res.data.map((item: any) => new Schedule(
       item.id,
@@ -54,7 +52,7 @@ export const fetchLatestSchedulesByHours = async (userId: string, hours: number)
 
 export const deleteSchedule = async (scheduleId: string): Promise<boolean> => {
   try {
-    const res = await axios.delete(`${BASE_URL}/delete/${scheduleId}`);
+    const res = await serverApi.delete(`${SERVICE}/delete/${scheduleId}`);
     return res.data === "Deleted" || res.data === true;
   } catch (error) {
     console.error("Error deleting schedule:", error);

@@ -1,15 +1,13 @@
-import { SAMPLE_USER_ID } from "@/data";
+import { serverApi } from "@/config/serverApi";
 import ClothingItem from "@/models/ClothingItem";
 import Outfit from "@/models/Outfit";
 import OutfitGenerationResponse from "@/models/OutfitGenerationResponse";
-import axios from "axios";
 
-const BASE_URL = "http://10.225.145.138:8000/recommendation";
+const SERVICE = "recommendation";
 
 export const getRecommendation = async (weatherData: { temperature: number, description: string }, occasion: string): Promise<OutfitGenerationResponse> => {
     try {
-        const res = await axios.post(`${BASE_URL}/get-recommendation`, {
-            user_id: SAMPLE_USER_ID,
+        const res = await serverApi.post(`${SERVICE}/get-recommendation`, {
             weather_data: weatherData,
             occasion: occasion
         });
@@ -66,8 +64,7 @@ export const getRecommendation = async (weatherData: { temperature: number, desc
 
 export const getScheduleRecommendation = async (weatherData: { temperature: number, description: string }, scheduleEvent: string): Promise<OutfitGenerationResponse> => {
     try {
-        const res = await axios.post(`${BASE_URL}/get-schedule-recommendation`, {
-            user_id: SAMPLE_USER_ID,
+        const res = await serverApi.post(`${SERVICE}/get-schedule-recommendation`, {
             weather_data: weatherData,
             schedule_event: scheduleEvent
         });
@@ -124,8 +121,7 @@ export const getScheduleRecommendation = async (weatherData: { temperature: numb
 
 export const acceptOutfit = async (id: string): Promise<void> => {
     try {
-        await axios.post(`${BASE_URL}/accept-outfit`, {
-            user_id: SAMPLE_USER_ID,
+        await serverApi.post(`${SERVICE}/accept-outfit`, {
             outfit_id: id
         });
     } catch (error) {
@@ -135,8 +131,7 @@ export const acceptOutfit = async (id: string): Promise<void> => {
 
 export const rejectOutfit = async (id: string): Promise<void> => {
     try {
-        await axios.post(`${BASE_URL}/reject-outfit`, {
-            user_id: SAMPLE_USER_ID,
+        await serverApi.post(`${SERVICE}/reject-outfit`, {
             outfit_id: id
         });
     } catch (error) {

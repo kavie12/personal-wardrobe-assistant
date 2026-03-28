@@ -1,22 +1,20 @@
-import { SAMPLE_USER_ID } from "@/data";
+import { serverApi } from "@/config/serverApi";
 import ClothingItem from "@/models/ClothingItem";
 import ClothingItemsResponse from "@/models/ClothingItemsResponse";
-import axios from "axios";
 
-const BASE_URL = "http://10.225.145.138:8000/wardrobe";
+const SERVICE = "wardrobe";
 
 export const addItem = async (imageUri: string): Promise<ClothingItem> => {
     const formData = new FormData();
-            
     formData.append("clothing_item", {
         uri: imageUri,
         name: "upload.jpg",
         type: "image/jpeg"
     } as any);
 
-    const res = await axios.post(`${BASE_URL}/add`, formData, {
+    const res = await serverApi.post(`${SERVICE}/add`, formData, {
         headers: {
-            "Content-Type": "multipart/form-data"
+            "Content-Type": "multipart/form-data",
         }
     });
 
@@ -32,15 +30,12 @@ export const addItem = async (imageUri: string): Promise<ClothingItem> => {
 };
 
 export const fetchWardrobe = async ({ pageParam }: { pageParam: number }): Promise<ClothingItemsResponse> => {
-    const res = await axios.get(`${BASE_URL}/list/${SAMPLE_USER_ID}`, {
-        params: {
-            page: pageParam,
-            size: 10
-        }
+    const res = await serverApi.get(`${SERVICE}/list`, {
+        params: { page: pageParam, size: 10 }
     });
 
     return new ClothingItemsResponse(
-        res.data.dataList.map((item: any) => 
+        res.data.dataList.map((item: any) =>
             new ClothingItem(
                 item.id,
                 { uri: `data:image/jpeg;base64,${item.image}` },
@@ -56,10 +51,9 @@ export const fetchWardrobe = async ({ pageParam }: { pageParam: number }): Promi
     );
 };
 
-export const saveItem = async (item: ClothingItem, userId: string): Promise<boolean> => {
-    const res = await axios.post(`${BASE_URL}/save`, {
+export const saveItem = async (item: ClothingItem): Promise<boolean> => {
+    const res = await serverApi.post(`${SERVICE}/save`, {
         item_id: item.id,
-        user_id: userId,
         labels: {
             category: item.category,
             type: item.type,
@@ -72,7 +66,7 @@ export const saveItem = async (item: ClothingItem, userId: string): Promise<bool
 };
 
 export const updateItem = async (item: ClothingItem): Promise<boolean> => {
-    const res = await axios.put(`${BASE_URL}/update/${item.id}`, {
+    const res = await serverApi.put(`${SERVICE}/update/${item.id}`, {
         labels: {
             category: item.category,
             type: item.type,
@@ -85,6 +79,6 @@ export const updateItem = async (item: ClothingItem): Promise<boolean> => {
 };
 
 export const deleteItem = async (itemId: string): Promise<boolean> => {
-    const res = await axios.delete(`${BASE_URL}/delete/${itemId}`);
+    const res = await serverApi.delete(`${SERVICE}/delete/${itemId}`);
     return res.data;
 };

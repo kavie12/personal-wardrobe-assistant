@@ -1,14 +1,17 @@
-import { SAMPLE_USER_ID } from "@/data";
-import axios from "axios";
+import { serverApi } from "@/config/serverApi";
 
-const BASE_URL = "http://10.225.145.138:8000/assistant";
+const SERVICE = "assistant";
 
-export const chat = async (
-  userId: string = SAMPLE_USER_ID,
-  message: string
-): Promise<{ message: string, readyToGenerate: boolean, context: string | null, time: Date | null, formality: string | null }> => {
-  const res = await axios.post(`${BASE_URL}/chat`, {
-    user_id: userId,
+interface ChatResponse {
+  message: string;
+  readyToGenerate: boolean;
+  context: string | null;
+  time: Date | null;
+  formality: string | null;
+}
+
+export const chat = async (message: string): Promise<ChatResponse> => {
+  const res = await serverApi.post(`${SERVICE}/chat`, {
     message: message
   });
   

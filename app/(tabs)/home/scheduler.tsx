@@ -1,5 +1,5 @@
 import { HOME_SCHEDULE_RECOMMENDATION_KEY, SCHEDULE_LIST_KEY } from "@/constants/query_keys";
-import { CLOTHING_OCCASIONS, SAMPLE_USER_ID } from "@/data";
+import { CLOTHING_OCCASIONS } from "@/data";
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import Schedule from "@/models/Schedule";
 import { addSchedule, deleteSchedule, fetchSchedules } from "@/services/schedule-service";
@@ -46,7 +46,7 @@ const Header = ({ openAddModal, className = "" }: { openAddModal: () => void; cl
 const ScheduleList = ({ className = "" }: { className?: string }) => {
   const query = useQuery({
     queryKey: SCHEDULE_LIST_KEY,
-    queryFn: () => fetchSchedules(SAMPLE_USER_ID),
+    queryFn: () => fetchSchedules(),
     staleTime: Infinity,
     gcTime: Infinity
   });

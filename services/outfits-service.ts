@@ -1,18 +1,12 @@
-import { SAMPLE_USER_ID } from "@/data";
+import { serverApi } from "@/config/serverApi";
 import ClothingItem from "@/models/ClothingItem";
 import Outfit from "@/models/Outfit";
 import OutfitsResponse from "@/models/OutfitsResponse";
-import axios from "axios";
 
-const BASE_URL = "http://10.225.145.138:8000/outfits";
+const SERVICE = "outfits";
 
-export const saveOutfit = async (
-  outfit: Outfit,
-  occasion: string,
-  userId: string = SAMPLE_USER_ID
-): Promise<boolean> => {
-  const res = await axios.post(`${BASE_URL}/save`, {
-    user_id: userId,
+export const saveOutfit = async (outfit: Outfit, occasion: string): Promise<boolean> => {
+  const res = await serverApi.post(`${SERVICE}/save`, {
     items: {
       topwear_id: outfit.topwear.id,
       bottomwear_id: outfit.bottomwear.id,
@@ -26,7 +20,7 @@ export const saveOutfit = async (
 
 export const fetchOutfits = async ({ pageParam }: { pageParam: number }): Promise<OutfitsResponse> => {
   
-  const res = await axios.get(`${BASE_URL}/list/${SAMPLE_USER_ID}`, {
+  const res = await serverApi.get(`${SERVICE}/list`, {
     params: {
       page: pageParam,
       size: 10
@@ -85,6 +79,6 @@ export const fetchOutfits = async ({ pageParam }: { pageParam: number }): Promis
 };
 
 export const deleteOutfit = async (outfitId: string): Promise<boolean> => {
-  const res = await axios.delete(`${BASE_URL}/delete/${outfitId}`);
+  const res = await serverApi.delete(`${SERVICE}/delete/${outfitId}`);
   return res.data;
 };

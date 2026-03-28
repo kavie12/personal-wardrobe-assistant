@@ -1,7 +1,7 @@
 import Chip from '@/components/chip';
 import FloatingActionButton from '@/components/floating-action-button';
 import { WARDROBE_LIST_KEY } from '@/constants/query_keys';
-import { CLOTHING_LABELS, SAMPLE_USER_ID } from '@/data';
+import { CLOTHING_LABELS } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
 import { deleteItem, saveItem, updateItem } from '@/services/wardrobe-service';
 import { ClothingItemScreenMode } from '@/types';
@@ -25,7 +25,7 @@ const DefaultItemScreen = ({ clothingItem, mode, isNewItem, setMode, onSave, onD
 
     const mutationSave = useMutation({
         mutationFn: async () => {
-            const success = await saveItem(editedItem, SAMPLE_USER_ID);
+            const success = await saveItem(editedItem);
             if (!success)
                 Alert.alert("Error", "Failed to save item.");
         },

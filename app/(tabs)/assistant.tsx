@@ -1,4 +1,3 @@
-import { SAMPLE_USER_ID } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
 import Outfit from '@/models/Outfit';
 import { chat } from '@/services/assistant-service';
@@ -30,7 +29,7 @@ const AssistantScreen = () => {
     setLoading(true);
 
     try {
-      const res = await chat(SAMPLE_USER_ID, content);
+      const res = await chat(content);
 
       setMessages(prev => [...prev, {
         type: "system",

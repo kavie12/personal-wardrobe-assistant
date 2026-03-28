@@ -1,5 +1,5 @@
 import { HOME_CURRENT_WEATHER_KEY, HOME_MANUAL_RECOMMENDATION_KEY, HOME_SCHEDULE_LIST_KEY, HOME_SCHEDULE_RECOMMENDATION_KEY, OUTFIT_LIST_KEY } from '@/constants/query_keys';
-import { CLOTHING_OCCASIONS, SAMPLE_USER_ID } from '@/data';
+import { CLOTHING_OCCASIONS } from '@/data';
 import ClothingItem from '@/models/ClothingItem';
 import OutfitGenerationResponse from '@/models/OutfitGenerationResponse';
 import Schedule from '@/models/Schedule';
@@ -24,7 +24,7 @@ const HomeContext = createContext<{ latestSchedulesQuery: UseQueryResult<Schedul
 const HomeScreen = () => {
   const latestSchedulesQuery = useQuery({
     queryKey: HOME_SCHEDULE_LIST_KEY,
-    queryFn: () => fetchLatestSchedulesByHours(SAMPLE_USER_ID, 48),
+    queryFn: () => fetchLatestSchedulesByHours(48),
     staleTime: Infinity,
     gcTime: Infinity
   });
