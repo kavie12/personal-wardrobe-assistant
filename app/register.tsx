@@ -26,9 +26,8 @@ const RegisterScreen = () => {
       return;
     }
     setLoading(true);
-    const success = await register(email, password);
+    await register(email, password);
     setLoading(false);
-    if (!success) Alert.alert("Error", "Registration failed. Try a different email.");
   };
 
   return (

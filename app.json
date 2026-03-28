@@ -4,7 +4,7 @@
     "slug": "personal-wardrobe-assistant",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/logo.png",
     "scheme": "personalwardrobeassistant",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -32,12 +32,12 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/icon-transparent.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#111f49",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#111f49"
           }
         }
       ],
@@ -48,7 +48,8 @@
           "cameraPermission": "The app accesses your camera."
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

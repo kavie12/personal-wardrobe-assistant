@@ -1,3 +1,4 @@
+import { useAuth } from "@/hooks/use-auth";
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -8,91 +9,93 @@ import { SafeAreaView } from "react-native-safe-area-context";
 type TemperatureScale = "C" | "F";
 
 const ProfileScreen = () => {
-    const [tempScale, setTempScale] = useState<TemperatureScale>("C");
+    // const [tempScale, setTempScale] = useState<TemperatureScale>("C");
     const [passwordModalVisible, setPasswordModalVisible] = useState(false);
 
+    const { logout } = useAuth();
+
     return (
-        <SafeAreaView className="flex-1">
-            <Header className="mt-4" />
+      <SafeAreaView className="flex-1">
+        <Header className="mt-4" />
 
-            <View className="px-6 mt-8">
-                {/* Avatar + User Info */}
-                <View className="items-center gap-y-3">
-                    <View className="w-20 h-20 rounded-full bg-blue-200 dark:bg-slate-200 items-center justify-center">
-                        <Text className="text-blue-600 dark:text-slate-800 text-2xl font-bold">KD</Text>
-                    </View>
-                    <View className="items-center gap-y-1">
-                        <Text className="text-xl font-bold text-slate-800 dark:text-white">Kaveesha Dissanayake</Text>
-                        <Text className="text-sm text-slate-400">kaveeshad@email.com</Text>
-                    </View>
-                </View>
-
-                {/* Preferences */}
-                {/* <View className="mt-10 gap-y-2">
-                    <Text className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1 ml-1">
-                        Preferences
-                    </Text>
-                    <SettingsItem icon="thermometer-outline" label="Temperature Scale">
-                        <View className="flex-row bg-slate-300 dark:bg-slate-700 rounded-xl p-1 gap-x-1">
-                            {(["C", "F"] as TemperatureScale[]).map((scale) => (
-                                <TouchableOpacity
-                                    key={scale}
-                                    onPress={() => setTempScale(scale)}
-                                    activeOpacity={0.7}
-                                    className={`px-3 py-1 rounded-lg ${
-                                        tempScale === scale
-                                        ? "bg-white dark:bg-slate-500"
-                                        : ""
-                                    }`}
-                                >
-                                    <Text className={`text-sm font-medium ${
-                                        tempScale === scale
-                                        ? "text-slate-800 dark:text-white"
-                                        : "text-slate-500"
-                                    }`}>
-                                        {scale === "C" ? "°C" : "°F"}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                    </SettingsItem>
-                </View> */}
-
-                {/* Account */}
-                <View className="mt-6 gap-y-2">
-                    <Text className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1 ml-1">
-                        Account
-                    </Text>
-                    <SettingsItem
-                        icon="lock-closed-outline"
-                        label="Change Password"
-                        showViewIcon
-                        onPress={() => setPasswordModalVisible(true)}
-                    />
-                    <SettingsItem
-                        icon="log-out-outline"
-                        label="Log Out"
-                        showViewIcon
-                        onPress={() => {}}
-                    />
-                    <SettingsItem
-                        icon="trash-outline"
-                        label="Delete Account"
-                        textRed
-                        onPress={() => {}}
-                    />
-                </View>
+        <View className="px-6 mt-8">
+          {/* Avatar + User Info */}
+          <View className="items-center gap-y-3">
+            <View className="w-20 h-20 rounded-full bg-blue-200 dark:bg-slate-200 items-center justify-center">
+              <Text className="text-blue-600 dark:text-slate-800 text-2xl font-bold">KD</Text>
             </View>
+            <View className="items-center gap-y-1">
+              <Text className="text-xl font-bold text-slate-800 dark:text-white">Kaveesha Dissanayake</Text>
+              <Text className="text-sm text-slate-400">kaveeshad@email.com</Text>
+            </View>
+          </View>
 
-            <ChangePasswordModal
-                visible={passwordModalVisible}
-                onClose={() => setPasswordModalVisible(false)}
-                onSave={(current, next) => {
-                    // handle save
-                    setPasswordModalVisible(false);
-                }}
+          {/* Preferences */}
+          {/* <View className="mt-10 gap-y-2">
+              <Text className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1 ml-1">
+                  Preferences
+              </Text>
+              <SettingsItem icon="thermometer-outline" label="Temperature Scale">
+                  <View className="flex-row bg-slate-300 dark:bg-slate-700 rounded-xl p-1 gap-x-1">
+                      {(["C", "F"] as TemperatureScale[]).map((scale) => (
+                          <TouchableOpacity
+                              key={scale}
+                              onPress={() => setTempScale(scale)}
+                              activeOpacity={0.7}
+                              className={`px-3 py-1 rounded-lg ${
+                                  tempScale === scale
+                                  ? "bg-white dark:bg-slate-500"
+                                  : ""
+                              }`}
+                          >
+                              <Text className={`text-sm font-medium ${
+                                  tempScale === scale
+                                  ? "text-slate-800 dark:text-white"
+                                  : "text-slate-500"
+                              }`}>
+                                  {scale === "C" ? "°C" : "°F"}
+                              </Text>
+                          </TouchableOpacity>
+                      ))}
+                  </View>
+              </SettingsItem>
+          </View> */}
+
+          {/* Account */}
+          <View className="mt-6 gap-y-2">
+            <Text className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1 ml-1">
+              Account
+            </Text>
+            <SettingsItem
+              icon="lock-closed-outline"
+              label="Change Password"
+              showViewIcon
+              onPress={() => setPasswordModalVisible(true)}
             />
-        </SafeAreaView>
+            <SettingsItem
+              icon="log-out-outline"
+              label="Log Out"
+              showViewIcon
+              onPress={logout}
+            />
+            <SettingsItem
+              icon="trash-outline"
+              label="Delete Account"
+              textRed
+              onPress={() => {}}
+            />
+          </View>
+        </View>
+
+        <ChangePasswordModal
+          visible={passwordModalVisible}
+          onClose={() => setPasswordModalVisible(false)}
+          onSave={(current, next) => {
+            // handle save
+            setPasswordModalVisible(false);
+          }}
+        />
+      </SafeAreaView>
     );
 };
 

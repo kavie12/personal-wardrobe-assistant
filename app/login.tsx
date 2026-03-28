@@ -16,9 +16,8 @@ const LoginScreen = () => {
       return;
     }
     setLoading(true);
-    const success = await login(email, password);
+    await login(email, password);
     setLoading(false);
-    if (!success) Alert.alert("Error", "Invalid email or password.");
   };
 
   return (
