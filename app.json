@@ -20,7 +20,12 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "softwareKeyboardLayoutMode": "pan"
+      "softwareKeyboardLayoutMode": "pan",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.kaveeshas1.personalwardrobeassistant"
     },
     "web": {
       "output": "static",
@@ -32,7 +37,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/icon-transparent.png",
+          "image": "./assets/images/logo-transparent.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#111f49",
