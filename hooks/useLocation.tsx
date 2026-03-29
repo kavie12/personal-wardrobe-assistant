@@ -8,7 +8,7 @@ interface LocationContextValue {
 const LocationContext = createContext<LocationContextValue | null>(null);
 
 export const LocationProvider = ({ children }: { children: React.ReactNode }) => {
-    const [location, setLocation] = useState<LocationContextValue | null>(null);
+    const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
 
     useEffect(() => {
         async function getCurrentLocation() {
@@ -19,19 +19,19 @@ export const LocationProvider = ({ children }: { children: React.ReactNode }) =>
             }
             let location = await Location.getCurrentPositionAsync({});
             console.log("Location:", location.coords.latitude, location.coords.longitude);
-            setLocation({ coords: { lat: location.coords.latitude, lng: location.coords.longitude } });
+            setCoords({ lat: location.coords.latitude, lng: location.coords.longitude });
         }
         getCurrentLocation();
     }, []);
 
-    return <LocationContext.Provider value={location}>{children}</LocationContext.Provider>;
+    return <LocationContext.Provider value={{ coords }}>{children}</LocationContext.Provider>;
 };
 
 export const useLocation = (): LocationContextValue => {
     const context = useContext(LocationContext);
 
     if (!context) {
-        throw new Error("useAuth must be used within an AuthProvider.");
+        throw new Error("useLocation must be used within a LocationProvider.");
     }
 
     return context;

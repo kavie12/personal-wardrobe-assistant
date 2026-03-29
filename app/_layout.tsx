@@ -12,8 +12,8 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <AuthProvider>
-      <LocationProvider>
+    <LocationProvider>
+      <AuthProvider>
         <SafeAreaProvider>
           <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <SplashScreenController />
@@ -21,8 +21,8 @@ export default function RootLayout() {
             <StatusBar style="auto" />
           </ThemeProvider>
         </SafeAreaProvider>
-      </LocationProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </LocationProvider>
   );
 }
 
