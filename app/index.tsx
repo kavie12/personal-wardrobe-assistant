@@ -88,13 +88,16 @@ const OnboardingScreen = () => {
                             onPress={() => flatListRef.current?.scrollToIndex({ index })}
                             activeOpacity={0.7}
                         >
-                        <View
-                            className={`h-2 rounded-full transition-all ${
-                            activeIndex === index
-                                ? "bg-slate-800 dark:bg-white w-6"
-                                : "bg-slate-200 dark:bg-slate-700 w-2"
-                            }`}
-                        />
+                            <View
+                            style={{
+                                height: 8,
+                                width: activeIndex === index ? 24 : 8,
+                                borderRadius: 4,
+                                backgroundColor: activeIndex === index
+                                ? colorScheme === "dark" ? "#ffffff" : "#1e293b"
+                                : colorScheme === "dark" ? "#334155" : "#e2e8f0",
+                            }}
+                            />
                         </TouchableOpacity>
                     ))}
                 </View>

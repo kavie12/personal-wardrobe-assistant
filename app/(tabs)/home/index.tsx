@@ -5,7 +5,7 @@ import OutfitGenerationResponse from '@/models/OutfitGenerationResponse';
 import Schedule from '@/models/Schedule';
 import Weather from '@/models/Weather';
 import { saveOutfit } from '@/services/outfits-service';
-import { acceptOutfit, getRecommendation, getScheduleRecommendation, rejectOutfit } from '@/services/recommendation-service';
+import { getRecommendation } from '@/services/recommendation-service';
 import { fetchLatestSchedulesByHours } from '@/services/schedule-service';
 import { getCurrentWeather, getForecastWeather } from '@/services/weather-service';
 import { ClothingOccasion } from '@/types';
@@ -143,7 +143,7 @@ const ScheduleRecord = ({schedule}: {schedule: Schedule}) => {
   );
 };
 
-const outfitCardModes = ["Manual", "Schedule", "Create"];
+const outfitCardModes = ["Manual", "Schedule"];
 
 const OutfitCard = ({ className = "" }: { className: string; }) => {
   const [activeMode, setActiveMode] = useState(0);
@@ -245,15 +245,11 @@ const ManualOutfit = () => {
 
   const handleAccept = async () => {
     if (!query.data) return;
-
     setAccepted(true);
-    await acceptOutfit(query.data?.id);
   };
 
   const handleRetry = async () => {
     if (!query.data) return;
-
-    await rejectOutfit(query.data?.id);
     queryClient.resetQueries({ queryKey: HOME_MANUAL_RECOMMENDATION_KEY });
   };
 
@@ -326,7 +322,7 @@ const ScheduleOutfit = () => {
 
       console.log("Schedule-based recommendation with weather data:", { description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
 
-      return await getScheduleRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
+      return await getRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
     },
     staleTime: Infinity,
     gcTime: Infinity,
@@ -335,15 +331,11 @@ const ScheduleOutfit = () => {
 
   const handleAccept = async () => {
     if (!query.data) return;
-
     setAccepted(true);
-    await acceptOutfit(query.data?.id);
   };
 
   const handleRetry = async () => {
     if (!query.data) return;
-
-    await rejectOutfit(query.data?.id);
     query.refetch();
   };
 

@@ -1,7 +1,7 @@
 import ClothingItem from '@/models/ClothingItem';
 import Outfit from '@/models/Outfit';
 import { chat } from '@/services/assistant-service';
-import { getScheduleRecommendation } from '@/services/recommendation-service';
+import { getRecommendation } from '@/services/recommendation-service';
 import { getForecastWeather } from '@/services/weather-service';
 import { Message } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
@@ -58,7 +58,7 @@ const AssistantScreen = () => {
     if (!weatherData) throw new Error("Weather data not available");
 
     const fullContext = `${context} | ${timestamp.toLocaleString()} | ${formality}`;
-    return await getScheduleRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, fullContext);
+    return await getRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, fullContext);
   };
 
   useEffect(() => {
