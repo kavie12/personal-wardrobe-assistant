@@ -1,11 +1,12 @@
 import { serverApi } from "@/config/serverApi";
 import ClothingItem from "@/models/ClothingItem";
 import Outfit from "@/models/Outfit";
+import OutfitGeneration from "@/models/OutfitGeneration";
 import OutfitsResponse from "@/models/OutfitsResponse";
 
 const SERVICE = "outfits";
 
-export const saveOutfit = async (outfit: Outfit, occasion: string): Promise<boolean> => {
+export const saveOutfit = async (outfit: OutfitGeneration, occasion: string): Promise<boolean> => {
   const res = await serverApi.post(`${SERVICE}/save`, {
     items: {
       topwear_id: outfit.topwear.id,

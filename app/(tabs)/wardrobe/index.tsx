@@ -8,11 +8,12 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const WardrobeScreen = () => {
-  const [category, setCategory] = useState<ClothingCategory | "All">("All");
   const router = useRouter();
-  const selectCategory = (category: ClothingCategory | "All") => setCategory(category);
+
+  const [category, setCategory] = useState<ClothingCategory | "All">("All");
 
   const wardrobeData = useWardrobe();
   const wardrobeItems = wardrobeData.items.filter(item => 
@@ -20,10 +21,11 @@ const WardrobeScreen = () => {
   ) || [];
 
   return (
-    <View className="flex-1 my-8">
+    <SafeAreaView className="flex-1">
+      <Header className="mt-4 mb-8" />
 
       {/* Category filters */}
-      <CategoryFilters selectedCategory={category} selectCategory={selectCategory} />
+      <CategoryFilters selectedCategory={category} selectCategory={c => setCategory(c)} />
 
       {/* Clothing items list */}
       <FlatList
@@ -54,8 +56,16 @@ const WardrobeScreen = () => {
         iconColor="white" 
         onPress={() => router.navigate("/wardrobe/add")}
       />
-    </View>
+    </SafeAreaView>
   )
+};
+
+const Header = ({ className = "" }: { className?: string; }) => {
+  return (
+    <View className={`flex-row items-center justify-between mx-4 ${className}`}>
+        <Text className="text-3xl font-bold dark:text-white">My Wardrobe</Text>
+    </View>
+  );
 };
 
 const WardrobeItem = ({ image, type, onPress }: WardrobeItemProps) => {

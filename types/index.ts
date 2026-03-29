@@ -1,5 +1,5 @@
 import { CLOTHING_CATEGORIES, CLOTHING_COLORS, CLOTHING_OCCASIONS, CLOTHING_TEMPERATURES, CLOTHING_TYPES } from "@/data";
-import Outfit from "@/models/Outfit";
+import OutfitGeneration from "@/models/OutfitGeneration";
 import { ImageSourcePropType } from "react-native";
 
 export interface WardrobeItemProps {
@@ -25,5 +25,6 @@ export type ClothingItemScreenMode = "View" | "Edit";
 export interface Message {
   type: "user" | "system" | "outfit",
   content: string,
-  outfit?: Outfit
+  outfit?: OutfitGeneration,
+  occasion?: ClothingOccasion
 }

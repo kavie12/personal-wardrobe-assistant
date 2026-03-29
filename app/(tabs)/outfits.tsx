@@ -1,14 +1,19 @@
+import Chip from '@/components/chip';
 import { OUTFIT_LIST_KEY } from '@/constants/query_keys';
+import { CLOTHING_OCCASIONS } from '@/data';
 import Outfit from '@/models/Outfit';
 import { deleteOutfit, fetchOutfits } from '@/services/outfits-service';
+import { ClothingOccasion } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import React, { useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const OutfitsScreen = () => {
+  const [occasion, setOccasion] = useState<ClothingOccasion | "All">("All");
+
   const query = useInfiniteQuery({
     queryKey: OUTFIT_LIST_KEY,
     queryFn: fetchOutfits,
@@ -23,18 +28,25 @@ const OutfitsScreen = () => {
     [query.data]
   );
 
+  const outfits = items.filter(item => 
+    occasion === "All" ? true : item.occasion === occasion
+  ) || [];
+
   return (
     <SafeAreaView className="flex-1">
-        <Header className="mt-4"  />
+      <Header className="mt-4 mb-8" />
 
-        <FlatList
-          data={items}
-          keyExtractor={(item) => item.id?.toString() as string}
-          renderItem={({ item }) => <OutfitCard outfit={item} />}
-          contentContainerClassName="px-4 gap-y-4"
-          ListEmptyComponent={query.isPending ? <ActivityIndicator size="large" color="#0891b2" className="mt-20" /> : <EmptyOutfits />}
-          className="mt-8"
-        />
+      {/* Occasion filters */}
+      <OccasionFilters selectedOccasion={occasion} selectOccasion={o => setOccasion(o)} />
+
+      <FlatList
+        data={outfits}
+        keyExtractor={(item) => item.id?.toString() as string}
+        renderItem={({ item }) => <OutfitCard outfit={item} />}
+        contentContainerClassName="px-4 gap-y-4"
+        ListEmptyComponent={query.isPending ? <ActivityIndicator size="large" color="#0891b2" className="mt-20" /> : <EmptyOutfits />}
+        className="mt-8"
+      />
     </SafeAreaView>
   )
 };
@@ -43,6 +55,23 @@ const Header = ({ className = "" }: { className?: string; }) => {
   return (
     <View className={`flex-row items-center justify-between mx-4 ${className}`}>
         <Text className="text-3xl font-bold dark:text-white">My Outfits</Text>
+    </View>
+  );
+};
+
+const OccasionFilters = ({ selectedOccasion, selectOccasion }: { selectedOccasion: ClothingOccasion | "All", selectOccasion: (category: ClothingOccasion | "All") => void }) => {
+  return (
+    <View>
+      <ScrollView className="mx-4" horizontal={true} contentContainerClassName="gap-x-2" showsHorizontalScrollIndicator={false}>
+        {["All"].concat(CLOTHING_OCCASIONS).map((occasion) => (
+          <Chip<ClothingOccasion | "All">
+            key={occasion}
+            value={occasion as ClothingOccasion | "All"}
+            isSelected={selectedOccasion === occasion}
+            onSelect={(value) => selectOccasion(value)}
+          />
+        ))}
+      </ScrollView>
     </View>
   );
 };

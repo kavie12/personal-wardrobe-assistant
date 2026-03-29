@@ -1,13 +1,11 @@
-import { ClothingOccasion } from "@/types";
 import ClothingItem from "./ClothingItem";
 
-class Outfit {
+class OutfitGeneration {
     id?: string;
     topwear: ClothingItem;
     bottomwear: ClothingItem;
     footwear: ClothingItem;
     outerwear: ClothingItem | null;
-    occasion?: ClothingOccasion;
 
     constructor(topwear: ClothingItem, bottomwear: ClothingItem, footwear: ClothingItem, outerwear?: ClothingItem | null) {
         this.topwear = topwear;
@@ -19,10 +17,6 @@ class Outfit {
     setId(id: string) {
         this.id = id;
     }
-
-    setOccasion(occasion: ClothingOccasion) {
-        this.occasion = occasion;
-    }
 };
 
-export default Outfit;
+export default OutfitGeneration;

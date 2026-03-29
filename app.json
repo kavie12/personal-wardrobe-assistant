@@ -53,6 +53,12 @@
           "cameraPermission": "The app accesses your camera."
         }
       ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Personal Wardrobe Assistant to use your location."
+        }
+      ],
       "@react-native-community/datetimepicker",
       "expo-secure-store"
     ],

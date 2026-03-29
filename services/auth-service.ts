@@ -1,9 +1,10 @@
 import { auth } from "@/config/firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, deleteUser, EmailAuthProvider, reauthenticateWithCredential, signInWithEmailAndPassword, signOut, updatePassword, updateProfile } from "firebase/auth";
 
-export const register = async (email: string, password: string): Promise<void> => {
+export const register = async (email: string, password: string, name: string): Promise<void> => {
     try {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(userCredentials.user, { displayName: name });
     } catch (err: any) {
         const errorCode = err.code;
         const errorMessage = err.message;
@@ -31,12 +32,27 @@ export const logout = async (): Promise<void> => {
     }
 };
 
-// export const changePassword = async (user: User, newPassword: string): Promise<void> => {
-//     try {
-//         await updatePassword(user, newPassword);
-//     } catch (err: any) {
-//         const errorCode = err.code;
-//         const errorMessage = err.message;
-//         console.log("Change password error", errorCode, errorMessage);
-//     }
-// };
+export const changePassword = async (currentPassword: string, newPassword: string): Promise<void> => {
+    try {
+        if (!auth.currentUser) throw new Error("No user is currently signed in");
+        await reauthenticateWithCredential(auth.currentUser, EmailAuthProvider.credential(auth.currentUser.email!, currentPassword));
+        await updatePassword(auth.currentUser, newPassword);
+    } catch (err: any) {
+        const errorCode = err.code;
+        const errorMessage = err.message;
+        console.log("Change password error", errorCode, errorMessage);
+    }
+};
+
+export const deleteAccount = async (password: string): Promise<void> => {
+    try {
+        if (!auth.currentUser) throw new Error("No user is currently signed in");
+        await reauthenticateWithCredential(auth.currentUser, EmailAuthProvider.credential(auth.currentUser.email!, password));
+        await deleteUser(auth.currentUser);
+        // TODO: Wipe out all user's data
+    } catch (err: any) {
+        const errorCode = err.code;
+        const errorMessage = err.message;
+        console.log("Delete user error", errorCode, errorMessage);
+    }
+};

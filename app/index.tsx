@@ -45,7 +45,7 @@ const OnboardingScreen = () => {
     return (
         <SafeAreaView className="flex-1 bg-white dark:bg-slate-900">
             {/* Carousel */}
-            <View style={{ height: height * 0.55 }}>
+            <View style={{ height: height * 0.55 }} className="bg-slate-900">
                 <FlatList
                     ref={flatListRef}
                     data={slides}
@@ -61,15 +61,15 @@ const OnboardingScreen = () => {
                             className="flex-1 items-center justify-center px-10 gap-y-6"
                         >
                             {/* Icon circle */}
-                            <View className="w-32 h-32 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center">
+                            <View className="w-32 h-32 rounded-full bg-slate-800 items-center justify-center">
                                 <Ionicons
                                     name={item.icon}
                                     size={56}
-                                    color={colorScheme === "dark" ? `#FFFFFF` : "#1e293b"}
+                                    color="#FFFFFF"
                                 />
                             </View>
                             <View className="items-center gap-y-3">
-                                <Text className="text-2xl font-bold text-slate-800 dark:text-white text-center">
+                                <Text className="text-2xl font-bold text-white text-center">
                                     {item.title}
                                 </Text>
                                 <Text className="text-slate-400 text-center text-[15px] leading-6">
@@ -93,9 +93,7 @@ const OnboardingScreen = () => {
                                 height: 8,
                                 width: activeIndex === index ? 24 : 8,
                                 borderRadius: 4,
-                                backgroundColor: activeIndex === index
-                                ? colorScheme === "dark" ? "#ffffff" : "#1e293b"
-                                : colorScheme === "dark" ? "#334155" : "#e2e8f0",
+                                backgroundColor: activeIndex === index ? "#ffffff" : "#334155"
                             }}
                             />
                         </TouchableOpacity>

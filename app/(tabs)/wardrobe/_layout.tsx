@@ -19,7 +19,7 @@ export default function StackLayout() {
             name="index"
             options={{
                 title: "My Wardrobe",
-                headerShown: true,
+                headerShown: false,
             }}
         />
         <Stack.Screen

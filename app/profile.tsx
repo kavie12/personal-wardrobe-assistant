@@ -12,7 +12,7 @@ const ProfileScreen = () => {
     // const [tempScale, setTempScale] = useState<TemperatureScale>("C");
     const [passwordModalVisible, setPasswordModalVisible] = useState(false);
 
-    const { logout } = useAuth();
+    const { user, logout, changePassword, deleteAccount } = useAuth();
 
     return (
       <SafeAreaView className="flex-1">
@@ -22,11 +22,11 @@ const ProfileScreen = () => {
           {/* Avatar + User Info */}
           <View className="items-center gap-y-3">
             <View className="w-20 h-20 rounded-full bg-blue-200 dark:bg-slate-200 items-center justify-center">
-              <Text className="text-blue-600 dark:text-slate-800 text-2xl font-bold">KD</Text>
+              <Text className="text-blue-600 dark:text-slate-800 text-2xl font-bold">{ user?.displayName?.charAt(0) }</Text>
             </View>
             <View className="items-center gap-y-1">
-              <Text className="text-xl font-bold text-slate-800 dark:text-white">Kaveesha Dissanayake</Text>
-              <Text className="text-sm text-slate-400">kaveeshad@email.com</Text>
+              <Text className="text-xl font-bold text-slate-800 dark:text-white">{ user?.displayName }</Text>
+              <Text className="text-sm text-slate-400">{ user?.email }</Text>
             </View>
           </View>
 
@@ -91,7 +91,7 @@ const ProfileScreen = () => {
           visible={passwordModalVisible}
           onClose={() => setPasswordModalVisible(false)}
           onSave={(current, next) => {
-            // handle save
+            changePassword(current, next);
             setPasswordModalVisible(false);
           }}
         />
@@ -186,20 +186,20 @@ const SettingsItem = ({ icon, label, textRed = false, showViewIcon = false, onPr
       onPress={onPress}
       className="flex-row items-center justify-between bg-gray-200 dark:bg-slate-800 px-4 py-4 rounded-2xl"
     >
-        <View className="flex-row items-center gap-x-3">
-            <Ionicons name={icon} size={20} color={iconColor} />
-            <Text className={`text-[15px] font-medium ${textRed ? "text-red-500" : "text-slate-700 dark:text-slate-200"}`}>
-                {label}
-            </Text>
-        </View>
-        { children }
-        {showViewIcon &&
-            <Ionicons
-                name="chevron-forward"
-                size={16}
-                color={colorScheme === "dark" ? "#475569" : "#a8b2bd"}
-            />
-        }
+      <View className="flex-row items-center gap-x-3">
+        <Ionicons name={icon} size={20} color={iconColor} />
+        <Text className={`text-[15px] font-medium ${textRed ? "text-red-500" : "text-slate-700 dark:text-slate-200"}`}>
+          {label}
+        </Text>
+      </View>
+      { children }
+      {showViewIcon &&
+        <Ionicons
+          name="chevron-forward"
+          size={16}
+          color={colorScheme === "dark" ? "#475569" : "#a8b2bd"}
+        />
+      }
     </TouchableOpacity>
   );
 };

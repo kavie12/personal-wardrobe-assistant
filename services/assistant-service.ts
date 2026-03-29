@@ -27,3 +27,7 @@ export const chat = async (message: string): Promise<ChatResponse> => {
 
   return chatObj;
 };
+
+export const resetChat = async (): Promise<void> => {
+  await serverApi.post(`${SERVICE}/reset`);
+};

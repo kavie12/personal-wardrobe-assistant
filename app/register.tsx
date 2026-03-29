@@ -26,7 +26,7 @@ const RegisterScreen = () => {
       return;
     }
     setLoading(true);
-    await register(email, password);
+    await register(email, password, name);
     setLoading(false);
   };
 

@@ -1,5 +1,7 @@
 import { HOME_CURRENT_WEATHER_KEY, HOME_MANUAL_RECOMMENDATION_KEY, HOME_SCHEDULE_LIST_KEY, HOME_SCHEDULE_RECOMMENDATION_KEY, OUTFIT_LIST_KEY } from '@/constants/query_keys';
 import { CLOTHING_OCCASIONS } from '@/data';
+import { useAuth } from '@/hooks/use-auth';
+import { useLocation } from '@/hooks/useLocation';
 import ClothingItem from '@/models/ClothingItem';
 import OutfitGenerationResponse from '@/models/OutfitGenerationResponse';
 import Schedule from '@/models/Schedule';
@@ -19,9 +21,14 @@ import React, { createContext, useContext, useEffect, useRef, useState } from 'r
 import { ActivityIndicator, Alert, Animated, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const HomeContext = createContext<{ latestSchedulesQuery: UseQueryResult<Schedule[], Error>, weatherQuery: UseQueryResult<Weather | null, Error> } | null>(null);
+const HomeContext = createContext<{
+  latestSchedulesQuery: UseQueryResult<Schedule[], Error>,
+  weatherQuery: UseQueryResult<Weather | null | undefined, Error>
+} | null>(null);
 
 const HomeScreen = () => {
+  const location = useLocation();
+
   const latestSchedulesQuery = useQuery({
     queryKey: HOME_SCHEDULE_LIST_KEY,
     queryFn: () => fetchLatestSchedulesByHours(48),
@@ -30,9 +37,13 @@ const HomeScreen = () => {
   });
   const weatherQuery = useQuery({
     queryKey: HOME_CURRENT_WEATHER_KEY,
-    queryFn: () => getCurrentWeather(6.9271, 79.8612),
+    queryFn: async () => {
+      if (!location.coords) return;
+      return await getCurrentWeather(location.coords.lat, location.coords.lng)
+    },
     staleTime: 3600000,
-    gcTime: 3600000
+    gcTime: 3600000,
+    enabled: !!location.coords
   });
 
   return (
@@ -50,15 +61,16 @@ const HomeScreen = () => {
 };
 
 const Greeting = ({ className = "" }: { className?: string; }) => {
-  const router = useRouter()
+  const router = useRouter();
+  const user = useAuth().user;
   return (
     <View className={`flex-row justify-between items-center ${className}`}>
       <View className="gap-y-1">
         <Text className="text-md font-medium text-slate-500 dark:text-slate-400">GOOD MORNING,</Text>
-        <Text className="text-3xl font-bold text-slate-800 dark:text-slate-200">Kaveesha</Text>
+        <Text className="text-3xl font-bold text-slate-800 dark:text-slate-200">{ user?.displayName?.split(" ")[0] }</Text>
       </View>
       <TouchableOpacity onPress={() => router.navigate("/profile")} activeOpacity={0.7} className="bg-blue-200 rounded-full w-14 h-14 justify-center items-center">
-        <Text className="text-lg font-bold text-blue-600">KD</Text>
+        <Text className="text-lg font-bold text-blue-600">{ user?.displayName?.charAt(0) }</Text>
       </TouchableOpacity>
     </View>
   );
@@ -308,25 +320,28 @@ const ManualOutfit = () => {
 const ScheduleOutfit = () => {
   const [accepted, setAccepted] = useState(false);
 
-  const {latestSchedulesQuery} = useContext(HomeContext)!;
+  const { latestSchedulesQuery } = useContext(HomeContext)!;
   const schedule = latestSchedulesQuery.data ? latestSchedulesQuery.data[0] : null;
 
+  const location = useLocation();
+  
   const query = useQuery({
     queryKey: HOME_SCHEDULE_RECOMMENDATION_KEY,
     queryFn: async () => {
       if (!schedule) throw new Error("Schedule data not available.");
+      if (!location.coords) throw new Error("Location data not available.");
 
       const scheduleString = `${schedule.title} | ${schedule.timestamp.toLocaleString()} | ${schedule.occasion}`;
-      const weatherData = await getForecastWeather(6.9271, 79.8612, schedule.timestamp);
+      const weatherData = await getForecastWeather(location.coords.lat, location.coords.lng, schedule.timestamp);
       if (!weatherData) throw new Error("Weather data not available");
 
-      console.log("Schedule-based recommendation with weather data:", { description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
+      console.log("Recommendation request:", { description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
 
       return await getRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
     },
     staleTime: Infinity,
     gcTime: Infinity,
-    enabled: !!schedule
+    enabled: !!schedule && !!location.coords
   });
 
   const handleAccept = async () => {
