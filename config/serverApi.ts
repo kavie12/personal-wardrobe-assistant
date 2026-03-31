@@ -8,8 +8,23 @@ export const serverApi = axios.create({
 serverApi.interceptors.request.use(async (config) => {
     const user = auth.currentUser;
     if (user) {
-        const token = await user.getIdToken();;
+        const token = await user.getIdToken();
         config.headers.Authorization = `Bearer ${token}`;
+    } else {
+        // Wait for auth state to resolve
+        const token = await new Promise<string | null>((resolve) => {
+            const unsubscribe = auth.onAuthStateChanged(async (user) => {
+                unsubscribe();
+                if (user) {
+                    resolve(await user.getIdToken());
+                } else {
+                    resolve(null);
+                }
+            });
+        });
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
     }
     return config;
 });
