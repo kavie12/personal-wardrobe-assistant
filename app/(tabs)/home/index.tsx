@@ -1,6 +1,7 @@
 import { HOME_CURRENT_WEATHER_KEY, HOME_MANUAL_RECOMMENDATION_KEY, HOME_SCHEDULE_LIST_KEY, HOME_SCHEDULE_RECOMMENDATION_KEY, OUTFIT_LIST_KEY } from '@/constants/query_keys';
 import { CLOTHING_OCCASIONS } from '@/data';
 import { useAuth } from '@/hooks/use-auth';
+import { useColorScheme } from '@/hooks/use-color-scheme.web';
 import { useLocation } from '@/hooks/useLocation';
 import ClothingItem from '@/models/ClothingItem';
 import OutfitGenerationResponse from '@/models/OutfitGenerationResponse';
@@ -82,7 +83,7 @@ const WeatherCard = ({ className = "" }: { className?: string; }) => {
   if (!query) return null;
 
   return (
-    <View className={`bg-sky-600 flex-row items-center justify-between p-8 rounded-2xl ${className}`}>
+    <View className={`bg-sky-600 dark:bg-sky-800 flex-row items-center justify-between p-8 rounded-2xl ${className}`}>
       <View className="gap-y-2">
         <View className="flex-row items-center gap-x-2">
           <Ionicons name="sunny-outline" color="white" />
@@ -100,25 +101,26 @@ const WeatherCard = ({ className = "" }: { className?: string; }) => {
 
 const ScheduleCard = ({ className = "" }: { className?: string; }) => {
   const router = useRouter();
+  const colorScheme = useColorScheme();
 
   const query = useContext(HomeContext)?.latestSchedulesQuery;
   if (!query) return null;
 
   return (
-    <View className={`bg-white p-8 rounded-2xl ${className}`}>
+    <View className={`bg-white dark:bg-slate-800 p-8 rounded-2xl ${className}`}>
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-x-4">
-          <Ionicons name="calendar-outline" size={24} color="blue" />
-          <Text className="text-xl font-bold text-slate-500">SCHEDULE</Text>
+          <Ionicons name="calendar-outline" size={24} color={colorScheme === 'dark' ? 'white' : 'blue'} />
+          <Text className="text-xl font-bold text-slate-500 dark:text-slate-200">SCHEDULE</Text>
         </View>
         <TouchableOpacity onPress={() => router.navigate("/home/scheduler")} activeOpacity={0.7}>
-          <Ionicons name="open-outline" size={20} />
+          <Ionicons name="open-outline" size={20} color={colorScheme === 'dark' ? 'white' : 'black'} />
         </TouchableOpacity>
       </View>
       <View className="mt-8 gap-y-6">
-        { query.isFetching && <ActivityIndicator size="small" color="#0891b2" /> }
+        { query.isFetching && <ActivityIndicator size="small" color={colorScheme === 'dark' ? '#FFFFFF' : '#0891b2'} /> }
         { query.data && query.data.map((item, i) => <ScheduleRecord schedule={item} key={i} />) }
-        { query.data && query.data.length === 0 && <Text className="text-center text-slate-500 italic font-medium">No schedules for next 48 hours!</Text> }
+        { query.data && query.data.length === 0 && <Text className="text-center text-slate-500 dark:text-slate-400 italic font-medium">No schedules for next 48 hours!</Text> }
       </View>
     </View>
   );
@@ -166,6 +168,8 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
   const {latestSchedulesQuery} = useContext(HomeContext)!;
   const schedule = latestSchedulesQuery.data ? latestSchedulesQuery.data[0] : null;
 
+  const colorScheme = useColorScheme();
+
   const changeMode = (index: number) => {
     setActiveMode(index);
     Animated.spring(underlineX, {
@@ -183,16 +187,16 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
   }, [schedule, tabBarWidth]);
 
   return (
-    <View className={`bg-white p-8 rounded-2xl ${className}`}>
+    <View className={`bg-white dark:bg-slate-800 p-8 rounded-2xl ${className}`}>
       {/* Header */}
       <View className="flex-row items-center gap-x-4">
-        <Ionicons name="shirt-outline" size={24} color="blue" />
-        <Text className="text-xl font-bold text-slate-500">OUTFIT OF THE DAY</Text>
+        <Ionicons name="shirt-outline" size={24} color={colorScheme === 'dark' ? 'white' : 'blue'} />
+        <Text className="text-xl font-bold text-slate-500 dark:text-slate-200">OUTFIT OF THE DAY</Text>
       </View>
 
       {/* Mode Tabs UI */}
       <View
-        className="flex-row border-b border-gray-200 relative mt-4"
+        className="flex-row border-b border-gray-200 dark:border-gray-600 relative mt-4"
         onLayout={(e) => setTabBarWidth(e.nativeEvent.layout.width)}
       >
         {outfitCardModes.map((mode, index) => (
@@ -205,7 +209,7 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
             <Text
               className={`text-[15px] ${
                 activeMode === index
-                  ? 'text-blue-600 font-semibold'
+                  ? 'text-blue-600 dark:text-blue-400 font-semibold'
                   : 'text-gray-400 font-normal'
               }`}
             >
@@ -214,7 +218,7 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
           </TouchableOpacity>
         ))}
         <Animated.View
-          className="absolute bottom-0 h-[3px] bg-blue-600 rounded-full"
+          className="absolute bottom-0 h-[3px] bg-blue-600 dark:bg-blue-400 rounded-full"
           style={{
             width: modeWidth * 0.7,
             marginLeft: modeWidth * 0.15,
@@ -239,6 +243,8 @@ const ManualOutfit = () => {
 
   const {weatherQuery} = useContext(HomeContext)!;
   const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion>("Casual");
+
+  const colorScheme = useColorScheme();
 
   const queryClient = useQueryClient();
   const query = useQuery({
@@ -270,7 +276,7 @@ const ManualOutfit = () => {
       {
         !query.isFetched &&
         <View className="mt-8 gap-y-6">
-          <Text className="text-slate-500 font-medium">
+          <Text className="text-slate-500 dark:text-slate-400 font-medium">
             Generate today's outfit.
           </Text>
 
@@ -295,7 +301,7 @@ const ManualOutfit = () => {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => query.refetch()}
-              className="bg-slate-800 p-4 rounded-xl items-center shadow-lg justify-center"
+              className="bg-slate-800 dark:bg-slate-600 p-4 rounded-xl items-center shadow-lg justify-center"
             >
               <Text className="text-white text-lg font-medium">Generate Outfit</Text>
             </TouchableOpacity>
@@ -360,7 +366,7 @@ const ScheduleOutfit = () => {
     <>
       {
          !schedule ?
-          <Text className="text-slate-500 font-medium mt-8">No schedules for next 48 hours!</Text>
+          <Text className="text-slate-500 dark:text-slate-400 font-medium mt-8">No schedules for next 48 hours!</Text>
           :
           <OutfitItemView
             isFetching={query.isFetching}

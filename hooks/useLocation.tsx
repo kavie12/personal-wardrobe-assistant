@@ -14,8 +14,7 @@ export const LocationProvider = ({ children }: { children: React.ReactNode }) =>
         async function getCurrentLocation() {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
-                console.log('Permission to access location was denied');
-                return;
+                throw new Error('Permission to access location was denied');
             }
             let location = await Location.getCurrentPositionAsync({});
             console.log("Location:", location.coords.latitude, location.coords.longitude);
