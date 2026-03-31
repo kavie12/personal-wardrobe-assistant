@@ -146,11 +146,11 @@ const ScheduleRecord = ({schedule}: {schedule: Schedule}) => {
     <View className="flex-row items-center">
       <View className="items-center w-20">
         <Text className="text-slate-400 text-sm font-medium">{dateLabel}</Text>
-        <Text className="font-bold text-md">{timeString}</Text>
+        <Text className="font-bold text-md dark:text-white">{timeString}</Text>
       </View>
-      <View className="mx-6 w-[1px] h-full bg-slate-300"></View>
+      <View className="mx-6 w-[1px] h-full bg-slate-300 dark:bg-slate-600"></View>
       <View className="gap-y-1">
-        <Text numberOfLines={1} className="font-medium text-lg text-slate-800">{schedule.title}</Text>
+        <Text numberOfLines={1} className="font-medium text-lg text-slate-800 dark:text-white">{schedule.title}</Text>
         <Text className={`${theme.bg} ${theme.text} font-semibold text-sm self-start px-3 py-1 rounded-full`}>{schedule.occasion.toUpperCase()}</Text>
       </View>
     </View>
@@ -389,6 +389,8 @@ const OutfitItemView = ({ isFetching, data, occasion, handleAccept, handleRetry,
   handleAccept: () => void;
   handleRetry: () => void;
 }) => {
+  const colorScheme = useColorScheme();
+
   const queryClient = useQueryClient();
   const mutationSave = useMutation({
     mutationFn: async () => {
@@ -417,14 +419,14 @@ const OutfitItemView = ({ isFetching, data, occasion, handleAccept, handleRetry,
             </View>
 
             {/* Save outfit button */}
-            <TouchableOpacity onPress={() => mutationSave.mutate()} activeOpacity={0.7} className="flex-row items-center gap-x-2 border border-blue-600 px-3 py-1 rounded-lg">
-              <Ionicons name="save-outline" size={16} color="#2563eb" />
-              <Text className="text-blue-600 font-medium text-sm">Save Outfit</Text>
+            <TouchableOpacity onPress={() => mutationSave.mutate()} activeOpacity={0.7} className="flex-row items-center gap-x-2 border border-blue-600 dark:border-blue-400 px-3 py-1 rounded-lg">
+              <Ionicons name="save-outline" size={16} color={colorScheme === "dark" ? "#60a5fa" : "#2563eb"} />
+              <Text className="text-blue-600 dark:text-blue-400 font-medium text-sm">Save Outfit</Text>
             </TouchableOpacity>
           </View>
 
           {/* Reason text */}
-          <Text className="text-slate-500 italic mt-4 font-medium">"{data.reason}"</Text>
+          <Text className="text-slate-500 dark:text-slate-400 italic mt-4 font-medium">"{data.reason}"</Text>
 
           {/* Outfit items */}
           <ScrollView horizontal contentContainerClassName="gap-x-4 pb-4" className="mt-4">
@@ -441,7 +443,7 @@ const OutfitItemView = ({ isFetching, data, occasion, handleAccept, handleRetry,
               <TouchableOpacity activeOpacity={0.8} onPress={handleRetry} className="bg-red-100 px-6 py-3 rounded-xl">
                 <Ionicons name="refresh-outline" size={24} color="red" />
               </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.8} onPress={handleAccept} className="flex-row items-center bg-slate-800 px-3 py-3 rounded-xl gap-x-4 flex-grow justify-center">
+              <TouchableOpacity activeOpacity={0.8} onPress={handleAccept} className="flex-row items-center bg-slate-800 dark:bg-slate-600 px-3 py-3 rounded-xl gap-x-4 flex-grow justify-center">
                 <Ionicons name="checkmark-outline" size={24} color="white" />
                 <Text className="text-white font-medium text-lg">Wear This</Text>
               </TouchableOpacity>
@@ -457,7 +459,7 @@ const OutfitClothingItem = ({ item }: { item: Partial<ClothingItem> }) => {
   return (
     <View className="items-center gap-y-2">
       <Image source={item.image} style={{ width: 120, height: 120, borderRadius: 12 }} />
-      <Text className="font-semibold text-slate-500">{item.type}</Text>
+      <Text className="font-semibold text-slate-500 dark:text-slate-400">{item.type}</Text>
     </View>
   );
 };

@@ -103,20 +103,20 @@ const ScheduleRecord = ({ schedule }: { schedule: Schedule; }) => {
     <TouchableOpacity
       activeOpacity={0.9}
       onLongPress={() => setSelected(!selected)}
-      className={`${selected ? "bg-slate-200" : "bg-white"} flex-row items-center p-4 rounded-xl`}
+      className={`${selected ? "bg-slate-200 dark:bg-slate-900" : "bg-white dark:bg-slate-800"} flex-row items-center p-4 rounded-xl`}
     >
       <View className="items-center w-20">
-        <Text className="text-slate-400 text-sm font-medium">{dateLabel}</Text>
-        <Text className="font-bold text-md">{timeString}</Text>
+        <Text className="text-slate-400 dark:text-slate-300 text-sm font-medium">{dateLabel}</Text>
+        <Text className="font-bold text-md dark:text-white">{timeString}</Text>
       </View>
-      <View className="mx-6 w-[1px] h-full bg-slate-300"></View>
+      <View className="mx-6 w-[1px] h-full bg-slate-300 dark:bg-slate-600"></View>
       <View className="gap-y-1">
-        <Text numberOfLines={1} className="font-medium text-lg text-slate-800">{schedule.title}</Text>
+        <Text numberOfLines={1} className="font-medium text-lg text-slate-800 dark:text-white">{schedule.title}</Text>
         <Text className={`${theme.bg} ${theme.text} font-semibold text-sm self-start px-3 py-1 rounded-full`}>{schedule.occasion.toUpperCase()}</Text>
       </View>
       {selected &&
         <>
-          <View className="ms-auto mr-2 w-[1px] h-full bg-slate-300"></View>
+          <View className="ms-auto mr-2 w-[1px] h-full bg-slate-300 dark:bg-slate-600"></View>
           <TouchableOpacity activeOpacity={0.7} onPress={openDeleteAlert}>
             <Ionicons name="trash-outline" color="#e0263c" size={16} className="mr-2" />
           </TouchableOpacity>
@@ -136,7 +136,6 @@ const ScheduleAddModal = ({ visible, onClose }: { visible: boolean; onClose: () 
   const [loading, setLoading] = useState(false);
 
   const queryClient = useQueryClient();
-
   const mutation = useMutation({
     mutationFn: async (schedule: Schedule) => {
       setLoading(true);
@@ -160,9 +159,9 @@ const ScheduleAddModal = ({ visible, onClose }: { visible: boolean; onClose: () 
         onPress={onClose}
       >
         {/* Modal Card */}
-        <Pressable className="bg-white w-full rounded-3xl p-8 shadow-xl" onPress={(e) => e.stopPropagation()}>
+        <Pressable className="bg-white dark:bg-slate-800 w-full rounded-3xl p-8 shadow-xl" onPress={(e) => e.stopPropagation()}>
           <View className="flex-row justify-between items-center mb-6">
-            <Text className="text-2xl font-bold text-slate-800">New Schedule</Text>
+            <Text className="text-2xl font-bold text-slate-800 dark:text-white">New Schedule</Text>
             <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
               <Ionicons name="close-circle" size={28} color="#94a3b8" />
             </TouchableOpacity>
@@ -170,7 +169,7 @@ const ScheduleAddModal = ({ visible, onClose }: { visible: boolean; onClose: () 
 
           {/* Title Input */}
           <View className="mb-6">
-            <Text className="text-slate-500 font-semibold mb-2 ml-1">EVENT TITLE</Text>
+            <Text className="text-slate-500 dark:text-slate-400 font-semibold mb-2 ml-1">EVENT TITLE</Text>
             <TextInput
               className="bg-slate-100 p-4 rounded-xl text-lg text-slate-800 font-medium"
               placeholder="Meeting with..."
@@ -182,7 +181,7 @@ const ScheduleAddModal = ({ visible, onClose }: { visible: boolean; onClose: () 
 
           {/* Occasion Picker */}
           <View className="mb-6">
-            <Text className="text-slate-500 font-semibold mb-2 ml-1">OCCASION</Text>
+            <Text className="text-slate-500 dark:text-slate-400 font-semibold mb-2 ml-1">OCCASION</Text>
             <View className="bg-slate-100 rounded-xl overflow-hidden">
               <Picker
                 selectedValue={occasion}
