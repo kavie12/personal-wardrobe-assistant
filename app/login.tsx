@@ -86,13 +86,13 @@ const LoginScreen = () => {
 
       </View>
 
-      {openResetModal && <PasswordResetModal onClose={() => setOpenResetModal(false)} />}
+      <PasswordResetModal visible={openResetModal} onClose={() => setOpenResetModal(false)} />
 
     </SafeAreaView>
   );
 };
 
-const PasswordResetModal = ({ onClose }: { onClose: () => void }) => {
+const PasswordResetModal = ({ visible, onClose }: { visible: boolean; onClose: () => void; }) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -114,7 +114,7 @@ const PasswordResetModal = ({ onClose }: { onClose: () => void }) => {
   };
 
   return (
-    <Modal transparent animationType="fade" onRequestClose={onClose}>
+    <Modal transparent animationType="fade" visible={visible}>
       <TouchableOpacity
         className="flex-1 bg-black/50 justify-center px-6"
         activeOpacity={1}

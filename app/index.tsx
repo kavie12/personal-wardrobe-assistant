@@ -1,4 +1,3 @@
-import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
@@ -35,7 +34,6 @@ const slides = [
 ];
 
 const OnboardingScreen = () => {
-    const colorScheme = useColorScheme();
     const router = useRouter();
     const [activeIndex, setActiveIndex] = useState(0);
     const flatListRef = useRef<FlatList>(null);
