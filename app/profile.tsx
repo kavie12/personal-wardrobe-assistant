@@ -1,9 +1,10 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
+import { deleteAccount } from "@/services/auth-service";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type TemperatureScale = "C" | "F";
@@ -11,8 +12,9 @@ type TemperatureScale = "C" | "F";
 const ProfileScreen = () => {
     // const [tempScale, setTempScale] = useState<TemperatureScale>("C");
     const [passwordModalVisible, setPasswordModalVisible] = useState(false);
+    const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false);
 
-    const { user, logout, changePassword, deleteAccount } = useAuth();
+    const { user, logout } = useAuth();
 
     return (
       <SafeAreaView className="flex-1">
@@ -82,7 +84,7 @@ const ProfileScreen = () => {
               icon="trash-outline"
               label="Delete Account"
               textRed
-              onPress={() => {}}
+              onPress={() => setDeleteAccountModalVisible(true)}
             />
           </View>
         </View>
@@ -90,30 +92,31 @@ const ProfileScreen = () => {
         <ChangePasswordModal
           visible={passwordModalVisible}
           onClose={() => setPasswordModalVisible(false)}
-          onSave={(current, next) => {
-            changePassword(current, next);
-            setPasswordModalVisible(false);
-          }}
         />
+
+        <DeleteAccountModal
+          visible={deleteAccountModalVisible}
+          onClose={() => setDeleteAccountModalVisible(false)}
+        />
+        
       </SafeAreaView>
     );
 };
 
-const ChangePasswordModal = ({ visible, onClose, onSave }: {
-  visible: boolean;
-  onClose: () => void;
-  onSave: (current: string, next: string) => void;
-}) => {
+const ChangePasswordModal = ({ visible, onClose }: { visible: boolean; onClose: () => void; }) => {
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
 
-  const handleSave = () => {
+  const { changePassword } = useAuth();
+
+  const handleSave = async () => {
     if (next !== confirm) {
       Alert.alert("Error", "New passwords do not match.");
       return;
     }
-    onSave(current, next);
+    await changePassword(current, next);
+    onClose();
   };
 
   return (
@@ -216,6 +219,83 @@ const Header = ({ className = "" }: { className?: string; }) => {
         <Text className="text-3xl font-bold dark:text-white">Profile</Text>
       </View>
     </View>
+  );
+};
+  
+const DeleteAccountModal = ({ visible, onClose }: { visible: boolean, onClose: () => void }) => {
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const colorScheme = useColorScheme();
+
+  const handleDeletePassword = async () => {
+    if (!password) {
+      Alert.alert("Error", "Please enter your password.");
+      return;
+    }
+    setLoading(true);
+    await deleteAccount(password);
+    setLoading(false);
+    Alert.alert("Success", "Account deleted successfully.", [
+      { text: "OK", onPress: onClose },
+    ]);
+  };
+
+  return (
+    <Modal transparent animationType="fade" visible={visible}>
+      <TouchableOpacity
+        className="flex-1 bg-black/50 justify-center px-6"
+        activeOpacity={1}
+        onPress={onClose}
+      >
+        <TouchableOpacity activeOpacity={1}>
+          <View className="bg-white dark:bg-slate-800 rounded-3xl p-6 gap-y-5">
+
+            {/* Header */}
+            <View className="gap-y-1">
+              <Text className="text-xl font-bold text-slate-800 dark:text-white">Delete Account</Text>
+              <Text className="text-slate-400 text-sm">
+                Enter your password to confirm account deletion.
+              </Text>
+            </View>
+
+            {/* Password input */}
+            <TextInput
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Password"
+              placeholderTextColor="#94a3b8"
+              secureTextEntry
+              className="bg-slate-100 dark:bg-slate-700 rounded-2xl px-4 py-4 text-slate-800 dark:text-white"
+            />
+
+            {/* Buttons */}
+            <View className="flex-row gap-x-3">
+              <TouchableOpacity
+                onPress={onClose}
+                activeOpacity={0.8}
+                className="flex-1 py-4 rounded-2xl items-center border border-slate-200 dark:border-slate-600"
+              >
+                <Text className="text-slate-600 dark:text-slate-300 font-semibold">Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleDeletePassword}
+                activeOpacity={0.8}
+                disabled={loading}
+                className="flex-1 bg-slate-800 dark:bg-white py-4 rounded-2xl items-center"
+              >
+                {loading
+                  ? <ActivityIndicator color={colorScheme === "dark" ? "#000" : "#fff"} />
+                  : <Text className="text-white dark:text-slate-800 font-semibold">Delete Account</Text>
+                }
+              </TouchableOpacity>
+            </View>
+
+          </View>
+        </TouchableOpacity>
+      </TouchableOpacity>
+    </Modal>
   );
 };
 

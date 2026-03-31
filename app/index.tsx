@@ -8,24 +8,30 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const { width, height } = Dimensions.get("window");
 
 const slides = [
-  {
-    id: "1",
-    icon: "shirt-outline" as const,
-    title: "Your Smart Wardrobe",
-    description: "Organise your clothes and build outfits effortlessly in one place.",
-  },
-  {
-    id: "2",
-    icon: "sunny-outline" as const,
-    title: "Weather-Aware Outfits",
-    description: "Get outfit suggestions tailored to today's forecast automatically.",
-  },
-  {
-    id: "3",
-    icon: "calendar-outline" as const,
-    title: "Dress for Every Occasion",
-    description: "Plan ahead with schedule-based recommendations for any event.",
-  },
+    {
+        id: "1",
+        icon: "shirt-outline" as const,
+        title: "Your Smart Wardrobe",
+        description: "Organise your clothes and build outfits effortlessly in one place.",
+    },
+    {
+        id: "2",
+        icon: "sunny-outline" as const,
+        title: "Weather-Aware Outfits",
+        description: "Get outfit suggestions tailored to today's forecast automatically.",
+    },
+    {
+        id: "3",
+        icon: "calendar-outline" as const,
+        title: "Dress for Every Occasion",
+        description: "Plan ahead with schedule-based recommendations for any event.",
+    },
+    {
+        id: "4",
+        icon: "chatbox-outline" as const,
+        title: "Get Style Advice",
+        description: "Chat with our AI stylist for personalized outfit recommendations.",
+    },
 ];
 
 const OnboardingScreen = () => {

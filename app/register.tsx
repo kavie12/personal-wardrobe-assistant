@@ -1,3 +1,4 @@
+import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import { register } from "@/services/auth-service";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -11,6 +12,8 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const colorScheme = useColorScheme();
 
   const handleRegister = async () => {
     if (!name || !email || !password || !confirm) {
@@ -85,7 +88,7 @@ const RegisterScreen = () => {
           className="bg-slate-800 dark:bg-white py-4 rounded-2xl items-center"
         >
           {loading
-            ? <ActivityIndicator color="#fff" />
+            ? <ActivityIndicator color={colorScheme === "dark" ? "#000" : "#fff"} />
             : <Text className="text-white dark:text-slate-800 font-semibold text-[15px]">Create Account</Text>
           }
         </TouchableOpacity>

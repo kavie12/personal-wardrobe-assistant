@@ -1,5 +1,5 @@
 import { auth } from "@/config/firebase";
-import { changePassword, deleteAccount, login, logout, register } from "@/services/auth-service";
+import { changePassword, deleteAccount, login, logout, register, resetPassword } from "@/services/auth-service";
 import { onAuthStateChanged, User } from "firebase/auth";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
@@ -10,6 +10,7 @@ interface AuthContextValue {
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
+    resetPassword: (email: string) => Promise<void>;
     deleteAccount: (password: string) => Promise<void>;
 }
 
@@ -35,6 +36,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         login,
         logout,
         changePassword,
+        resetPassword,
         deleteAccount
     };
 
