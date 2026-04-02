@@ -1,8 +1,8 @@
 import { HOME_CURRENT_WEATHER_KEY, HOME_MANUAL_RECOMMENDATION_KEY, HOME_SCHEDULE_LIST_KEY, HOME_SCHEDULE_RECOMMENDATION_KEY, OUTFIT_LIST_KEY } from '@/constants/query_keys';
 import { CLOTHING_OCCASIONS } from '@/data';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/context/auth-context';
 import { useColorScheme } from '@/hooks/use-color-scheme.web';
-import { useLocation } from '@/hooks/useLocation';
+import { useLocation } from '@/context/location-context';
 import ClothingItem from '@/models/ClothingItem';
 import OutfitGenerationResponse from '@/models/OutfitGenerationResponse';
 import Schedule from '@/models/Schedule';

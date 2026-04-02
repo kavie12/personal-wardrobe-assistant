@@ -1,4 +1,5 @@
 import { HOME_SCHEDULE_RECOMMENDATION_KEY, SCHEDULE_LIST_KEY } from "@/constants/query_keys";
+import { useNotification } from "@/context/notification-context";
 import { CLOTHING_OCCASIONS } from "@/data";
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import Schedule from "@/models/Schedule";
@@ -135,11 +136,14 @@ const ScheduleAddModal = ({ visible, onClose }: { visible: boolean; onClose: () 
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const { schedulePushNotificationByDate } = useNotification()
+
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async (schedule: Schedule) => {
       setLoading(true);
-      return await addSchedule(schedule)
+      await schedulePushNotificationByDate(schedule.title, "Your outfit is ready!", new Date(schedule.timestamp.getTime() - 24 * 60 * 60 * 1000));
+      return await addSchedule(schedule);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SCHEDULE_LIST_KEY });

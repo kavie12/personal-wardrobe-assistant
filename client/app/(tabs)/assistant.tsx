@@ -1,5 +1,5 @@
 import { OUTFIT_LIST_KEY } from '@/constants/query_keys';
-import { useLocation } from '@/hooks/useLocation';
+import { useLocation } from '@/context/location-context';
 import ClothingItem from '@/models/ClothingItem';
 import { chat, resetChat } from '@/services/assistant-service';
 import { saveOutfit } from '@/services/outfits-service';
