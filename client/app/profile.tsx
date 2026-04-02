@@ -1,4 +1,4 @@
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/context/auth-context";
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import { deleteAccount } from "@/services/auth-service";
 import { Ionicons } from "@expo/vector-icons";

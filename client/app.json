@@ -23,7 +23,8 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.kaveeshas1.personalwardrobeassistant"
+      "package": "com.kaveeshas1.personalwardrobeassistant",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "output": "static",
@@ -55,6 +56,15 @@
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow Personal Wardrobe Assistant to use your location."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/logo.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
         }
       ],
       "@react-native-community/datetimepicker",

@@ -11,8 +11,6 @@ export const LocationProvider = ({ children }: { children: React.ReactNode }) =>
     const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
 
     useEffect(() => {
-        if (coords) return;
-
         async function getCurrentLocation() {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {

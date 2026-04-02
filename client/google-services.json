@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "326299744088",
+    "project_id": "personal-wardrobe-assistant",
+    "storage_bucket": "personal-wardrobe-assistant.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326299744088:android:cfd39a39f19b544795d72d",
+        "android_client_info": {
+          "package_name": "com.kaveeshas1.personalwardrobeassistant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCyinY9rushfXXEBHav0dqzQxbXzsXdZo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
