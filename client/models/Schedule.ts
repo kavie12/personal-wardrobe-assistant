@@ -5,6 +5,7 @@ class Schedule {
     title: string;
     occasion: ClothingOccasion;
     timestamp: Date;
+    notificationId: string | null = null;
 
     constructor(id: string | undefined, title: string, occasion: ClothingOccasion, date: Date, time?: Date);
     constructor(id: string | undefined, title: string, occasion: ClothingOccasion, timestamp: Date);
@@ -28,6 +29,9 @@ class Schedule {
         }
     }
     
+    setNotificationId(notificationId: string) {
+        this.notificationId = notificationId;
+    }
 };
 
 export default Schedule;

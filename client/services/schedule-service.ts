@@ -9,6 +9,7 @@ export const addSchedule = async (schedule: Schedule): Promise<boolean> => {
       title: schedule.title,
       occasion: schedule.occasion,
       timestamp: schedule.timestamp.toISOString(),
+      notification_id: schedule.notificationId
     });
 
     return res.data.success;
@@ -22,12 +23,16 @@ export const fetchSchedules = async (): Promise<Schedule[]> => {
   try {
     const res = await serverApi.get(`${SERVICE}/list`);
     
-    return res.data.map((item: any) => new Schedule(
-      item.id,
-      item.title,
-      item.occasion,
-      new Date(item.timestamp)
-    ));
+    return res.data.map((item: any) => {
+      const s = new Schedule(
+        item.id,
+        item.title,
+        item.occasion,
+        new Date(item.timestamp)
+      );
+      s.setNotificationId(item.notification_id);
+      return s;
+    });
   } catch (error) {
     console.error("Error fetching schedules:", error);
     return [];
@@ -38,12 +43,16 @@ export const fetchLatestSchedulesByHours = async (hours: number): Promise<Schedu
   try {
     const res = await serverApi.get(`${SERVICE}/latest-by-hours/${hours}`);
     
-    return res.data.map((item: any) => new Schedule(
-      item.id,
-      item.title,
-      item.occasion,
-      new Date(item.timestamp)
-    ));
+    return res.data.map((item: any) => {
+      const s = new Schedule(
+        item.id,
+        item.title,
+        item.occasion,
+        new Date(item.timestamp)
+      );
+      s.setNotificationId(item.notification_id);
+      return s;
+    });
   } catch (error) {
     console.error("Error fetching latest schedules by hours:", error);
     return [];

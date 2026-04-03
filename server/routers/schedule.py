@@ -10,10 +10,11 @@ class ScheduleRequest(BaseModel):
     title: str
     occasion: str
     timestamp: datetime
+    notification_id: str | None = None
 
 @router.post("/add")
 async def add_schedule(body: ScheduleRequest, uid: str = Depends(get_current_uid)):
-    result = schedule.add(uid, body.title, body.occasion, body.timestamp)
+    result = schedule.add(uid, body.title, body.occasion, body.timestamp, body.notification_id)
     if not result["success"]:
         raise HTTPException(status_code=500, detail="Failed to save schedule")
     return result
