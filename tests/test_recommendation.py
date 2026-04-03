@@ -44,7 +44,7 @@ from typing import Any, Dict, List, Optional
 BASE_URL       = "http://localhost:8000/api/v1"
 RECOMMEND_EP   = f"{BASE_URL}/recommendation/get-recommendation"
 AUTH_TOKEN     = os.environ.get("AUTH_TOKEN", "YOUR_FIREBASE_ID_TOKEN_HERE")
-TEST_DATA_FILE = Path(__file__).parent / "test_recommendation_cases.json"
+TEST_DATA_FILE = Path(__file__).parent / "data/test_recommendation_cases.json"
 
 # ---------------------------------------------------------------------------
 # Load test cases
@@ -290,7 +290,7 @@ def print_summary(results: List[CaseResult]):
 
     print("=" * 68)
 
-    out_path = Path(__file__).parent / "recommendation_results.json"
+    out_path = Path(__file__).parent / "results/recommendation_results.json"
     with open(out_path, "w") as f:
         json.dump(
             [{

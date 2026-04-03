@@ -1,0 +1,369 @@
+{
+  "_comment": "Phase 3 assistant chat test cases. Each test simulates a conversation turn-by-turn until ready_to_generate is true or max_turns is reached.",
+
+  "_scoring": {
+    "reaches_ready":       "strict  — ready_to_generate must become true within max_turns",
+    "context_not_null":    "strict  — context, time, formality must all be non-null when ready",
+    "formality_valid":     "strict  — formality must be one of the allowed values",
+    "formality_match":     "strict  — formality must match expected_formality (if set)",
+    "context_keywords":    "lenient — all expected_keywords must appear somewhere in the context string (case-insensitive)",
+    "no_unnecessary_turns":"lenient — conversation should reach ready within expected_turns (informational, not a hard fail)"
+  },
+
+  "_allowed_formality_values": ["Casual", "Smart casual", "Formal", "Sportswear", "Party", "Work"],
+
+  "tests": [
+
+    {
+      "id": "CH-01",
+      "_group": "Single-turn — enough info in first message",
+      "description": "Full context in one message — should be ready immediately",
+      "turns": [
+        "I have a job interview tomorrow morning"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Formal",
+        "context_keywords":     ["interview"],
+        "expected_turns":       1,
+        "max_turns":            2
+      }
+    },
+
+    {
+      "id": "CH-02",
+      "_group": "Single-turn",
+      "description": "Gym session with time — ready in one turn",
+      "turns": [
+        "Going to the gym this evening"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Sportswear",
+        "context_keywords":     ["gym"],
+        "expected_turns":       1,
+        "max_turns":            2
+      }
+    },
+
+    {
+      "id": "CH-03",
+      "_group": "Single-turn",
+      "description": "Casual hangout with friends, afternoon",
+      "turns": [
+        "Hanging out with friends tomorrow afternoon"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Casual",
+        "context_keywords":     ["friends"],
+        "expected_turns":       1,
+        "max_turns":            2
+      }
+    },
+
+    {
+      "id": "CH-04",
+      "_group": "Single-turn",
+      "description": "Office work day — Work formality expected",
+      "turns": [
+        "I have office work tomorrow morning"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Work",
+        "context_keywords":     ["office"],
+        "expected_turns":       1,
+        "max_turns":            2
+      }
+    },
+
+    {
+      "id": "CH-05",
+      "_group": "Single-turn",
+      "description": "Wedding — formal inferred from event type",
+      "turns": [
+        "Attending a wedding this Saturday afternoon"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Formal",
+        "context_keywords":     ["wedding"],
+        "expected_turns":       1,
+        "max_turns":            2
+      }
+    },
+
+    {
+      "id": "CH-06",
+      "_group": "Single-turn",
+      "description": "Party tonight with colour preference",
+      "turns": [
+        "House party tonight, want to wear something black"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Party",
+        "context_keywords":     ["party", "black"],
+        "expected_turns":       1,
+        "max_turns":            2
+      }
+    },
+
+    {
+      "id": "CH-07",
+      "_group": "Single-turn",
+      "description": "Date night — Smart casual inferred",
+      "turns": [
+        "Taking someone out for dinner tonight"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Smart casual",
+        "context_keywords":     ["dinner"],
+        "expected_turns":       1,
+        "max_turns":            2
+      }
+    },
+
+    {
+      "id": "CH-08",
+      "_group": "Multi-turn — LLM needs to ask for missing info",
+      "description": "Vague event — LLM should ask, user clarifies",
+      "turns": [
+        "I have an event",
+        "It's a birthday party tonight"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Party",
+        "context_keywords":     ["party", "birthday"],
+        "expected_turns":       2,
+        "max_turns":            3
+      }
+    },
+
+    {
+      "id": "CH-09",
+      "_group": "Multi-turn",
+      "description": "User gives occasion but no time — LLM asks, user provides",
+      "turns": [
+        "I need an outfit for a meeting",
+        "Tomorrow at 10am"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Work",
+        "context_keywords":     ["meeting"],
+        "expected_turns":       2,
+        "max_turns":            3
+      }
+    },
+
+    {
+      "id": "CH-10",
+      "_group": "Multi-turn",
+      "description": "User gives time but no occasion — LLM asks, user provides",
+      "turns": [
+        "I need something for tomorrow evening",
+        "Going for a casual dinner with family"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Smart casual",
+        "context_keywords":     ["dinner", "family"],
+        "expected_turns":       2,
+        "max_turns":            3
+      }
+    },
+
+    {
+      "id": "CH-11",
+      "_group": "Multi-turn",
+      "description": "Three-turn conversation — very vague start",
+      "turns": [
+        "Help me pick an outfit",
+        "Something casual",
+        "This afternoon, just going out"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Casual",
+        "context_keywords":     ["casual"],
+        "expected_turns":       3,
+        "max_turns":            4
+      }
+    },
+
+    {
+      "id": "CH-12",
+      "_group": "Refinement — user changes their mind mid-conversation",
+      "description": "User first says casual, then switches to formal",
+      "turns": [
+        "Casual lunch tomorrow afternoon",
+        "Actually it's a more formal lunch, business meeting"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Work",
+        "context_keywords":     ["lunch", "meeting"],
+        "expected_turns":       2,
+        "max_turns":            3
+      }
+    },
+
+    {
+      "id": "CH-13",
+      "_group": "Refinement",
+      "description": "User adds a colour preference after context is ready",
+      "turns": [
+        "Team meeting tomorrow morning",
+        "Prefer something blue"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Work",
+        "context_keywords":     ["meeting", "blue"],
+        "expected_turns":       2,
+        "max_turns":            3
+      }
+    },
+
+    {
+      "id": "CH-14",
+      "_group": "Edge — minimal single word input",
+      "description": "Single word input — LLM must ask follow-up",
+      "turns": [
+        "Party",
+        "Tonight at 9pm"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Party",
+        "context_keywords":     ["party"],
+        "expected_turns":       2,
+        "max_turns":            3
+      }
+    },
+
+    {
+      "id": "CH-15",
+      "_group": "Edge — relative date inference",
+      "description": "Relative time reference — 'this weekend' should be inferred to a datetime",
+      "turns": [
+        "Beach outing this weekend afternoon"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Casual",
+        "context_keywords":     ["beach"],
+        "expected_turns":       1,
+        "max_turns":            2
+      }
+    },
+
+    {
+      "id": "CH-16",
+      "_group": "Edge — implicit formality from event name",
+      "description": "Graduation ceremony — formal should be inferred without user saying it",
+      "turns": [
+        "Graduation ceremony next Friday morning"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Formal",
+        "context_keywords":     ["graduation"],
+        "expected_turns":       1,
+        "max_turns":            2
+      }
+    },
+
+    {
+      "id": "CH-17",
+      "_group": "Edge — no time recoverable even after clarification",
+      "description": "User refuses to give a time — system should still resolve or use a sensible default",
+      "turns": [
+        "I need an outfit for work",
+        "Just anytime, doesn't matter"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Work",
+        "context_keywords":     ["work"],
+        "expected_turns":       2,
+        "max_turns":            3
+      }
+    },
+
+    {
+      "id": "CH-18",
+      "_group": "End-to-end pipeline",
+      "_note": "After chat reaches ready, extracted context is forwarded to the recommendation endpoint and evaluated",
+      "description": "Full pipeline — chat extracts context, recommendation returns valid outfit",
+      "turns": [
+        "Formal dinner tonight at a nice restaurant"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Smart casual",
+        "context_keywords":     ["dinner"],
+        "expected_turns":       1,
+        "max_turns":            2,
+        "run_pipeline":         true,
+        "pipeline_weather":     { "temperature": 22, "description": "clear" },
+        "pipeline_checks": {
+          "outfit_complete":    true,
+          "reason_present":     true
+        }
+      }
+    },
+
+    {
+      "id": "CH-19",
+      "_group": "End-to-end pipeline",
+      "_note": "Pipeline test with cold weather — outerwear expected in recommendation",
+      "description": "Full pipeline — casual outing in cold weather, outerwear expected",
+      "turns": [
+        "Going out with friends this evening, keeping it casual"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Casual",
+        "context_keywords":     ["friends"],
+        "expected_turns":       1,
+        "max_turns":            2,
+        "run_pipeline":         true,
+        "pipeline_weather":     { "temperature": 12, "description": "cold and cloudy" },
+        "pipeline_checks": {
+          "outfit_complete":    true,
+          "reason_present":     true,
+          "outerwear_present":  true
+        }
+      }
+    },
+
+    {
+      "id": "CH-20",
+      "_group": "End-to-end pipeline",
+      "description": "Full pipeline — formal meeting, no outerwear on warm day",
+      "turns": [
+        "Important client meeting tomorrow morning"
+      ],
+      "expected": {
+        "reaches_ready":        true,
+        "expected_formality":   "Work",
+        "context_keywords":     ["meeting", "client"],
+        "expected_turns":       1,
+        "max_turns":            2,
+        "run_pipeline":         true,
+        "pipeline_weather":     { "temperature": 28, "description": "sunny" },
+        "pipeline_checks": {
+          "outfit_complete":    true,
+          "reason_present":     true,
+          "outerwear_present":  false
+        }
+      }
+    }
+
+  ]
+}

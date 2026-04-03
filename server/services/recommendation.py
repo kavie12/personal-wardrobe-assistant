@@ -134,7 +134,7 @@ async def get_llm_suggestion(
     weather_data: Dict[str, Any],
     context: str,
 ):
-    response = groq_client.chat.completions.create(
+    response = groq_client.chat_create(
         model=llm_model_id,
         messages=[
             {

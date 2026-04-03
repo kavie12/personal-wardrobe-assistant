@@ -4,7 +4,7 @@
     "description": "Formal supervisor meeting in the evening",
     "group": "Schedule-dominant (mild neutral weather so weather doesn't override context)",
     "passed": true,
-    "response_ms": 7577.9,
+    "response_ms": 9985.5,
     "error": null,
     "checks": [
       {
@@ -20,7 +20,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'Black shirt and trousers with formal shoes create a professional, formal outfit '"
+        "detail": "reason: 'The selected outfit consisting of a white shirt, black trousers, and black forma'"
       },
       {
         "name": "occasion_match",
@@ -39,7 +39,7 @@
     "description": "Gym / workout session in the morning",
     "group": "Schedule-dominant",
     "passed": true,
-    "response_ms": 4735.5,
+    "response_ms": 4996.4,
     "error": null,
     "checks": [
       {
@@ -55,7 +55,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'Black topwear and bottomwear paired with black and white sneakers creates a slee'"
+        "detail": "reason: 'This outfit is perfect for a gym session in warm weather as it includes breathab'"
       },
       {
         "name": "occasion_match",
@@ -74,7 +74,7 @@
     "description": "Casual friend hangout at noon",
     "group": "Schedule-dominant",
     "passed": true,
-    "response_ms": 4691.5,
+    "response_ms": 4892.3,
     "error": null,
     "checks": [
       {
@@ -90,7 +90,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'This outfit is suitable for a casual daytime gathering with friends, as it combi'"
+        "detail": "reason: 'This outfit is suitable for a casual sunny day with friends, featuring coordinat'"
       },
       {
         "name": "occasion_match",
@@ -108,14 +108,14 @@
     "case_id": "SC-04",
     "description": "University lecture in the morning",
     "group": "Schedule-dominant",
-    "passed": true,
-    "response_ms": 5343.8,
+    "passed": false,
+    "response_ms": 4776.9,
     "error": null,
     "checks": [
       {
         "name": "outfit_complete",
-        "passed": true,
-        "detail": "all present"
+        "passed": false,
+        "detail": "missing: ['footwear']"
       },
       {
         "name": "outerwear_rule",
@@ -144,7 +144,7 @@
     "description": "Birthday dinner party in the evening",
     "group": "Schedule-dominant",
     "passed": true,
-    "response_ms": 4866.8,
+    "response_ms": 4768.2,
     "error": null,
     "checks": [
       {
@@ -160,7 +160,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'This outfit choice of blue shirt and blue jeans paired with white and black snea'"
+        "detail": "reason: 'For a birthday dinner party at 7 pm, a formal shirt, black trousers, and formal '"
       },
       {
         "name": "occasion_match",
@@ -179,7 +179,7 @@
     "description": "Job interview in the morning",
     "group": "Schedule-dominant",
     "passed": true,
-    "response_ms": 4549.4,
+    "response_ms": 13070.6,
     "error": null,
     "checks": [
       {
@@ -195,7 +195,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'This outfit is a classic combination of formal pieces, suitable for a job interv'"
+        "detail": "reason: 'This classic black shirt and trousers combination with formal black shoes exudes'"
       },
       {
         "name": "occasion_match",
@@ -214,7 +214,7 @@
     "description": "No schedule \u00e2\u20ac\u201d manual smart casual request",
     "group": "Schedule-dominant",
     "passed": true,
-    "response_ms": 10158.4,
+    "response_ms": 15332.5,
     "error": null,
     "checks": [
       {
@@ -230,7 +230,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'The combination of white top, beige bottom, and black and white sneakers creates'"
+        "detail": "reason: 'This combination of blue shirt, blue jeans, and black and white sneakers creates'"
       },
       {
         "name": "occasion_match",
@@ -249,7 +249,7 @@
     "description": "Hot sunny day, no specific occasion",
     "group": "Weather-dominant (vague context so weather dominates)",
     "passed": true,
-    "response_ms": 13553.9,
+    "response_ms": 14152.5,
     "error": null,
     "checks": [
       {
@@ -265,7 +265,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'This outfit is chosen because the beige T-shirt and gray shorts are light and br'"
+        "detail": "reason: 'This outfit is chosen for a casual and sunny day, with the black T-shirt and gra'"
       },
       {
         "name": "occasion_match",
@@ -283,8 +283,8 @@
     "case_id": "WC-02",
     "description": "Cold day, no specific occasion \u00e2\u20ac\u201d outerwear must be included",
     "group": "Weather-dominant",
-    "passed": false,
-    "response_ms": 12190.4,
+    "passed": true,
+    "response_ms": 14300.9,
     "error": null,
     "checks": [
       {
@@ -294,13 +294,13 @@
       },
       {
         "name": "outerwear_rule",
-        "passed": false,
-        "detail": "outerwear missing (temp=10\u00b0C, rule=required)"
+        "passed": true,
+        "detail": "outerwear present"
       },
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'The gray sweater, blue jeans, and black boots create a casual, well-coordinated '"
+        "detail": "reason: 'The selected outfit consisting of a gray hoodie, black joggers, black and white '"
       },
       {
         "name": "occasion_match",
@@ -319,7 +319,7 @@
     "description": "Rainy day, no specific occasion",
     "group": "Weather-dominant",
     "passed": true,
-    "response_ms": 12950.1,
+    "response_ms": 16040.0,
     "error": null,
     "checks": [
       {
@@ -335,7 +335,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'The blue shirt and blue jeans create a cohesive and stylish outfit, while the gr'"
+        "detail": "reason: 'The chosen outfit combines a gray hoodie with blue jeans and black boots, making'"
       },
       {
         "name": "occasion_match",
@@ -354,7 +354,7 @@
     "description": "Very cold weather \u00e2\u20ac\u201d outerwear strictly required",
     "group": "Weather-dominant",
     "passed": false,
-    "response_ms": 12224.4,
+    "response_ms": 14523.2,
     "error": null,
     "checks": [
       {
@@ -364,23 +364,23 @@
       },
       {
         "name": "outerwear_rule",
-        "passed": false,
-        "detail": "outerwear missing (temp=5\u00b0C, rule=required)"
+        "passed": true,
+        "detail": "outerwear present"
       },
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'The chosen outfit combines a comfortable gray sweater with blue jeans and sneake'"
+        "detail": "reason: 'The chosen outfit, consisting of a black sweater, joggers, and boots, paired wit'"
       },
       {
         "name": "occasion_match",
-        "passed": true,
-        "detail": "all items match"
+        "passed": false,
+        "detail": "outerwear (Blazer) has occasions=['Formal'], none in expected=['Casual']"
       },
       {
         "name": "temperature_match",
-        "passed": false,
-        "detail": "footwear (Sneakers) temps=['Hot', 'Mild'], missing 'Cold'"
+        "passed": true,
+        "detail": "all items match"
       }
     ]
   },
@@ -389,7 +389,7 @@
     "description": "Formal meeting on a hot day \u00e2\u20ac\u201d must balance formality with heat",
     "group": "Combined \u00e2\u20ac\u201d conflict between formal occasion and hot weather",
     "passed": false,
-    "response_ms": 12907.5,
+    "response_ms": 12918.5,
     "error": null,
     "checks": [
       {
@@ -405,7 +405,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'This outfit is chosen because it is formal and suitable for a team meeting at 10'"
+        "detail": "reason: 'The selected outfit, comprising a black shirt, black trousers, and black formal '"
       },
       {
         "name": "occasion_match",
@@ -424,7 +424,7 @@
     "description": "Outdoor gym session on a cold morning",
     "group": "Combined \u00e2\u20ac\u201d sportswear in cold weather, outerwear expected",
     "passed": false,
-    "response_ms": 12010.9,
+    "response_ms": 15858.9,
     "error": null,
     "checks": [
       {
@@ -440,7 +440,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'The black top and bottom wear coordinate well and are suitable for a cold outdoo'"
+        "detail": "reason: 'The selected outfit combines a gray sweater, black joggers, and black boots to c'"
       },
       {
         "name": "occasion_match",
@@ -449,8 +449,8 @@
       },
       {
         "name": "temperature_match",
-        "passed": false,
-        "detail": "topwear (T-shirt) temps=['Hot', 'Mild'], missing 'Cold'; footwear (Sneakers) temps=['Hot', 'Mild'], missing 'Cold'"
+        "passed": true,
+        "detail": "all items match"
       }
     ]
   },
@@ -459,7 +459,7 @@
     "description": "Casual brunch on a rainy mild day",
     "group": "Combined \u00e2\u20ac\u201d casual outing in rainy mild weather",
     "passed": true,
-    "response_ms": 14990.2,
+    "response_ms": 13375.8,
     "error": null,
     "checks": [
       {
@@ -475,7 +475,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'Neutral colors and casual attire are suitable for an 11 am brunch with friends o'"
+        "detail": "reason: 'The outfit combines casual and comfortable pieces suitable for brunch with frien'"
       },
       {
         "name": "occasion_match",
@@ -494,7 +494,7 @@
     "description": "Evening party when cold outside \u00e2\u20ac\u201d outerwear expected",
     "group": "Combined \u00e2\u20ac\u201d party at night in cold weather",
     "passed": false,
-    "response_ms": 10860.0,
+    "response_ms": 14182.1,
     "error": null,
     "checks": [
       {
@@ -504,18 +504,18 @@
       },
       {
         "name": "outerwear_rule",
-        "passed": false,
-        "detail": "outerwear missing (temp=12\u00b0C, rule=required)"
+        "passed": true,
+        "detail": "outerwear present"
       },
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'This outfit is well-coordinated with gray topwear, black bottomwear, and black b'"
+        "detail": "reason: 'The gray sweater, black trousers, and black boots combination is stylish and war'"
       },
       {
         "name": "occasion_match",
-        "passed": true,
-        "detail": "all items match"
+        "passed": false,
+        "detail": "outerwear (Blazer) has occasions=['Formal'], none in expected=['Party', 'Smart casual']"
       },
       {
         "name": "temperature_match",
@@ -528,8 +528,8 @@
     "case_id": "CC-05",
     "description": "Office work day in hot humid weather",
     "group": "Combined \u00e2\u20ac\u201d work meeting on a hot day",
-    "passed": false,
-    "response_ms": 12537.5,
+    "passed": true,
+    "response_ms": 15060.0,
     "error": null,
     "checks": [
       {
@@ -545,7 +545,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'The selected outfit is suitable for office work, combining a gray shirt with bla'"
+        "detail": "reason: 'Selecting lightweight and breathable clothing in neutral colors to keep cool and'"
       },
       {
         "name": "occasion_match",
@@ -554,8 +554,8 @@
       },
       {
         "name": "temperature_match",
-        "passed": false,
-        "detail": "topwear (Shirt) temps=['Mild', 'Cold'], missing 'Hot'; bottomwear (Trousers) temps=['Mild', 'Cold'], missing 'Hot'; footwear (Formal shoes) temps=['Mild', 'Cold'], missing 'Hot'"
+        "passed": true,
+        "detail": "all items match"
       }
     ]
   },
@@ -564,7 +564,7 @@
     "description": "No context provided \u00e2\u20ac\u201d system should still return a valid outfit",
     "group": "Edge \u00e2\u20ac\u201d empty / minimal context",
     "passed": true,
-    "response_ms": 12631.8,
+    "response_ms": 13583.2,
     "error": null,
     "checks": [
       {
@@ -580,7 +580,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'This outfit is chosen for a sunny day, combining a crisp white shirt with gray s'"
+        "detail": "reason: 'This casual outfit is perfect for a sunny day with coordinating earthy tones and'"
       },
       {
         "name": "occasion_match",
@@ -599,7 +599,7 @@
     "description": "Temperature exactly at the cold/mild threshold",
     "group": "Edge \u00e2\u20ac\u201d boundary temperature exactly at 15\u00c2\u00b0C",
     "passed": true,
-    "response_ms": 12620.1,
+    "response_ms": 15624.0,
     "error": null,
     "checks": [
       {
@@ -615,7 +615,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'The outfit is casual, comfortable, and coordinates well in terms of color with w'"
+        "detail": "reason: 'This outfit combines neutral gray and blue colors, creating a stylish, casual lo'"
       },
       {
         "name": "occasion_match",
@@ -634,7 +634,7 @@
     "description": "Temperature just below the cold threshold \u00e2\u20ac\u201d outerwear expected",
     "group": "Edge \u00e2\u20ac\u201d boundary temperature just below 15\u00c2\u00b0C",
     "passed": false,
-    "response_ms": 13333.7,
+    "response_ms": 14881.2,
     "error": null,
     "checks": [
       {
@@ -650,17 +650,17 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'The black T-shirt, blue jeans, and black boots create a cohesive and stylish cas'"
+        "detail": "reason: 'The selected outfit is suitable for a casual occasion in cloudy and chilly weath'"
       },
       {
         "name": "occasion_match",
-        "passed": true,
-        "detail": "all items match"
+        "passed": false,
+        "detail": "bottomwear (Trousers) has occasions=['Formal', 'Work', 'Smart casual'], none in expected=['Casual']"
       },
       {
         "name": "temperature_match",
-        "passed": false,
-        "detail": "topwear (T-shirt) temps=['Hot', 'Mild'], missing 'Cold'"
+        "passed": true,
+        "detail": "all items match"
       }
     ]
   },
@@ -668,8 +668,8 @@
     "case_id": "EX-04",
     "description": "Very high temperature \u00e2\u20ac\u201d light breathable clothing expected",
     "group": "Edge \u00e2\u20ac\u201d extreme heat",
-    "passed": false,
-    "response_ms": 11608.1,
+    "passed": true,
+    "response_ms": 13915.9,
     "error": null,
     "checks": [
       {
@@ -685,7 +685,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'Light-colored, breathable, and casual pieces are chosen for a hot weather casual'"
+        "detail": "reason: 'This outfit is suitable for a casual occasion in extremely hot weather as it inc'"
       },
       {
         "name": "occasion_match",
@@ -694,8 +694,8 @@
       },
       {
         "name": "temperature_match",
-        "passed": false,
-        "detail": "topwear (T-shirt) temps=['Mild', 'Cold'], missing 'Hot'"
+        "passed": true,
+        "detail": "all items match"
       }
     ]
   },
@@ -704,7 +704,7 @@
     "description": "Context has time of day but no occasion label",
     "group": "Edge \u00e2\u20ac\u201d all-day event with time cue only",
     "passed": true,
-    "response_ms": 13012.2,
+    "response_ms": 13763.6,
     "error": null,
     "checks": [
       {
@@ -720,7 +720,7 @@
       {
         "name": "reason_present",
         "passed": true,
-        "detail": "reason: 'This outfit is chosen for its smart casual tone, which fits well with a 6 pm eve'"
+        "detail": "reason: 'This outfit combines a green polo shirt with black trousers and formal shoes, cr'"
       },
       {
         "name": "occasion_match",

@@ -32,8 +32,8 @@ from typing import List, Optional
 BASE_URL       = "http://localhost:8000/api/v1"
 WARDROBE_EP    = f"{BASE_URL}/wardrobe/add"
 AUTH_TOKEN     = os.environ.get("AUTH_TOKEN", "YOUR_FIREBASE_ID_TOKEN_HERE")
-IMAGES_DIR     = Path(__file__).parent / "test_images"
-TEST_DATA_FILE = Path(__file__).parent / "test_classification_cases.json"
+IMAGES_DIR     = Path(__file__).parent / "data/test_images"
+TEST_DATA_FILE = Path(__file__).parent / "data/test_classification_cases.json"
 
 # ---------------------------------------------------------------------------
 # Load test data from JSON
@@ -203,7 +203,7 @@ def print_summary(results: List[ItemResult]):
         print(f"  [{icon}]  {r.filename}{note}")
     print("=" * 62)
 
-    out_path = Path(__file__).parent / "classification_results.json"
+    out_path = Path(__file__).parent / "results/classification_results.json"
     with open(out_path, "w") as f:
         json.dump(
             [{
