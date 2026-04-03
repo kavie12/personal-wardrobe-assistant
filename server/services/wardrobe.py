@@ -63,7 +63,7 @@ def _compresss_to_base64(img: ImageFile) -> str:
 
 def _get_classified_labels(image_base64) -> ClassificationResponse:
     # Call Groq API
-    response = groq_client.chat.completions.create(
+    response = groq_client.chat_create(
         model="meta-llama/llama-4-scout-17b-16e-instruct",
         messages=[
             {

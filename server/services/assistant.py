@@ -9,10 +9,10 @@ llm_model_id = "llama-3.3-70b-versatile"
 
 async def chat(user_id: str, message: str):
   if user_id not in chat_history:
-      today = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-      chat_history[user_id] = [{
-          "role": "system",
-          "content": f"""
+    today = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    chat_history[user_id] = [{
+        "role": "system",
+        "content": f"""
 Today: {today}
 
 Extract outfit info from user input. Infer aggressively — never ask if you can infer.
@@ -45,19 +45,19 @@ Examples:
 "blue outfit for dinner tonight" → {{"message":"Love it — blue dinner date tonight 💙","ready_to_generate":true,"context":"dinner date | blue outfit | evening","time":"2026-03-25T18:00:00","formality":"Smart casual"}}
 "I have an event" → {{"message":"What kind of event, and when?","ready_to_generate":false,"context":null,"time":null,"formality":null}}
 """
-      }]
+    }]
 
   chat_history[user_id].append({
-      "role": "user",
-      "content": message
+    "role": "user",
+    "content": message
   })
 
   # First request - creates cache for system message
-  response = groq_client.chat.completions.create(
-      messages=chat_history[user_id],
-      model=llm_model_id,
-      response_format={"type": "json_object"},
-      temperature=0.7
+  response = groq_client.chat_create(
+    messages=chat_history[user_id],
+    model=llm_model_id,
+    response_format={"type": "json_object"},
+    temperature=0.7
   )
 
   chat_history[user_id].append(response.choices[0].message)

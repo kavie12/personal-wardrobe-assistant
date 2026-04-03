@@ -5,13 +5,14 @@ from fastapi import HTTPException
 
 schedule_ref = db.collection("schedules")
 
-def add(user_id: str, title: str, occasion: str, timestamp: datetime):
+def add(user_id: str, title: str, occasion: str, timestamp: datetime, notification_id: str | None = None):
     try:
         doc_ref = schedule_ref.add({
             "user_id": user_id,
             "title": title,
             "occasion": occasion,
             "timestamp": timestamp,
+            "notification_id": notification_id,
             "created_at": datetime.now()
         })
         return {"success": True, "id": doc_ref[1].id}
@@ -36,7 +37,8 @@ def list_by_user(user_id: str):
                 "id": doc.id,
                 "title": data.get("title"),
                 "occasion": data.get("occasion"),
-                "timestamp": data.get("timestamp")
+                "timestamp": data.get("timestamp"),
+                "notification_id": data.get("notification_id", None)
             })
         return schedules
     except Exception as e:
@@ -64,7 +66,8 @@ def get_latest_by_hours(user_id: str, hours: int):
                 "id": doc.id,
                 "title": data.get("title"),
                 "occasion": data.get("occasion"),
-                "timestamp": data.get("timestamp")
+                "timestamp": data.get("timestamp"),
+                "notification_id": data.get("notification_id", None)
             })
         return schedules
     except Exception as e:

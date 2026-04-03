@@ -34,15 +34,13 @@ async def get_recommendation(
     return await _build_recommendation(
         filtered_items=wardrobe_result,
         weather_data=weather_data,
-        context=context,
-        user_id=user_id,
+        context=context
     )
 
 async def _build_recommendation(
     filtered_items: List[Dict[str, Any]],
     weather_data: Dict[str, Any],
-    context: str,
-    user_id: str,
+    context: str
 ) -> Dict[str, Any]:
     item_lookup = {item["id"]: item for item in filtered_items}
     minified_menu = get_minified_menu(filtered_items)
@@ -126,6 +124,7 @@ def get_minified_menu(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             "type": item["type"],
             "colors": item["colors"],
             "occasions": item["occasions"],
+            "temps": item["temperatures"]
         }
         for item in shuffled
     ]
@@ -135,14 +134,14 @@ async def get_llm_suggestion(
     weather_data: Dict[str, Any],
     context: str,
 ):
-    response = groq_client.chat.completions.create(
+    response = groq_client.chat_create(
         model=llm_model_id,
         messages=[
             {
                 "role": "system",
                 "content": """You are a professional fashion stylist AI.
 Your task:
-1. Select exactly ONE item from each category: topwear, bottomwear, footwear; Optionally select ONE outerwear if weather is cold (<15°C)
+1. Select exactly ONE item from each category: topwear, bottomwear, footwear; If temperature is below 15°C, you MUST select ONE outerwear item. If temperature is 15°C or above, set outerwear_id to null.
 2. Ensure colors coordinate well and match the outfit to the context — consider formality, time of day, occasion type, color preferences, or any other cues present in the context
 3. Provide a short, compelling reason (1 sentence)
 Return only a JSON object with this structure:

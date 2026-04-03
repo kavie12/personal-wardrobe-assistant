@@ -7,7 +7,8 @@ interface NotificationContextType {
     devicePushToken: string | null;
     notification: Notifications.Notification | null;
     error: Error | null;
-    schedulePushNotificationByDate: (title: string, body: string, date: Date) => Promise<void>;
+    scheduleNotificationByDate: (title: string, body: string, date: Date) => Promise<string>;
+    cancelScheduledNotification: (notificationId: string) => Promise<void>;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -57,8 +58,8 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         };
     }, []);
 
-    const schedulePushNotificationByDate = async (title: string, body: string, date: Date) => {
-        await Notifications.scheduleNotificationAsync({
+    const scheduleNotificationByDate = async (title: string, body: string, date: Date): Promise<string> => {
+        const notificationId = await Notifications.scheduleNotificationAsync({
             content: {
                 title: title,
                 body: body
@@ -68,10 +69,15 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
                 date: date
             },
         });
+        return notificationId;
     };
 
+    const cancelScheduledNotification = async (notificationId: string): Promise<void> => {
+        await Notifications.cancelScheduledNotificationAsync(notificationId);
+    }
+
     return (
-        <NotificationContext.Provider value={{ expoPushToken, devicePushToken, notification, error, schedulePushNotificationByDate }}>
+        <NotificationContext.Provider value={{ expoPushToken, devicePushToken, notification, error, scheduleNotificationByDate, cancelScheduledNotification }}>
             {children}
         </NotificationContext.Provider>
     );

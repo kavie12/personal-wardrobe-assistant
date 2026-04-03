@@ -1,0 +1,336 @@
+{
+  "_comment": "Phase 2 recommendation test cases. Each entry sends a POST to /recommendation/get-recommendation with weather_data and context, then evaluates the response against expected criteria.",
+
+  "_scoring": {
+    "outfit_complete":    "strict  — topwear, bottomwear, footwear must all be non-null",
+    "outerwear_rule":     "strict  — outerwear must be present when temp < 15, null when temp >= 15",
+    "reason_present":     "strict  — reason field must be a non-empty string",
+    "occasion_match":     "lenient — each selected item's occasions list must contain at least one of expected_occasions",
+    "temperature_match":  "lenient — each selected item's temperatures list must contain the expected_temp_label"
+  },
+
+  "_temp_label_guide": {
+    "Hot":  "temperature >= 25",
+    "Mild": "15 <= temperature < 25",
+    "Cold": "temperature < 15"
+  },
+
+  "tests": [
+
+    {
+      "id": "SC-01",
+      "_group": "Schedule-dominant (mild neutral weather so weather doesn't override context)",
+      "description": "Formal supervisor meeting in the evening",
+      "weather_data": { "temperature": 20, "description": "partly cloudy" },
+      "context": "supervisor meeting | 8.00 pm | formal",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "optional",
+        "reason_present":    true,
+        "occasion_match":    ["Formal", "Work", "Smart casual"],
+        "temperature_match": "Mild"
+      }
+    },
+
+    {
+      "id": "SC-02",
+      "_group": "Schedule-dominant",
+      "description": "Gym / workout session in the morning",
+      "weather_data": { "temperature": 22, "description": "sunny" },
+      "context": "gym session | 6.30 am | sportswear",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "optional",
+        "reason_present":    true,
+        "occasion_match":    ["Sportswear"],
+        "temperature_match": "Mild"
+      }
+    },
+
+    {
+      "id": "SC-03",
+      "_group": "Schedule-dominant",
+      "description": "Casual friend hangout at noon",
+      "weather_data": { "temperature": 23, "description": "sunny" },
+      "context": "hanging out with friends | 12.00 pm | casual",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "optional",
+        "reason_present":    true,
+        "occasion_match":    ["Casual", "Smart casual"],
+        "temperature_match": "Mild"
+      }
+    },
+
+    {
+      "id": "SC-04",
+      "_group": "Schedule-dominant",
+      "description": "University lecture in the morning",
+      "weather_data": { "temperature": 21, "description": "overcast" },
+      "context": "university lecture | 9.00 am | smart casual",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "optional",
+        "reason_present":    true,
+        "occasion_match":    ["Smart casual", "Casual"],
+        "temperature_match": "Mild"
+      }
+    },
+
+    {
+      "id": "SC-05",
+      "_group": "Schedule-dominant",
+      "description": "Birthday dinner party in the evening",
+      "weather_data": { "temperature": 24, "description": "clear" },
+      "context": "birthday dinner | 7.00 pm | party",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "optional",
+        "reason_present":    true,
+        "occasion_match":    ["Party", "Smart casual", "Formal"],
+        "temperature_match": "Mild"
+      }
+    },
+
+    {
+      "id": "SC-06",
+      "_group": "Schedule-dominant",
+      "description": "Job interview in the morning",
+      "weather_data": { "temperature": 20, "description": "partly cloudy" },
+      "context": "job interview | 10.00 am | formal",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "optional",
+        "reason_present":    true,
+        "occasion_match":    ["Formal", "Work"],
+        "temperature_match": "Mild"
+      }
+    },
+
+    {
+      "id": "SC-07",
+      "_group": "Schedule-dominant",
+      "description": "No schedule — manual smart casual request",
+      "weather_data": { "temperature": 22, "description": "sunny" },
+      "context": "smart casual",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "optional",
+        "reason_present":    true,
+        "occasion_match":    ["Smart casual", "Casual"],
+        "temperature_match": "Mild"
+      }
+    },
+
+    {
+      "id": "WC-01",
+      "_group": "Weather-dominant (vague context so weather dominates)",
+      "description": "Hot sunny day, no specific occasion",
+      "weather_data": { "temperature": 33, "description": "sunny" },
+      "context": "casual",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "absent",
+        "reason_present":    true,
+        "occasion_match":    ["Casual"],
+        "temperature_match": "Hot"
+      }
+    },
+
+    {
+      "id": "WC-02",
+      "_group": "Weather-dominant",
+      "description": "Cold day, no specific occasion — outerwear must be included",
+      "weather_data": { "temperature": 10, "description": "cloudy" },
+      "context": "casual",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "required",
+        "reason_present":    true,
+        "occasion_match":    ["Casual"],
+        "temperature_match": "Cold"
+      }
+    },
+
+    {
+      "id": "WC-03",
+      "_group": "Weather-dominant",
+      "description": "Rainy day, no specific occasion",
+      "weather_data": { "temperature": 18, "description": "rainy" },
+      "context": "casual",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "optional",
+        "reason_present":    true,
+        "occasion_match":    ["Casual"],
+        "temperature_match": "Mild"
+      }
+    },
+
+    {
+      "id": "WC-04",
+      "_group": "Weather-dominant",
+      "description": "Very cold weather — outerwear strictly required",
+      "weather_data": { "temperature": 5, "description": "cold and cloudy" },
+      "context": "casual",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "required",
+        "reason_present":    true,
+        "occasion_match":    ["Casual"],
+        "temperature_match": "Cold"
+      }
+    },
+
+    {
+      "id": "CC-01",
+      "_group": "Combined — conflict between formal occasion and hot weather",
+      "description": "Formal meeting on a hot day — must balance formality with heat",
+      "weather_data": { "temperature": 32, "description": "sunny and hot" },
+      "context": "team meeting | 10.00 am | formal",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "absent",
+        "reason_present":    true,
+        "occasion_match":    ["Formal", "Work", "Smart casual"],
+        "temperature_match": "Hot"
+      }
+    },
+
+    {
+      "id": "CC-02",
+      "_group": "Combined — sportswear in cold weather, outerwear expected",
+      "description": "Outdoor gym session on a cold morning",
+      "weather_data": { "temperature": 11, "description": "cold and windy" },
+      "context": "outdoor gym | 7.00 am | sportswear",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "required",
+        "reason_present":    true,
+        "occasion_match":    ["Sportswear", "Casual"],
+        "temperature_match": "Cold"
+      }
+    },
+
+    {
+      "id": "CC-03",
+      "_group": "Combined — casual outing in rainy mild weather",
+      "description": "Casual brunch on a rainy mild day",
+      "weather_data": { "temperature": 19, "description": "rainy" },
+      "context": "brunch with friends | 11.00 am | casual",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "optional",
+        "reason_present":    true,
+        "occasion_match":    ["Casual", "Smart casual"],
+        "temperature_match": "Mild"
+      }
+    },
+
+    {
+      "id": "CC-04",
+      "_group": "Combined — party at night in cold weather",
+      "description": "Evening party when cold outside — outerwear expected",
+      "weather_data": { "temperature": 12, "description": "cold and clear" },
+      "context": "house party | 9.00 pm | party",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "required",
+        "reason_present":    true,
+        "occasion_match":    ["Party", "Smart casual"],
+        "temperature_match": "Cold"
+      }
+    },
+
+    {
+      "id": "CC-05",
+      "_group": "Combined — work meeting on a hot day",
+      "description": "Office work day in hot humid weather",
+      "weather_data": { "temperature": 30, "description": "humid and hot" },
+      "context": "office work | 9.00 am | work",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "absent",
+        "reason_present":    true,
+        "occasion_match":    ["Work", "Formal", "Smart casual"],
+        "temperature_match": "Hot"
+      }
+    },
+
+    {
+      "id": "EX-01",
+      "_group": "Edge — empty / minimal context",
+      "description": "No context provided — system should still return a valid outfit",
+      "weather_data": { "temperature": 22, "description": "sunny" },
+      "context": "",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "optional",
+        "reason_present":    true,
+        "occasion_match":    null,
+        "temperature_match": "Mild"
+      }
+    },
+
+    {
+      "id": "EX-02",
+      "_group": "Edge — boundary temperature exactly at 15°C",
+      "description": "Temperature exactly at the cold/mild threshold",
+      "weather_data": { "temperature": 15, "description": "cloudy" },
+      "context": "casual",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "optional",
+        "reason_present":    true,
+        "occasion_match":    ["Casual"],
+        "temperature_match": "Mild"
+      }
+    },
+
+    {
+      "id": "EX-03",
+      "_group": "Edge — boundary temperature just below 15°C",
+      "description": "Temperature just below the cold threshold — outerwear expected",
+      "weather_data": { "temperature": 14, "description": "cloudy" },
+      "context": "casual",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "required",
+        "reason_present":    true,
+        "occasion_match":    ["Casual"],
+        "temperature_match": "Cold"
+      }
+    },
+
+    {
+      "id": "EX-04",
+      "_group": "Edge — extreme heat",
+      "description": "Very high temperature — light breathable clothing expected",
+      "weather_data": { "temperature": 38, "description": "extremely hot" },
+      "context": "casual",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "absent",
+        "reason_present":    true,
+        "occasion_match":    ["Casual"],
+        "temperature_match": "Hot"
+      }
+    },
+
+    {
+      "id": "EX-05",
+      "_group": "Edge — all-day event with time cue only",
+      "description": "Context has time of day but no occasion label",
+      "weather_data": { "temperature": 21, "description": "partly cloudy" },
+      "context": "event | 6.00 pm",
+      "expected": {
+        "outfit_complete":   true,
+        "outerwear_rule":    "optional",
+        "reason_present":    true,
+        "occasion_match":    null,
+        "temperature_match": "Mild"
+      }
+    }
+
+  ]
+}

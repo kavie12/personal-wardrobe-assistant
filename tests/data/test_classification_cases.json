@@ -1,0 +1,257 @@
+{
+  "_comment": "Test data for Phase 1 classification tests. Add new entries here without touching the Python script.",
+  "_scoring": {
+    "category":     "strict  — predicted must exactly equal expected",
+    "type":         "strict  — predicted must exactly equal expected",
+    "colors":       "lenient — expected values must be a subset of predicted",
+    "occasions":    "lenient — expected values must be a subset of predicted",
+    "temperatures": "lenient — expected values must be a subset of predicted"
+  },
+
+  "white_tshirt.jpg": {
+    "category":     "Topwear",
+    "type":         "T-shirt",
+    "colors":       ["White"],
+    "occasions":    ["Casual"],
+    "temperatures": ["Hot", "Mild"]
+  },
+  "blue_formal_shirt.jpg": {
+    "category":     "Topwear",
+    "type":         "Shirt",
+    "colors":       ["Blue"],
+    "occasions":    ["Formal", "Work"],
+    "temperatures": ["Mild"]
+  },
+  "black_hoodie.jpg": {
+    "category":     "Topwear",
+    "type":         "Hoodie",
+    "colors":       ["Black"],
+    "occasions":    ["Casual"],
+    "temperatures": ["Cold", "Mild"]
+  },
+  "grey_blazer.jpg": {
+    "category":     "Topwear",
+    "type":         "Blazer",
+    "colors":       ["Gray"],
+    "occasions":    ["Formal", "Work", "Smart casual"],
+    "temperatures": ["Mild"]
+  },
+  "red_polo_shirt.jpg": {
+    "category":     "Topwear",
+    "type":         "Polo shirt",
+    "colors":       ["Red"],
+    "occasions":    ["Casual", "Smart casual"],
+    "temperatures": ["Hot", "Mild"]
+  },
+  "blue_jeans.jpg": {
+    "category":     "Bottomwear",
+    "type":         "Jeans",
+    "colors":       ["Blue"],
+    "occasions":    ["Casual", "Smart casual"],
+    "temperatures": ["Mild", "Cold"]
+  },
+  "black_trousers.jpg": {
+    "category":     "Bottomwear",
+    "type":         "Trousers",
+    "colors":       ["Black"],
+    "occasions":    ["Formal", "Work"],
+    "temperatures": ["Mild"]
+  },
+  "khaki_shorts.jpg": {
+    "category":     "Bottomwear",
+    "type":         "Shorts",
+    "colors":       ["Beige"],
+    "occasions":    ["Casual"],
+    "temperatures": ["Hot"]
+  },
+  "black_leggings.jpg": {
+    "category":     "Bottomwear",
+    "type":         "Leggings",
+    "colors":       ["Black"],
+    "occasions":    ["Sportswear", "Casual"],
+    "temperatures": ["Mild", "Cold"]
+  },
+  "black_dress.jpg": {
+    "category":     "One-piece",
+    "type":         "Dress",
+    "colors":       ["Black"],
+    "occasions":    ["Party", "Smart casual", "Formal"],
+    "temperatures": ["Hot", "Mild"]
+  },
+  "floral_jumpsuit.jpg": {
+    "category":     "One-piece",
+    "type":         "Jumpsuit",
+    "colors":       ["White"],
+    "occasions":    ["Casual", "Party"],
+    "temperatures": ["Hot", "Mild"]
+  },
+  "white_sneakers.jpg": {
+    "category":     "Footwear",
+    "type":         "Sneakers",
+    "colors":       ["White"],
+    "occasions":    ["Casual", "Sportswear"],
+    "temperatures": ["Hot", "Mild"]
+  },
+  "black_formal_shoes.jpg": {
+    "category":     "Footwear",
+    "type":         "Formal shoes",
+    "colors":       ["Black"],
+    "occasions":    ["Formal", "Work"],
+    "temperatures": ["Mild", "Cold"]
+  },
+  "brown_boots.jpg": {
+    "category":     "Footwear",
+    "type":         "Boots",
+    "colors":       ["Brown"],
+    "occasions":    ["Casual", "Smart casual"],
+    "temperatures": ["Cold", "Mild"]
+  },
+  "blurry_jacket.jpg": {
+    "_note":        "Edge case: low image quality",
+    "category":     "Topwear",
+    "type":         "Jacket",
+    "colors":       ["Black"],
+    "occasions":    ["Casual"],
+    "temperatures": ["Cold"]
+  },
+  "patterned_shirt.jpg": {
+    "_note":        "Edge case: multi-colour pattern",
+    "category":     "Topwear",
+    "type":         "Shirt",
+    "colors":       ["Blue", "White"],
+    "occasions":    ["Casual", "Smart casual"],
+    "temperatures": ["Hot", "Mild"]
+  },
+
+  "navy_sweater.jpg": {
+    "category":     "Topwear",
+    "type":         "Sweater",
+    "colors":       ["Blue"],
+    "occasions":    ["Casual", "Smart casual"],
+    "temperatures": ["Cold", "Mild"]
+  },
+  "beige_coat.jpg": {
+    "category":     "Topwear",
+    "type":         "Coat",
+    "colors":       ["Beige"],
+    "occasions":    ["Casual", "Smart casual", "Formal"],
+    "temperatures": ["Cold"]
+  },
+  "black_joggers.jpg": {
+    "category":     "Bottomwear",
+    "type":         "Joggers",
+    "colors":       ["Black"],
+    "occasions":    ["Sportswear", "Casual"],
+    "temperatures": ["Mild", "Cold"]
+  },
+  "white_skirt.jpg": {
+    "category":     "Bottomwear",
+    "type":         "Skirt",
+    "colors":       ["White"],
+    "occasions":    ["Casual", "Smart casual"],
+    "temperatures": ["Hot", "Mild"]
+  },
+  "grey_romper.jpg": {
+    "category":     "One-piece",
+    "type":         "Romper",
+    "colors":       ["Gray"],
+    "occasions":    ["Casual", "Party"],
+    "temperatures": ["Hot", "Mild"]
+  },
+  "navy_suit.jpg": {
+    "category":     "One-piece",
+    "type":         "Suit",
+    "colors":       ["Blue"],
+    "occasions":    ["Formal", "Work"],
+    "temperatures": ["Mild", "Cold"]
+  },
+  "brown_sandals.jpg": {
+    "category":     "Footwear",
+    "type":         "Sandals",
+    "colors":       ["Brown"],
+    "occasions":    ["Casual"],
+    "temperatures": ["Hot"]
+  },
+  "black_heels.jpg": {
+    "category":     "Footwear",
+    "type":         "Heels",
+    "colors":       ["Black"],
+    "occasions":    ["Formal", "Party", "Smart casual"],
+    "temperatures": ["Hot", "Mild"]
+  },
+  "white_flipflops.jpg": {
+    "category":     "Footwear",
+    "type":         "Flip-flops",
+    "colors":       ["White"],
+    "occasions":    ["Casual"],
+    "temperatures": ["Hot"]
+  },
+  "black_casual_shoes.jpg": {
+    "category":     "Footwear",
+    "type":         "Casual shoes",
+    "colors":       ["Black"],
+    "occasions":    ["Casual", "Smart casual"],
+    "temperatures": ["Mild", "Cold"]
+  },
+
+  "dark_angle_tshirt.jpg": {
+    "_note":        "Edge case: unusual camera angle",
+    "category":     "Topwear",
+    "type":         "T-shirt",
+    "colors":       ["Black"],
+    "occasions":    ["Casual"],
+    "temperatures": ["Hot", "Mild"]
+  },
+  "multicolor_dress.jpg": {
+    "_note":        "Edge case: multi-colour item",
+    "category":     "One-piece",
+    "type":         "Dress",
+    "colors":       ["Red", "White"],
+    "occasions":    ["Casual", "Party"],
+    "temperatures": ["Hot", "Mild"]
+  },
+  "dark_background_shirt.jpg": {
+    "_note":        "Edge case: item blends with dark background",
+    "category":     "Topwear",
+    "type":         "Shirt",
+    "colors":       ["White"],
+    "occasions":    ["Casual", "Smart casual"],
+    "temperatures": ["Hot", "Mild"]
+  },
+  "folded_jeans.jpg": {
+    "_note":        "Edge case: clothing shown folded, not worn or hung",
+    "category":     "Bottomwear",
+    "type":         "Jeans",
+    "colors":       ["Blue"],
+    "occasions":    ["Casual"],
+    "temperatures": ["Mild", "Cold"]
+  },
+  "green_jacket.jpg": {
+    "category":     "Topwear",
+    "type":         "Jacket",
+    "colors":       ["Green"],
+    "occasions":    ["Casual"],
+    "temperatures": ["Cold", "Mild"]
+  },
+  "pink_hoodie.jpg": {
+    "category":     "Topwear",
+    "type":         "Hoodie",
+    "colors":       ["Pink"],
+    "occasions":    ["Casual"],
+    "temperatures": ["Cold", "Mild"]
+  },
+  "white_formal_shirt.jpg": {
+    "category":     "Topwear",
+    "type":         "Shirt",
+    "colors":       ["White"],
+    "occasions":    ["Formal", "Work"],
+    "temperatures": ["Mild"]
+  },
+  "grey_joggers.jpg": {
+    "category":     "Bottomwear",
+    "type":         "Joggers",
+    "colors":       ["Gray"],
+    "occasions":    ["Sportswear", "Casual"],
+    "temperatures": ["Mild", "Cold"]
+  }
+}

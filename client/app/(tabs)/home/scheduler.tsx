@@ -1,4 +1,4 @@
-import { HOME_SCHEDULE_RECOMMENDATION_KEY, SCHEDULE_LIST_KEY } from "@/constants/query_keys";
+import { SCHEDULE_LIST_KEY } from "@/constants/query_keys";
 import { useNotification } from "@/context/notification-context";
 import { CLOTHING_OCCASIONS } from "@/data";
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
@@ -92,11 +92,12 @@ const ScheduleRecord = ({ schedule }: { schedule: Schedule; }) => {
 
   const queryClient = useQueryClient();
 
+  const { cancelScheduledNotification } = useNotification();
   const mutationDelete = useMutation({
-    mutationFn: () => deleteSchedule(schedule.id as string),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: SCHEDULE_LIST_KEY });
-      queryClient.invalidateQueries({ queryKey: HOME_SCHEDULE_RECOMMENDATION_KEY });
+    mutationFn: () => deleteSchedule(schedule.id!),
+    onSuccess: async () => {
+      if (schedule.notificationId) await cancelScheduledNotification(schedule.notificationId);
+      await queryClient.invalidateQueries({ queryKey: SCHEDULE_LIST_KEY });
     }
   });
 
@@ -136,18 +137,18 @@ const ScheduleAddModal = ({ visible, onClose }: { visible: boolean; onClose: () 
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { schedulePushNotificationByDate } = useNotification()
+  const { scheduleNotificationByDate } = useNotification();
 
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async (schedule: Schedule) => {
       setLoading(true);
-      await schedulePushNotificationByDate(schedule.title, "Your outfit is ready!", new Date(schedule.timestamp.getTime() - 24 * 60 * 60 * 1000));
+      const notificationId = await scheduleNotificationByDate(schedule.title, "Your outfit is ready!", new Date(schedule.timestamp.getTime() - 24 * 60 * 60 * 1000));
+      schedule.setNotificationId(notificationId);
       return await addSchedule(schedule);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SCHEDULE_LIST_KEY });
-      queryClient.invalidateQueries({ queryKey: HOME_SCHEDULE_RECOMMENDATION_KEY });
     },
     onSettled: () => {
       setLoading(false);

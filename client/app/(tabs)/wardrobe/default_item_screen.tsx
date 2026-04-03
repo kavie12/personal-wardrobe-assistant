@@ -89,7 +89,7 @@ const DefaultItemScreen = ({ clothingItem, mode, isNewItem, setMode, onSave, onD
             }
 
             if (Array.isArray(currentValue)) {
-                const list = currentValue as string[]; 
+                const list = currentValue as string[];
                 
                 const updatedList = list.includes(label)
                     ? list.length === 1 ? list : list.filter((item) => item !== label)
