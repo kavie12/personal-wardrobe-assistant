@@ -1,0 +1,2021 @@
+[
+  {
+    "filename": "white_tshirt.jpg",
+    "passed": true,
+    "response_ms": 2746.5,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Topwear",
+        "predicted": "Topwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "T-shirt",
+        "predicted": "T-shirt",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "White"
+        ],
+        "predicted": [
+          "White"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual",
+          "Sportswear"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot",
+          "Mild"
+        ],
+        "predicted": [
+          "Hot",
+          "Mild"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "blue_formal_shirt.jpg",
+    "passed": true,
+    "response_ms": 2580.3,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Topwear",
+        "predicted": "Topwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Shirt",
+        "predicted": "Shirt",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Blue"
+        ],
+        "predicted": [
+          "Blue"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Formal",
+          "Work"
+        ],
+        "predicted": [
+          "Formal",
+          "Smart casual",
+          "Work"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "black_hoodie.jpg",
+    "passed": true,
+    "response_ms": 3268.9,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Topwear",
+        "predicted": "Topwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Hoodie",
+        "predicted": "Hoodie",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Black"
+        ],
+        "predicted": [
+          "Black"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual",
+          "Sportswear"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Cold",
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "grey_blazer.jpg",
+    "passed": true,
+    "response_ms": 2713.4,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Topwear",
+        "predicted": "Topwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Blazer",
+        "predicted": "Blazer",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Gray"
+        ],
+        "predicted": [
+          "Gray"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Formal",
+          "Work",
+          "Smart casual"
+        ],
+        "predicted": [
+          "Formal",
+          "Smart casual",
+          "Work"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "red_polo_shirt.jpg",
+    "passed": true,
+    "response_ms": 2714.7,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Topwear",
+        "predicted": "Topwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Polo shirt",
+        "predicted": "Polo shirt",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Red"
+        ],
+        "predicted": [
+          "Red"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual",
+          "Smart casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot",
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Hot"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "blue_jeans.jpg",
+    "passed": true,
+    "response_ms": 2718.1,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Bottomwear",
+        "predicted": "Bottomwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Jeans",
+        "predicted": "Jeans",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Blue"
+        ],
+        "predicted": [
+          "Blue"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual",
+          "Smart casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Mild",
+          "Cold"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "black_trousers.jpg",
+    "passed": true,
+    "response_ms": 2556.1,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Bottomwear",
+        "predicted": "Bottomwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Trousers",
+        "predicted": "Trousers",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Black"
+        ],
+        "predicted": [
+          "Black"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Formal",
+          "Work"
+        ],
+        "predicted": [
+          "Formal",
+          "Work",
+          "Smart casual"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "khaki_shorts.jpg",
+    "passed": true,
+    "response_ms": 2687.0,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Bottomwear",
+        "predicted": "Bottomwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Shorts",
+        "predicted": "Shorts",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Beige"
+        ],
+        "predicted": [
+          "Beige"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot"
+        ],
+        "predicted": [
+          "Hot",
+          "Mild"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "black_leggings.jpg",
+    "passed": true,
+    "response_ms": 2532.3,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Bottomwear",
+        "predicted": "Bottomwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Leggings",
+        "predicted": "Leggings",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Black"
+        ],
+        "predicted": [
+          "Black"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Sportswear",
+          "Casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Sportswear",
+          "Smart casual"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Mild",
+          "Cold"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "black_dress.jpg",
+    "passed": false,
+    "response_ms": 2718.2,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "One-piece",
+        "predicted": "One-piece",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Dress",
+        "predicted": "Dress",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Black"
+        ],
+        "predicted": [
+          "Black"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Party",
+          "Smart casual",
+          "Formal"
+        ],
+        "predicted": [
+          "Formal",
+          "Smart casual",
+          "Party"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot",
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": false,
+        "lenient_pass": false
+      }
+    ]
+  },
+  {
+    "filename": "floral_jumpsuit.jpg",
+    "passed": false,
+    "response_ms": 2691.6,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "One-piece",
+        "predicted": "One-piece",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Jumpsuit",
+        "predicted": "Jumpsuit",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "White"
+        ],
+        "predicted": [
+          "White"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual",
+          "Party"
+        ],
+        "predicted": [
+          "Formal",
+          "Smart casual",
+          "Party"
+        ],
+        "strict_pass": false,
+        "lenient_pass": false
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot",
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Hot"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "white_sneakers.jpg",
+    "passed": true,
+    "response_ms": 2704.9,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Footwear",
+        "predicted": "Footwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Sneakers",
+        "predicted": "Sneakers",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "White"
+        ],
+        "predicted": [
+          "White"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual",
+          "Sportswear"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual",
+          "Sportswear"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot",
+          "Mild"
+        ],
+        "predicted": [
+          "Hot",
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "black_formal_shoes.jpg",
+    "passed": true,
+    "response_ms": 2541.1,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Footwear",
+        "predicted": "Footwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Formal shoes",
+        "predicted": "Formal shoes",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Black"
+        ],
+        "predicted": [
+          "Black"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Formal",
+          "Work"
+        ],
+        "predicted": [
+          "Formal",
+          "Work"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Mild",
+          "Cold"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "brown_boots.jpg",
+    "passed": false,
+    "response_ms": 2545.1,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Footwear",
+        "predicted": "Footwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Boots",
+        "predicted": "Boots",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Brown"
+        ],
+        "predicted": [
+          "Brown"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual",
+          "Smart casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Sportswear"
+        ],
+        "strict_pass": false,
+        "lenient_pass": false
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Cold",
+          "Mild"
+        ],
+        "predicted": [
+          "Cold",
+          "Mild"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "blurry_jacket.jpg",
+    "passed": true,
+    "response_ms": 2713.5,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Topwear",
+        "predicted": "Topwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Jacket",
+        "predicted": "Jacket",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Black"
+        ],
+        "predicted": [
+          "Black",
+          "Red",
+          "Gray"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual",
+          "Sportswear"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Cold"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "patterned_shirt.jpg",
+    "passed": true,
+    "response_ms": 2689.1,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Topwear",
+        "predicted": "Topwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Shirt",
+        "predicted": "Shirt",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Blue",
+          "White"
+        ],
+        "predicted": [
+          "White",
+          "Blue"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual",
+          "Smart casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot",
+          "Mild"
+        ],
+        "predicted": [
+          "Hot",
+          "Mild"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "navy_sweater.jpg",
+    "passed": true,
+    "response_ms": 5752.6,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Topwear",
+        "predicted": "Topwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Sweater",
+        "predicted": "Sweater",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Blue"
+        ],
+        "predicted": [
+          "Blue"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual",
+          "Smart casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Cold",
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "beige_coat.jpg",
+    "passed": false,
+    "response_ms": 5755.6,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Topwear",
+        "predicted": "Topwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Coat",
+        "predicted": "Coat",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Beige"
+        ],
+        "predicted": [
+          "Beige"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual",
+          "Smart casual",
+          "Formal"
+        ],
+        "predicted": [
+          "Formal",
+          "Smart casual"
+        ],
+        "strict_pass": false,
+        "lenient_pass": false
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Cold"
+        ],
+        "predicted": [
+          "Cold",
+          "Mild"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "black_joggers.jpg",
+    "passed": true,
+    "response_ms": 5709.6,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Bottomwear",
+        "predicted": "Bottomwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Joggers",
+        "predicted": "Joggers",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Black"
+        ],
+        "predicted": [
+          "Black"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Sportswear",
+          "Casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual",
+          "Sportswear"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Mild",
+          "Cold"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "white_skirt.jpg",
+    "passed": false,
+    "response_ms": 6616.7,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Bottomwear",
+        "predicted": "One-piece",
+        "strict_pass": false,
+        "lenient_pass": false
+      },
+      {
+        "field": "type",
+        "expected": "Skirt",
+        "predicted": "Skirt",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "White"
+        ],
+        "predicted": [
+          "White"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual",
+          "Smart casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual",
+          "Formal"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot",
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Hot"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "grey_romper.jpg",
+    "passed": false,
+    "response_ms": 5898.8,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "One-piece",
+        "predicted": "One-piece",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Romper",
+        "predicted": "Romper",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Gray"
+        ],
+        "predicted": [
+          "Gray"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual",
+          "Party"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual"
+        ],
+        "strict_pass": false,
+        "lenient_pass": false
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot",
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Hot"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "navy_suit.jpg",
+    "passed": false,
+    "response_ms": 5755.7,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "One-piece",
+        "predicted": "Topwear",
+        "strict_pass": false,
+        "lenient_pass": false
+      },
+      {
+        "field": "type",
+        "expected": "Suit",
+        "predicted": "Blazer",
+        "strict_pass": false,
+        "lenient_pass": false
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Blue"
+        ],
+        "predicted": [
+          "Blue"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Formal",
+          "Work"
+        ],
+        "predicted": [
+          "Formal",
+          "Smart casual",
+          "Work"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Mild",
+          "Cold"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "brown_sandals.jpg",
+    "passed": true,
+    "response_ms": 6395.1,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Footwear",
+        "predicted": "Footwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Sandals",
+        "predicted": "Sandals",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Brown"
+        ],
+        "predicted": [
+          "Brown"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual"
+        ],
+        "predicted": [
+          "Casual"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot"
+        ],
+        "predicted": [
+          "Hot",
+          "Mild"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "black_heels.jpg",
+    "passed": false,
+    "response_ms": 6250.0,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Footwear",
+        "predicted": "Footwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Heels",
+        "predicted": "Heels",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Black"
+        ],
+        "predicted": [
+          "Black"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Formal",
+          "Party",
+          "Smart casual"
+        ],
+        "predicted": [
+          "Formal",
+          "Smart casual",
+          "Party"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot",
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": false,
+        "lenient_pass": false
+      }
+    ]
+  },
+  {
+    "filename": "white_flipflops.jpg",
+    "passed": true,
+    "response_ms": 4781.2,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Footwear",
+        "predicted": "Footwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Flip-flops",
+        "predicted": "Flip-flops",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "White"
+        ],
+        "predicted": [
+          "White"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Sportswear",
+          "Party"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot"
+        ],
+        "predicted": [
+          "Hot"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "black_casual_shoes.jpg",
+    "passed": false,
+    "response_ms": 5758.5,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Footwear",
+        "predicted": "Footwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Casual shoes",
+        "predicted": "Sneakers",
+        "strict_pass": false,
+        "lenient_pass": false
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Black"
+        ],
+        "predicted": [
+          "Black"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual",
+          "Smart casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual",
+          "Sportswear"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Mild",
+          "Cold"
+        ],
+        "predicted": [
+          "Hot",
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "dark_angle_tshirt.jpg",
+    "passed": true,
+    "response_ms": 6606.3,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Topwear",
+        "predicted": "Topwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "T-shirt",
+        "predicted": "T-shirt",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Black"
+        ],
+        "predicted": [
+          "Black"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual",
+          "Sportswear"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot",
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Hot"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "multicolor_dress.jpg",
+    "passed": true,
+    "response_ms": 5695.3,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "One-piece",
+        "predicted": "One-piece",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Dress",
+        "predicted": "Dress",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Red",
+          "White"
+        ],
+        "predicted": [
+          "Red",
+          "White"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual",
+          "Party"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual",
+          "Party"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot",
+          "Mild"
+        ],
+        "predicted": [
+          "Hot",
+          "Mild"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "dark_background_shirt.jpg",
+    "passed": false,
+    "response_ms": 5624.7,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Topwear",
+        "predicted": "Topwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Shirt",
+        "predicted": "Shirt",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "White"
+        ],
+        "predicted": [
+          "Gray"
+        ],
+        "strict_pass": false,
+        "lenient_pass": false
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual",
+          "Smart casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual",
+          "Work"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Hot",
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Hot"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "folded_jeans.jpg",
+    "passed": true,
+    "response_ms": 5635.3,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Bottomwear",
+        "predicted": "Bottomwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Jeans",
+        "predicted": "Jeans",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Blue"
+        ],
+        "predicted": [
+          "Blue"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Mild",
+          "Cold"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "green_jacket.jpg",
+    "passed": true,
+    "response_ms": 7103.2,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Topwear",
+        "predicted": "Topwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Jacket",
+        "predicted": "Jacket",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Green"
+        ],
+        "predicted": [
+          "Green"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Cold",
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "pink_hoodie.jpg",
+    "passed": true,
+    "response_ms": 4824.8,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Topwear",
+        "predicted": "Topwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Hoodie",
+        "predicted": "Hoodie",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Pink"
+        ],
+        "predicted": [
+          "Pink"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual",
+          "Sportswear"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Cold",
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "white_formal_shirt.jpg",
+    "passed": true,
+    "response_ms": 5874.2,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Topwear",
+        "predicted": "Topwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Shirt",
+        "predicted": "Shirt",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "White"
+        ],
+        "predicted": [
+          "White"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Formal",
+          "Work"
+        ],
+        "predicted": [
+          "Formal",
+          "Smart casual",
+          "Work"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Mild"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      }
+    ]
+  },
+  {
+    "filename": "grey_joggers.jpg",
+    "passed": true,
+    "response_ms": 5739.4,
+    "error": null,
+    "fields": [
+      {
+        "field": "category",
+        "expected": "Bottomwear",
+        "predicted": "Bottomwear",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "type",
+        "expected": "Joggers",
+        "predicted": "Joggers",
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "colors",
+        "expected": [
+          "Gray"
+        ],
+        "predicted": [
+          "Gray"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      },
+      {
+        "field": "occasions",
+        "expected": [
+          "Sportswear",
+          "Casual"
+        ],
+        "predicted": [
+          "Casual",
+          "Smart casual",
+          "Sportswear"
+        ],
+        "strict_pass": false,
+        "lenient_pass": true
+      },
+      {
+        "field": "temperatures",
+        "expected": [
+          "Mild",
+          "Cold"
+        ],
+        "predicted": [
+          "Mild",
+          "Cold"
+        ],
+        "strict_pass": true,
+        "lenient_pass": true
+      }
+    ]
+  }
+]

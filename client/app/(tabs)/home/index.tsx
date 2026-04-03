@@ -18,7 +18,7 @@ import { Picker } from '@react-native-picker/picker';
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import React, { createContext, use, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Animated, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -253,8 +253,6 @@ const ManualOutfit = () => {
 
   const {weatherQuery} = useContext(HomeContext)!;
   const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion>("Casual");
-
-  const colorScheme = useColorScheme();
 
   const queryClient = useQueryClient();
   const query = useQuery({
