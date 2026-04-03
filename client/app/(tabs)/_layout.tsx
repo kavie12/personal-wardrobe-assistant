@@ -1,17 +1,31 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme.web';
 import { MaterialIcons } from '@expo/vector-icons';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity,
+      gcTime: Infinity
+    }
+  }
+});
+
+const persister = createAsyncStoragePersister({
+  storage: AsyncStorage
+});
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
@@ -46,6 +60,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 }

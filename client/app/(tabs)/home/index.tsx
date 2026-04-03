@@ -42,8 +42,6 @@ const HomeScreen = () => {
       }
       return schedules;
     },
-    staleTime: Infinity,
-    gcTime: Infinity
   });
   const weatherQuery = useQuery({
     queryKey: HOME_CURRENT_WEATHER_KEY,
@@ -249,8 +247,6 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
 };
 
 const ManualOutfit = () => {
-  const [accepted, setAccepted] = useState(false);
-
   const {weatherQuery} = useContext(HomeContext)!;
   const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion>("Casual");
 
@@ -264,15 +260,8 @@ const ManualOutfit = () => {
       console.log("General recommendation with weather data:", { description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
       return await getRecommendation({ description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
     },
-    staleTime: Infinity,
-    gcTime: Infinity,
     enabled: false
   });
-
-  const handleAccept = async () => {
-    if (!query.data) return;
-    setAccepted(true);
-  };
 
   const handleRetry = async () => {
     if (!query.data) return;
@@ -321,8 +310,6 @@ const ManualOutfit = () => {
         isFetching={query.isFetching}
         data={query.data}
         occasion={selectedOccasion}
-        accepted={accepted}
-        handleAccept={handleAccept}
         handleRetry={handleRetry}
       />
 
@@ -332,8 +319,6 @@ const ManualOutfit = () => {
 };
 
 const ScheduleOutfit = () => {
-  const [accepted, setAccepted] = useState(false);
-
   const { latestSchedulesQuery, selectedSchedule } = useContext(HomeContext)!;
 
   const location = useLocation();
@@ -352,15 +337,8 @@ const ScheduleOutfit = () => {
 
       return await getRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
     },
-    staleTime: Infinity,
-    gcTime: Infinity,
     enabled: !!selectedSchedule && !!location.coords
   });
-
-  const handleAccept = async () => {
-    if (!query.data) return;
-    setAccepted(true);
-  };
 
   const handleRetry = async () => {
     if (!query.data) return;
@@ -380,8 +358,6 @@ const ScheduleOutfit = () => {
               isFetching={query.isFetching}
               data={query.data}
               occasion={selectedSchedule.occasion}
-              accepted={accepted}
-              handleAccept={handleAccept}
               handleRetry={handleRetry}
             />
             :
@@ -391,16 +367,12 @@ const ScheduleOutfit = () => {
   );
 };
 
-const OutfitItemView = ({ isFetching, data, occasion, handleAccept, handleRetry, accepted } : {
+const OutfitItemView = ({ isFetching, data, occasion, handleRetry } : {
   isFetching: boolean;
   data: OutfitGenerationResponse | undefined;
   occasion: string;
-  accepted: boolean;
-  handleAccept: () => void;
   handleRetry: () => void;
 }) => {
-  const colorScheme = useColorScheme();
-
   const queryClient = useQueryClient();
   const mutationSave = useMutation({
     mutationFn: async () => {
@@ -421,18 +393,10 @@ const OutfitItemView = ({ isFetching, data, occasion, handleAccept, handleRetry,
       {
         !isFetching && data &&
         <>
-          <View className="flex-row mt-8 items-center justify-between">
-            {/* AI Pick decorator */}
-            <View className="bg-blue-600 flex-row items-center gap-2 self-start px-3 py-1 rounded-full">
-              <Ionicons name="chatbubble-outline" color="white" />
-              <Text className="text-white text-sm">AI Pick</Text>
-            </View>
-
-            {/* Save outfit button */}
-            <TouchableOpacity onPress={() => mutationSave.mutate()} activeOpacity={0.7} className="flex-row items-center gap-x-2 border border-blue-600 dark:border-blue-400 px-3 py-1 rounded-lg">
-              <Ionicons name="save-outline" size={16} color={colorScheme === "dark" ? "#60a5fa" : "#2563eb"} />
-              <Text className="text-blue-600 dark:text-blue-400 font-medium text-sm">Save Outfit</Text>
-            </TouchableOpacity>
+          {/* AI Pick decorator */}
+          <View className="bg-blue-600 flex-row items-center gap-2 self-start px-3 py-1 rounded-full mt-4">
+            <Ionicons name="chatbubble-outline" color="white" />
+            <Text className="text-white text-sm">AI Pick</Text>
           </View>
 
           {/* Reason text */}
@@ -446,19 +410,21 @@ const OutfitItemView = ({ isFetching, data, occasion, handleAccept, handleRetry,
             { data?.outfit.outerwear && <OutfitClothingItem item={data?.outfit.outerwear} /> }
           </ScrollView>
 
-          {
-            /* Outfit accept / retry buttons */
-            !accepted &&
-            <View className="flex-row w-full gap-x-4 mt-4">
-              <TouchableOpacity activeOpacity={0.8} onPress={handleRetry} className="bg-red-100 px-6 py-3 rounded-xl">
-                <Ionicons name="refresh-outline" size={24} color="red" />
-              </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.8} onPress={handleAccept} className="flex-row items-center bg-slate-800 dark:bg-slate-600 px-3 py-3 rounded-xl gap-x-4 flex-grow justify-center">
-                <Ionicons name="checkmark-outline" size={24} color="white" />
-                <Text className="text-white font-medium text-lg">Wear This</Text>
-              </TouchableOpacity>
-            </View>
-          }
+          {/* Outfit accept / retry buttons */}
+          <View className="flex-row w-full gap-x-4 mt-4 justify-between">
+            <TouchableOpacity activeOpacity={0.8} onPress={handleRetry} className="bg-red-100 px-6 py-3 rounded-xl">
+              <Ionicons name="refresh-outline" size={24} color="red" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => mutationSave.mutate()}
+              className="bg-blue-100 px-6 py-3 rounded-xl flex-row items-center justify-center flex-grow gap-x-2"
+            >
+              <Ionicons name="save-outline" size={24} color="#2563eb" />
+              <Text className="text-blue-600 font-medium">Save Outfit</Text>
+            </TouchableOpacity>
+          </View>
+
         </>
       }
     </>
