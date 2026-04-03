@@ -93,7 +93,7 @@ const ScheduleRecord = ({ schedule }: { schedule: Schedule; }) => {
   const queryClient = useQueryClient();
 
   const mutationDelete = useMutation({
-    mutationFn: () => deleteSchedule(schedule.id as string),
+    mutationFn: () => deleteSchedule(schedule.id!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SCHEDULE_LIST_KEY });
       queryClient.invalidateQueries({ queryKey: HOME_SCHEDULE_RECOMMENDATION_KEY });

@@ -18,21 +18,30 @@ import { Picker } from '@react-native-picker/picker';
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, use, useContext, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Animated, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const HomeContext = createContext<{
   latestSchedulesQuery: UseQueryResult<Schedule[], Error>,
+  selectedSchedule: Schedule | null,
+  setSelectedSchedule: React.Dispatch<React.SetStateAction<Schedule | null>>,
   weatherQuery: UseQueryResult<Weather | null | undefined, Error>
 } | null>(null);
 
 const HomeScreen = () => {
   const location = useLocation();
 
+  const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
   const latestSchedulesQuery = useQuery({
     queryKey: HOME_SCHEDULE_LIST_KEY,
-    queryFn: () => fetchLatestSchedulesByHours(48),
+    queryFn: async () => {
+      const schedules = await fetchLatestSchedulesByHours(48);
+      if (schedules.length > 0) {
+        setSelectedSchedule(schedules[0]);
+      }
+      return schedules;
+    },
     staleTime: Infinity,
     gcTime: Infinity
   });
@@ -48,7 +57,7 @@ const HomeScreen = () => {
   });
 
   return (
-    <HomeContext.Provider value={{ latestSchedulesQuery, weatherQuery }}>
+    <HomeContext.Provider value={{ latestSchedulesQuery, selectedSchedule, setSelectedSchedule, weatherQuery }}>
       <SafeAreaView className="flex-1">
         <ScrollView contentContainerClassName="px-4">
           <Greeting className="mt-4" />
@@ -117,7 +126,7 @@ const ScheduleCard = ({ className = "" }: { className?: string; }) => {
           <Ionicons name="open-outline" size={20} color={colorScheme === 'dark' ? 'white' : 'black'} />
         </TouchableOpacity>
       </View>
-      <View className="mt-8 gap-y-6">
+      <View className="mt-8">
         { query.isFetching && <ActivityIndicator size="small" color={colorScheme === 'dark' ? '#FFFFFF' : '#0891b2'} /> }
         { query.data && query.data.map((item, i) => <ScheduleRecord schedule={item} key={i} />) }
         { query.data && query.data.length === 0 && <Text className="text-center text-slate-500 dark:text-slate-400 italic font-medium">No schedules for next 48 hours!</Text> }
@@ -135,7 +144,8 @@ export const OCCASION_CHIP_COLORS: Record<string, { bg: string; text: string }> 
   "Work": { bg: 'bg-indigo-100', text: 'text-indigo-600' },
 };
 
-const ScheduleRecord = ({schedule}: {schedule: Schedule}) => {
+const ScheduleRecord = ({ schedule }: { schedule: Schedule }) => {
+  const { selectedSchedule, setSelectedSchedule } = useContext(HomeContext)!;
 
   const timeString = schedule.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   const dateLabel = getDateLabel(schedule.timestamp);
@@ -143,7 +153,7 @@ const ScheduleRecord = ({schedule}: {schedule: Schedule}) => {
   const theme = OCCASION_CHIP_COLORS[schedule.occasion];
 
   return (
-    <View className="flex-row items-center">
+    <View className={`flex-row items-center p-4 rounded-xl ${selectedSchedule?.id === schedule.id ? 'bg-slate-100 dark:bg-slate-900' : ''}`} onTouchEnd={() => setSelectedSchedule(schedule)}>
       <View className="items-center w-20">
         <Text className="text-slate-400 text-sm font-medium">{dateLabel}</Text>
         <Text className="font-bold text-md dark:text-white">{timeString}</Text>
@@ -326,19 +336,18 @@ const ManualOutfit = () => {
 const ScheduleOutfit = () => {
   const [accepted, setAccepted] = useState(false);
 
-  const { latestSchedulesQuery } = useContext(HomeContext)!;
-  const schedule = latestSchedulesQuery.data ? latestSchedulesQuery.data[0] : null;
+  const { latestSchedulesQuery, selectedSchedule } = useContext(HomeContext)!;
 
   const location = useLocation();
   
   const query = useQuery({
-    queryKey: HOME_SCHEDULE_RECOMMENDATION_KEY,
+    queryKey: HOME_SCHEDULE_RECOMMENDATION_KEY(selectedSchedule?.id!),
     queryFn: async () => {
-      if (!schedule) throw new Error("Schedule data not available.");
+      if (!selectedSchedule) throw new Error("Schedule data not available.");
       if (!location.coords) throw new Error("Location data not available.");
 
-      const scheduleString = `${schedule.title} | ${schedule.timestamp.toLocaleString()} | ${schedule.occasion}`;
-      const weatherData = await getForecastWeather(location.coords.lat, location.coords.lng, schedule.timestamp);
+      const scheduleString = `${selectedSchedule.title} | ${selectedSchedule.timestamp.toLocaleString()} | ${selectedSchedule.occasion}`;
+      const weatherData = await getForecastWeather(location.coords.lat, location.coords.lng, selectedSchedule.timestamp);
       if (!weatherData) throw new Error("Weather data not available");
 
       console.log("Recommendation request:", { description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
@@ -347,7 +356,7 @@ const ScheduleOutfit = () => {
     },
     staleTime: Infinity,
     gcTime: Infinity,
-    enabled: !!schedule && !!location.coords
+    enabled: !!selectedSchedule && !!location.coords
   });
 
   const handleAccept = async () => {
@@ -365,17 +374,20 @@ const ScheduleOutfit = () => {
   return (
     <>
       {
-         !schedule ?
+         !latestSchedulesQuery.data ?
           <Text className="text-slate-500 dark:text-slate-400 font-medium mt-8">No schedules for next 48 hours!</Text>
           :
-          <OutfitItemView
-            isFetching={query.isFetching}
-            data={query.data}
-            occasion={schedule.occasion}
-            accepted={accepted}
-            handleAccept={handleAccept}
-            handleRetry={handleRetry}
-          />
+          selectedSchedule ?
+            <OutfitItemView
+              isFetching={query.isFetching}
+              data={query.data}
+              occasion={selectedSchedule.occasion}
+              accepted={accepted}
+              handleAccept={handleAccept}
+              handleRetry={handleRetry}
+            />
+            :
+            <Text className="text-slate-500 dark:text-slate-400 font-medium mt-8">Select a schedule to generate an outfit!</Text>
       }
     </>
   );

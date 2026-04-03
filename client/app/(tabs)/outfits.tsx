@@ -41,7 +41,7 @@ const OutfitsScreen = () => {
 
       <FlatList
         data={outfits}
-        keyExtractor={(item) => item.id?.toString() as string}
+        keyExtractor={(item) => item.id?.toString()!}
         renderItem={({ item }) => <OutfitCard outfit={item} />}
         contentContainerClassName="px-4 gap-y-4"
         ListEmptyComponent={query.isPending ? <ActivityIndicator size="large" color="#0891b2" className="mt-20" /> : <EmptyOutfits />}
@@ -96,7 +96,7 @@ const OutfitCard = ({ outfit }: { outfit: Outfit }) => {
   }
 
   const mutationDelete = useMutation({
-    mutationFn: () => deleteOutfit(outfit.id as string),
+    mutationFn: () => deleteOutfit(outfit.id!),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: OUTFIT_LIST_KEY }),
   });
 
