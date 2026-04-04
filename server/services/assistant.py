@@ -62,7 +62,10 @@ Examples:
 
   chat_history[user_id].append(response.choices[0].message)
 
-  return json.loads(response.choices[0].message.content)
+  res = json.loads(response.choices[0].message.content)
+  print(f"Message: {message}\nResponse: {res}\n---")
+
+  return res
 
 async def reset_chat(user_id: str):
   if user_id in chat_history:
