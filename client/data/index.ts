@@ -1,4 +1,4 @@
-import { ClothingLabelKeys } from "@/types";
+import { ClothingLabelKeys, SlotHints } from "@/types";
 
 export const CLOTHING_CATEGORIES = ["Topwear", "Bottomwear", "One-piece", "Footwear"] as const;
 
@@ -31,4 +31,9 @@ export const CLOTHING_LABELS: {
   { title: "Temperatures", key: "temperatures", labels: CLOTHING_TEMPERATURES }
 ];
 
-export const SAMPLE_USER_ID = "ogL5STCYTnVebo9KP9RsY7nMHxC3";
+export const NULL_SLOT_HINTS: SlotHints = {
+  topwear: null,
+  bottomwear: null,
+  footwear: null,
+  outerwear: null,
+};

@@ -1,3 +1,4 @@
+import OutfitClothingItem from '@/components/outfit-clothing-item';
 import { OUTFIT_LIST_KEY } from '@/constants/query_keys';
 import { useLocation } from '@/context/location-context';
 import ClothingItem from '@/models/ClothingItem';
@@ -5,7 +6,7 @@ import { chat, resetChat } from '@/services/assistant-service';
 import { saveOutfit } from '@/services/outfits-service';
 import { getRecommendation } from '@/services/recommendation-service';
 import { getForecastWeather } from '@/services/weather-service';
-import { ClothingOccasion, Message } from '@/types';
+import { ClothingOccasion, Message, SlotHints } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
@@ -41,15 +42,15 @@ const AssistantScreen = () => {
       }]);
 
       if (res.readyToGenerate) {
-        if (!res.time || !res.context || !res.formality) throw new Error("Missing data for outfit generation");
+        if (!res.occasion || !res.time) throw new Error("Missing data for outfit generation");
 
-        const outfitRes = await generateOutfit(res.time, res.context, res.formality);
+        const outfitRes = await generateOutfit(res.occasion, res.time, res.type, res.color);
 
         setMessages(prev => [...prev, {
           type: "outfit",
           content: outfitRes.reason,
           outfit: outfitRes.outfit,
-          occasion: res.formality as ClothingOccasion
+          occasion: res.occasion as ClothingOccasion
         }]);
       }
     } catch (err) {
@@ -59,14 +60,13 @@ const AssistantScreen = () => {
     }
   };
 
-  const generateOutfit = async (timestamp: Date, context: string, formality: string) => {
+  const generateOutfit = async (occasion: string, timestamp: Date, type: SlotHints, color: SlotHints) => {
     if (!location.coords) throw new Error("Location data not available.");
 
     const weatherData = await getForecastWeather(location.coords.lat, location.coords.lng, timestamp);
     if (!weatherData) throw new Error("Weather data not available");
 
-    const fullContext = `${context} | ${timestamp.toLocaleString()} | ${formality}`;
-    return await getRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, fullContext);
+    return await getRecommendation(weatherData.temperature, occasion);
   };
 
   const handleReset = async () => {
@@ -203,9 +203,9 @@ const AIOutfitResponse = ({ message }: { message: Message }) => {
         {/* Outfit */}
         <View className="bg-white rounded-xl shadow-sm border border-slate-100 mt-4">
           <ScrollView horizontal contentContainerClassName="gap-x-4 pb-2 px-2" className="mt-4">
-            <OutfitClothingItem item={outfit.topwear} />
-            <OutfitClothingItem item={outfit.bottomwear} />
-            <OutfitClothingItem item={outfit.footwear} />
+            { outfit.topwear &&<OutfitClothingItem item={outfit.topwear} /> }
+            { outfit.bottomwear &&<OutfitClothingItem item={outfit.bottomwear} /> }
+            { outfit.footwear &&<OutfitClothingItem item={outfit.footwear} /> }
             { outfit.outerwear && <OutfitClothingItem item={outfit.outerwear} /> }
           </ScrollView>
         </View>
@@ -217,15 +217,6 @@ const AIOutfitResponse = ({ message }: { message: Message }) => {
         </TouchableOpacity>
 
       </View>
-    </View>
-  );
-};
-
-const OutfitClothingItem = ({ item }: { item: ClothingItem }) => {
-  return (
-    <View className="items-center gap-y-2">
-      <Image source={item.image} style={{ width: 120, height: 120, borderRadius: 12 }} />
-      <Text className="font-semibold text-slate-500">{item.type}</Text>
     </View>
   );
 };

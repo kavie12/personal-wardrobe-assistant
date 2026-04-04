@@ -3,7 +3,6 @@ import { CLOTHING_OCCASIONS } from '@/data';
 import { useAuth } from '@/context/auth-context';
 import { useColorScheme } from '@/hooks/use-color-scheme.web';
 import { useLocation } from '@/context/location-context';
-import ClothingItem from '@/models/ClothingItem';
 import OutfitGenerationResponse from '@/models/OutfitGenerationResponse';
 import Schedule from '@/models/Schedule';
 import Weather from '@/models/Weather';
@@ -21,6 +20,7 @@ import { useRouter } from 'expo-router';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Animated, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import OutfitClothingItem from '@/components/outfit-clothing-item';
 
 const HomeContext = createContext<{
   latestSchedulesQuery: UseQueryResult<Schedule[], Error>,
@@ -259,8 +259,8 @@ const ManualOutfit = () => {
       if (!weatherQuery.data) {
         throw new Error("Weather data not available");
       }
-      console.log("General recommendation with weather data:", { description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
-      return await getRecommendation({ description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
+      console.log("General recommendation - temperature:", weatherQuery.data.temperature, "Occasion:", selectedOccasion);
+      return await getRecommendation(weatherQuery.data.temperature, selectedOccasion);
     },
     enabled: false
   });
@@ -331,13 +331,12 @@ const ScheduleOutfit = () => {
       if (!selectedSchedule) throw new Error("Schedule data not available.");
       if (!location.coords) throw new Error("Location data not available.");
 
-      const scheduleString = `${selectedSchedule.title} | ${selectedSchedule.timestamp.toLocaleString()} | ${selectedSchedule.occasion}`;
       const weatherData = await getForecastWeather(location.coords.lat, location.coords.lng, selectedSchedule.timestamp);
       if (!weatherData) throw new Error("Weather data not available");
 
-      console.log("Recommendation request:", { description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
+      console.log("Schedule recommendation request - temperature:", weatherData.temperature, "Occasion:", selectedSchedule.occasion);
 
-      return await getRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
+      return await getRecommendation(weatherData.temperature, selectedSchedule.occasion);
     },
     enabled: !!selectedSchedule && !!location.coords
   });
@@ -406,10 +405,10 @@ const OutfitItemView = ({ isFetching, data, occasion, handleRetry } : {
 
           {/* Outfit items */}
           <ScrollView horizontal contentContainerClassName="gap-x-4 pb-4" className="mt-4">
-            <OutfitClothingItem item={data.outfit.topwear} />
-            <OutfitClothingItem item={data.outfit.bottomwear} />
-            <OutfitClothingItem item={data.outfit.footwear} />
-            { data?.outfit.outerwear && <OutfitClothingItem item={data?.outfit.outerwear} /> }
+            { data.outfit.topwear && <OutfitClothingItem item={data.outfit.topwear} /> }
+            { data.outfit.bottomwear && <OutfitClothingItem item={data.outfit.bottomwear} /> }
+            { data.outfit.footwear && <OutfitClothingItem item={data.outfit.footwear} /> }
+            { data.outfit.outerwear && <OutfitClothingItem item={data.outfit.outerwear} /> }
           </ScrollView>
 
           {/* Outfit accept / retry buttons */}
@@ -432,14 +431,5 @@ const OutfitItemView = ({ isFetching, data, occasion, handleRetry } : {
     </>
   );
 }
-
-const OutfitClothingItem = ({ item }: { item: Partial<ClothingItem> }) => {
-  return (
-    <View className="items-center gap-y-2">
-      <Image source={item.image} style={{ width: 120, height: 120, borderRadius: 12 }} />
-      <Text className="font-semibold text-slate-500 dark:text-slate-400">{item.type}</Text>
-    </View>
-  );
-};
 
 export default HomeScreen;
