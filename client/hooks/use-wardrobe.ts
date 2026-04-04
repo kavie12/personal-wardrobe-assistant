@@ -9,8 +9,6 @@ export const useWardrobe = () => {
     queryFn: fetchWardrobe,
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const items = useMemo(

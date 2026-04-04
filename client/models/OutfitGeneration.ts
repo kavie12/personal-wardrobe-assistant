@@ -6,6 +6,7 @@ class OutfitGeneration {
     bottomwear: ClothingItem;
     footwear: ClothingItem;
     outerwear: ClothingItem | null;
+    accepted?: boolean;
 
     constructor(topwear: ClothingItem, bottomwear: ClothingItem, footwear: ClothingItem, outerwear?: ClothingItem | null) {
         this.topwear = topwear;
@@ -16,6 +17,10 @@ class OutfitGeneration {
 
     setId(id: string) {
         this.id = id;
+    }
+
+    setAccepted(accepted: boolean) {
+        this.accepted = accepted;
     }
 };
 
