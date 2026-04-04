@@ -36,11 +36,7 @@ const HomeScreen = () => {
   const latestSchedulesQuery = useQuery({
     queryKey: HOME_SCHEDULE_LIST_KEY,
     queryFn: async () => {
-      const schedules = await fetchLatestSchedulesByHours(48);
-      if (schedules.length > 0) {
-        setSelectedSchedule(schedules[0]);
-      }
-      return schedules;
+      return await fetchLatestSchedulesByHours(48);
     },
   });
   const weatherQuery = useQuery({
@@ -53,6 +49,12 @@ const HomeScreen = () => {
     gcTime: 3600000,
     enabled: !!location.coords
   });
+
+  useEffect(() => {
+    if (latestSchedulesQuery.data && latestSchedulesQuery.data.length > 0) {
+      setSelectedSchedule(latestSchedulesQuery.data[0]);
+    }
+  }, [latestSchedulesQuery.data]);
 
   return (
     <HomeContext.Provider value={{ latestSchedulesQuery, selectedSchedule, setSelectedSchedule, weatherQuery }}>

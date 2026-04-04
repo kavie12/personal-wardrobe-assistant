@@ -4,9 +4,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { QueryClient } from '@tanstack/react-query';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { deserialize, serialize } from '@/utils/json-date';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,7 +19,9 @@ const queryClient = new QueryClient({
 });
 
 const persister = createAsyncStoragePersister({
-  storage: AsyncStorage
+  storage: AsyncStorage,
+  serialize,
+  deserialize
 });
 
 export default function TabLayout() {
