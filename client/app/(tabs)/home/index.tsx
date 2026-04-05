@@ -352,7 +352,7 @@ const ScheduleOutfit = () => {
   return (
     <>
       {
-         !latestSchedulesQuery.data ?
+        latestSchedulesQuery.data && latestSchedulesQuery.data.length === 0 ?
           <Text className="text-slate-500 dark:text-slate-400 font-medium mt-8">No schedules for next 48 hours!</Text>
           :
           selectedSchedule ?
