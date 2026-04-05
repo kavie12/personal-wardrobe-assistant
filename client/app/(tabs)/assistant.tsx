@@ -1,6 +1,6 @@
+import OutfitClothingItem from '@/components/outfit-clothing-item';
 import { OUTFIT_LIST_KEY } from '@/constants/query_keys';
 import { useLocation } from '@/context/location-context';
-import ClothingItem from '@/models/ClothingItem';
 import { chat, resetChat } from '@/services/assistant-service';
 import { saveOutfit } from '@/services/outfits-service';
 import { getRecommendation } from '@/services/recommendation-service';
@@ -8,7 +8,6 @@ import { getForecastWeather } from '@/services/weather-service';
 import { ClothingOccasion, Message } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Image } from 'expo-image';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -201,7 +200,7 @@ const AIOutfitResponse = ({ message }: { message: Message }) => {
         <Text className="text-slate-800 leading-6 dark:text-gray-100">{content}</Text>
         
         {/* Outfit */}
-        <View className="bg-white rounded-xl shadow-sm border border-slate-100 mt-4">
+        <View className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-600 mt-4">
           <ScrollView horizontal contentContainerClassName="gap-x-4 pb-2 px-2" className="mt-4">
             <OutfitClothingItem item={outfit.topwear} />
             <OutfitClothingItem item={outfit.bottomwear} />
@@ -211,21 +210,12 @@ const AIOutfitResponse = ({ message }: { message: Message }) => {
         </View>
 
         {/* Save outfit button */}
-        <TouchableOpacity onPress={() => mutationSave.mutate()} activeOpacity={0.7} className="flex-row items-center gap-x-2 border border-blue-600 px-3 py-1 rounded-lg self-start mt-4">
+        <TouchableOpacity onPress={() => mutationSave.mutate()} activeOpacity={0.7} className="flex-row items-center gap-x-2 bg-blue-100 px-3 py-1 rounded-lg self-start mt-4">
           <Ionicons name="save-outline" size={16} color="#2563eb" />
           <Text className="text-blue-600 font-medium text-sm">Save Outfit</Text>
         </TouchableOpacity>
 
       </View>
-    </View>
-  );
-};
-
-const OutfitClothingItem = ({ item }: { item: ClothingItem }) => {
-  return (
-    <View className="items-center gap-y-2">
-      <Image source={item.image} style={{ width: 120, height: 120, borderRadius: 12 }} />
-      <Text className="font-semibold text-slate-500">{item.type}</Text>
     </View>
   );
 };

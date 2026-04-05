@@ -3,7 +3,6 @@ import { CLOTHING_OCCASIONS } from '@/data';
 import { useAuth } from '@/context/auth-context';
 import { useColorScheme } from '@/hooks/use-color-scheme.web';
 import { useLocation } from '@/context/location-context';
-import ClothingItem from '@/models/ClothingItem';
 import OutfitGenerationResponse from '@/models/OutfitGenerationResponse';
 import Schedule from '@/models/Schedule';
 import Weather from '@/models/Weather';
@@ -21,6 +20,7 @@ import { useRouter } from 'expo-router';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Animated, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import OutfitClothingItem from '@/components/outfit-clothing-item';
 
 const HomeContext = createContext<{
   latestSchedulesQuery: UseQueryResult<Schedule[], Error>,
@@ -409,7 +409,7 @@ const OutfitItemView = ({ isFetching, data, occasion, handleRetry } : {
             <OutfitClothingItem item={data.outfit.topwear} />
             <OutfitClothingItem item={data.outfit.bottomwear} />
             <OutfitClothingItem item={data.outfit.footwear} />
-            { data?.outfit.outerwear && <OutfitClothingItem item={data?.outfit.outerwear} /> }
+            { data.outfit.outerwear && <OutfitClothingItem item={data.outfit.outerwear} /> }
           </ScrollView>
 
           {/* Outfit accept / retry buttons */}
@@ -432,14 +432,5 @@ const OutfitItemView = ({ isFetching, data, occasion, handleRetry } : {
     </>
   );
 }
-
-const OutfitClothingItem = ({ item }: { item: Partial<ClothingItem> }) => {
-  return (
-    <View className="items-center gap-y-2">
-      <Image source={item.image} style={{ width: 120, height: 120, borderRadius: 12 }} />
-      <Text className="font-semibold text-slate-500 dark:text-slate-400">{item.type}</Text>
-    </View>
-  );
-};
 
 export default HomeScreen;

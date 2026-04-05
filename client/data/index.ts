@@ -30,5 +30,3 @@ export const CLOTHING_LABELS: {
   { title: "Occasions", key: "occasions", labels: CLOTHING_OCCASIONS },
   { title: "Temperatures", key: "temperatures", labels: CLOTHING_TEMPERATURES }
 ];
-
-export const SAMPLE_USER_ID = "ogL5STCYTnVebo9KP9RsY7nMHxC3";
