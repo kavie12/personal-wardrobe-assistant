@@ -1,7 +1,6 @@
 import OutfitClothingItem from '@/components/outfit-clothing-item';
 import { OUTFIT_LIST_KEY } from '@/constants/query_keys';
 import { useLocation } from '@/context/location-context';
-import ClothingItem from '@/models/ClothingItem';
 import { chat, resetChat } from '@/services/assistant-service';
 import { saveOutfit } from '@/services/outfits-service';
 import { getRecommendation } from '@/services/recommendation-service';
@@ -9,7 +8,6 @@ import { getForecastWeather } from '@/services/weather-service';
 import { ClothingOccasion, Message } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Image } from 'expo-image';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
