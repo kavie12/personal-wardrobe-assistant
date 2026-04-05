@@ -28,10 +28,3 @@ export interface Message {
   outfit?: OutfitGeneration,
   occasion?: ClothingOccasion
 }
-
-export interface SlotHints {
-  topwear: string | null;
-  bottomwear: string | null;
-  footwear: string | null;
-  outerwear: string | null;
-}

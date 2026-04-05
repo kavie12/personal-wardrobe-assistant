@@ -259,8 +259,8 @@ const ManualOutfit = () => {
       if (!weatherQuery.data) {
         throw new Error("Weather data not available");
       }
-      console.log("General recommendation - temperature:", weatherQuery.data.temperature, "Occasion:", selectedOccasion);
-      return await getRecommendation(weatherQuery.data.temperature, selectedOccasion);
+      console.log("General recommendation with weather data:", { description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
+      return await getRecommendation({ description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
     },
     enabled: false
   });
@@ -331,12 +331,13 @@ const ScheduleOutfit = () => {
       if (!selectedSchedule) throw new Error("Schedule data not available.");
       if (!location.coords) throw new Error("Location data not available.");
 
+      const scheduleString = `${selectedSchedule.title} | ${selectedSchedule.timestamp.toLocaleString()} | ${selectedSchedule.occasion}`;
       const weatherData = await getForecastWeather(location.coords.lat, location.coords.lng, selectedSchedule.timestamp);
       if (!weatherData) throw new Error("Weather data not available");
 
-      console.log("Schedule recommendation request - temperature:", weatherData.temperature, "Occasion:", selectedSchedule.occasion);
+      console.log("Recommendation request:", { description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
 
-      return await getRecommendation(weatherData.temperature, selectedSchedule.occasion);
+      return await getRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
     },
     enabled: !!selectedSchedule && !!location.coords
   });
@@ -405,9 +406,9 @@ const OutfitItemView = ({ isFetching, data, occasion, handleRetry } : {
 
           {/* Outfit items */}
           <ScrollView horizontal contentContainerClassName="gap-x-4 pb-4" className="mt-4">
-            { data.outfit.topwear && <OutfitClothingItem item={data.outfit.topwear} /> }
-            { data.outfit.bottomwear && <OutfitClothingItem item={data.outfit.bottomwear} /> }
-            { data.outfit.footwear && <OutfitClothingItem item={data.outfit.footwear} /> }
+            <OutfitClothingItem item={data.outfit.topwear} />
+            <OutfitClothingItem item={data.outfit.bottomwear} />
+            <OutfitClothingItem item={data.outfit.footwear} />
             { data.outfit.outerwear && <OutfitClothingItem item={data.outfit.outerwear} /> }
           </ScrollView>
 

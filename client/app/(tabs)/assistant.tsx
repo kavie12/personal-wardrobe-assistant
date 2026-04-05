@@ -6,7 +6,7 @@ import { chat, resetChat } from '@/services/assistant-service';
 import { saveOutfit } from '@/services/outfits-service';
 import { getRecommendation } from '@/services/recommendation-service';
 import { getForecastWeather } from '@/services/weather-service';
-import { ClothingOccasion, Message, SlotHints } from '@/types';
+import { ClothingOccasion, Message } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
@@ -42,15 +42,15 @@ const AssistantScreen = () => {
       }]);
 
       if (res.readyToGenerate) {
-        if (!res.occasion || !res.time) throw new Error("Missing data for outfit generation");
+        if (!res.time || !res.context || !res.formality) throw new Error("Missing data for outfit generation");
 
-        const outfitRes = await generateOutfit(res.occasion, res.time, res.type, res.color);
+        const outfitRes = await generateOutfit(res.time, res.context, res.formality);
 
         setMessages(prev => [...prev, {
           type: "outfit",
           content: outfitRes.reason,
           outfit: outfitRes.outfit,
-          occasion: res.occasion as ClothingOccasion
+          occasion: res.formality as ClothingOccasion
         }]);
       }
     } catch (err) {
@@ -60,13 +60,14 @@ const AssistantScreen = () => {
     }
   };
 
-  const generateOutfit = async (occasion: string, timestamp: Date, type: SlotHints, color: SlotHints) => {
+  const generateOutfit = async (timestamp: Date, context: string, formality: string) => {
     if (!location.coords) throw new Error("Location data not available.");
 
     const weatherData = await getForecastWeather(location.coords.lat, location.coords.lng, timestamp);
     if (!weatherData) throw new Error("Weather data not available");
 
-    return await getRecommendation(weatherData.temperature, occasion);
+    const fullContext = `${context} | ${timestamp.toLocaleString()} | ${formality}`;
+    return await getRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, fullContext);
   };
 
   const handleReset = async () => {
@@ -201,17 +202,17 @@ const AIOutfitResponse = ({ message }: { message: Message }) => {
         <Text className="text-slate-800 leading-6 dark:text-gray-100">{content}</Text>
         
         {/* Outfit */}
-        <View className="bg-white rounded-xl shadow-sm border border-slate-100 mt-4">
+        <View className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-600 mt-4">
           <ScrollView horizontal contentContainerClassName="gap-x-4 pb-2 px-2" className="mt-4">
-            { outfit.topwear &&<OutfitClothingItem item={outfit.topwear} /> }
-            { outfit.bottomwear &&<OutfitClothingItem item={outfit.bottomwear} /> }
-            { outfit.footwear &&<OutfitClothingItem item={outfit.footwear} /> }
+            <OutfitClothingItem item={outfit.topwear} />
+            <OutfitClothingItem item={outfit.bottomwear} />
+            <OutfitClothingItem item={outfit.footwear} />
             { outfit.outerwear && <OutfitClothingItem item={outfit.outerwear} /> }
           </ScrollView>
         </View>
 
         {/* Save outfit button */}
-        <TouchableOpacity onPress={() => mutationSave.mutate()} activeOpacity={0.7} className="flex-row items-center gap-x-2 border border-blue-600 px-3 py-1 rounded-lg self-start mt-4">
+        <TouchableOpacity onPress={() => mutationSave.mutate()} activeOpacity={0.7} className="flex-row items-center gap-x-2 bg-blue-100 px-3 py-1 rounded-lg self-start mt-4">
           <Ionicons name="save-outline" size={16} color="#2563eb" />
           <Text className="text-blue-600 font-medium text-sm">Save Outfit</Text>
         </TouchableOpacity>
