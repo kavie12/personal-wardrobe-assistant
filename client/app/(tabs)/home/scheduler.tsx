@@ -47,9 +47,7 @@ const Header = ({ openAddModal, className = "" }: { openAddModal: () => void; cl
 const ScheduleList = ({ className = "" }: { className?: string }) => {
   const query = useQuery({
     queryKey: SCHEDULE_LIST_KEY,
-    queryFn: () => fetchSchedules(),
-    staleTime: Infinity,
-    gcTime: Infinity
+    queryFn: () => fetchSchedules()
   });
 
   return (

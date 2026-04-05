@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from fastapi import HTTPException
 
 class ClassificationResponse(BaseModel):
-    category: Literal["Topwear", "Bottomwear", "One-piece", "Footwear"]
+    category: Literal["Topwear", "Bottomwear", "One-piece", "Footwear", "Outerwear"]
     type: Literal["T-shirt", "Shirt", "Polo shirt", "Hoodie", "Sweater", "Jacket", "Blazer", "Coat", "Jeans", "Trousers", "Shorts",
                     "Skirt", "Leggings","Joggers", "Dress", "Jumpsuit", "Romper", "Suit", "Sneakers", "Casual shoes",
                     "Formal shoes", "Sandals", "Flip-flops", "Boots", "Heels"]

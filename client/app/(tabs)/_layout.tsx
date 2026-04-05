@@ -9,14 +9,7 @@ import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persi
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { deserialize, serialize } from '@/utils/json-date';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: Infinity,
-      gcTime: Infinity
-    }
-  }
-});
+const queryClient = new QueryClient();
 
 const persister = createAsyncStoragePersister({
   storage: AsyncStorage,

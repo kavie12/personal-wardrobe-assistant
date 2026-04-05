@@ -45,8 +45,6 @@ const HomeScreen = () => {
       if (!location.coords) return;
       return await getCurrentWeather(location.coords.lat, location.coords.lng)
     },
-    staleTime: 3600000,
-    gcTime: 3600000,
     enabled: !!location.coords
   });
 
@@ -167,7 +165,7 @@ const ScheduleRecord = ({ schedule }: { schedule: Schedule }) => {
   );
 };
 
-const outfitCardModes = ["Manual", "Schedule"];
+const outfitCardModes = ["Generate", "Schedule-Based"];
 
 const OutfitCard = ({ className = "" }: { className: string; }) => {
   const [activeMode, setActiveMode] = useState(0);
@@ -240,15 +238,15 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
       {
         // Outfit Section
         activeMode === 0 ?
-          <ManualOutfit />
+          <GenerateOutfitMode />
           :
-          <ScheduleOutfit />
+          <ScheduleBasedOutfitMode />
       }
     </View>
   );
 };
 
-const ManualOutfit = () => {
+const GenerateOutfitMode = () => {
   const {weatherQuery} = useContext(HomeContext)!;
   const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion>("Casual");
 
@@ -262,6 +260,8 @@ const ManualOutfit = () => {
       console.log("General recommendation with weather data:", { description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
       return await getRecommendation({ description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
     },
+    staleTime: Infinity,
+    gcTime: Infinity,
     enabled: false
   });
 
@@ -308,7 +308,7 @@ const ManualOutfit = () => {
         </View>
       }
 
-      <OutfitItemView
+      <GeneratedOutfitItemView
         isFetching={query.isFetching}
         data={query.data}
         occasion={selectedOccasion}
@@ -320,7 +320,7 @@ const ManualOutfit = () => {
   );
 };
 
-const ScheduleOutfit = () => {
+const ScheduleBasedOutfitMode = () => {
   const { latestSchedulesQuery, selectedSchedule } = useContext(HomeContext)!;
 
   const location = useLocation();
@@ -339,6 +339,8 @@ const ScheduleOutfit = () => {
 
       return await getRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
     },
+    staleTime: Infinity,
+    gcTime: Infinity,
     enabled: !!selectedSchedule && !!location.coords
   });
 
@@ -356,7 +358,7 @@ const ScheduleOutfit = () => {
           <Text className="text-slate-500 dark:text-slate-400 font-medium mt-8">No schedules for next 48 hours!</Text>
           :
           selectedSchedule ?
-            <OutfitItemView
+            <GeneratedOutfitItemView
               isFetching={query.isFetching}
               data={query.data}
               occasion={selectedSchedule.occasion}
@@ -369,7 +371,7 @@ const ScheduleOutfit = () => {
   );
 };
 
-const OutfitItemView = ({ isFetching, data, occasion, handleRetry } : {
+const GeneratedOutfitItemView = ({ isFetching, data, occasion, handleRetry } : {
   isFetching: boolean;
   data: OutfitGenerationResponse | undefined;
   occasion: string;
