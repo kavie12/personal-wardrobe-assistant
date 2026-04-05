@@ -1,6 +1,6 @@
 import { ClothingLabelKeys } from "@/types";
 
-export const CLOTHING_CATEGORIES = ["Topwear", "Bottomwear", "One-piece", "Footwear"] as const;
+export const CLOTHING_CATEGORIES = ["Topwear", "Bottomwear", "One-piece", "Footwear", "Outerwear"] as const;
 
 export const CLOTHING_TYPES = [
   "T-shirt", "Shirt", "Polo shirt", "Hoodie", "Sweater", "Jacket", "Blazer", "Coat", 

@@ -7,6 +7,8 @@ export const useWardrobe = () => {
   const query = useInfiniteQuery({
     queryKey: WARDROBE_LIST_KEY,
     queryFn: fetchWardrobe,
+    staleTime: Infinity,
+    gcTime: Infinity,
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage,
   });

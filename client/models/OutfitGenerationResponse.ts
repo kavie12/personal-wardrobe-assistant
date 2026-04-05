@@ -1,11 +1,11 @@
-import OutfitGeneration from "./OutfitGeneration";
+import Outfit from "./Outfit";
 
 class OutfitGenerationResponse {
     id: string;
-    outfit: OutfitGeneration;
+    outfit: Outfit;
     reason: string
 
-    constructor(id: string, outfit: OutfitGeneration, reason: string) {
+    constructor(id: string, outfit: Outfit, reason: string) {
         this.id = id;
         this.outfit = outfit;
         this.reason = reason;
