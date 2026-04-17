@@ -1,4 +1,5 @@
 import { serverApi } from "@/config/serverApi";
+import { ItemPreferences } from "./recommendation-service";
 
 const SERVICE = "assistant";
 
@@ -8,6 +9,7 @@ interface ChatResponse {
   context: string | null;
   time: Date | null;
   formality: string | null;
+  itemPreferences?: ItemPreferences;
 }
 
 export const chat = async (message: string): Promise<ChatResponse> => {
@@ -15,12 +17,13 @@ export const chat = async (message: string): Promise<ChatResponse> => {
     message: message
   });
   
-  const chatObj = {
+  const chatObj: ChatResponse = {
     message: res.data.message,
     readyToGenerate: res.data.ready_to_generate,
     context: res.data.context,
     time: res.data.time ? new Date(res.data.time) : null,
-    formality: res.data.formality
+    formality: res.data.formality,
+    itemPreferences: res.data.item_preferences
   };
 
   console.log(chatObj);

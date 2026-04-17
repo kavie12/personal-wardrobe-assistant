@@ -5,11 +5,28 @@ import OutfitGenerationResponse from "@/models/OutfitGenerationResponse";
 
 const SERVICE = "recommendation";
 
-export const getRecommendation = async (weatherData: { temperature: number, description: string }, context: string): Promise<OutfitGenerationResponse> => {
+export interface SlotPreference {
+    colors?: string[];
+    type?: string;
+}
+
+export interface ItemPreferences {
+    topwear?:    SlotPreference;
+    bottomwear?: SlotPreference;
+    footwear?:   SlotPreference;
+    outerwear?:  SlotPreference;
+}
+
+export const getRecommendation = async (
+    weatherData: { temperature: number, description: string },
+    context: string,
+    itemPreferences?: ItemPreferences,
+): Promise<OutfitGenerationResponse> => {
     try {
         const res = await serverApi.post(`${SERVICE}/get-recommendation`, {
             weather_data: weatherData,
-            context: context
+            context: context,
+            item_preferences: itemPreferences
         });
 
         return new OutfitGenerationResponse(

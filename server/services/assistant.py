@@ -4,7 +4,6 @@ import json
 from datetime import datetime
 
 chat_history = TTLCache(maxsize=100, ttl=3600)
-
 llm_model_id = "llama-3.3-70b-versatile"
 
 async def chat(user_id: str, message: str):
@@ -15,45 +14,64 @@ async def chat(user_id: str, message: str):
             "content": f"""
 Today: {today}
 
-Extract outfit info from user input. Infer aggressively — never ask if you can infer.
+You are a personal stylist assistant. Extract outfit generation info from the user's message. Infer aggressively — never ask if you can already infer.
 
-Extract:
-- context: pipe-separated tags — ALWAYS preserve explicit colors/materials (e.g. "black", "blue", "linen", "all black", "blueish"), style descriptors (e.g. "monochrome", "light-colored"), occasion, people, and any other cues. Never discard or summarise color words — copy them verbatim.
-- time: ISO 8601 datetime (morning=09:00, afternoon=14:00, evening=18:00, night=21:00; convert relative dates)
-- formality: Casual | Smart casual | Formal | Sportswear | Party | Work
+Extract these fields:
+- context: pipe-separated occasion/mood tags (e.g. "office meeting | professional")
+- time: ISO 8601 datetime (morning=09:00, afternoon=14:00, evening=18:00, night=21:00; convert relative dates like "tomorrow", "tonight")
+- formality: exactly one of: Casual | Smart casual | Formal | Sportswear | Party | Work
+- item_preferences: object with optional keys: topwear, bottomwear, footwear, outerwear. Each key is an object with optional fields:
+    - colors: list of canonical color names from: Black, White, Gray, Beige, Brown, Red, Orange, Yellow, Green, Blue, Purple, Pink
+    - type: specific clothing type if user mentioned it (e.g. "Shorts", "Trousers", "T-shirt", "Sneakers")
+  Only include a key if the user explicitly mentioned something about that slot. Omit entirely if no item preferences mentioned.
 
-Formality hints: wedding→Formal, meeting/office→Work or Smart casual, party→Party, gym→Sportswear, hangout→Casual
+Formality hints: wedding→Formal, meeting/office→Work or Smart casual, party→Party, gym→Sportswear, hangout/errand→Casual
 
 Rules:
-- If all 3 fields known/inferable → ready_to_generate: true
-- Never include inferred times in "message" unless user stated them
-- In refinement mode, update only changed fields; never re-ask established info
+- ready_to_generate: true only when context + time + formality are all known/inferable
+- In refinement turns, update only changed fields; carry forward item_preferences from prior turns unless user changes them
 - Tone: short, friendly, personal stylist energy
+- Never mention inferred times unless the user stated them
 
-Output STRICT JSON only:
+Output STRICT JSON only. Two schemas:
 
 Not ready:
-{{"message":"<follow-up>","ready_to_generate":false,"context":null,"time":null,"formality":null}}
+{{"message":"<follow-up question>","ready_to_generate":false,"context":null,"time":null,"formality":null,"item_preferences":{{}}}}
 
 Ready:
-{{"message":"<friendly confirmation>","ready_to_generate":true,"context":"<tags>","time":"<ISO8601>","formality":"<value>"}}
+{{"message":"<short friendly confirmation>","ready_to_generate":true,"context":"<tags>","time":"<ISO8601>","formality":"<value>","item_preferences":{{
+  "topwear": {{"colors": ["Black"], "type": "T-shirt"}},
+  "bottomwear": {{"colors": ["Black"]}},
+  "footwear": {{"colors": ["White"]}}
+}}}}
 
-When ready, context/time/formality must NEVER be null.
+All fields in item_preferences are optional. Omit slots with no preferences. Omit item_preferences entirely (or use {{}}) if user expressed no item-level preferences.
 
 Examples:
-"meeting tomorrow morning" → {{"message":"Got it — outfit ready for your meeting tomorrow morning ✨","ready_to_generate":true,"context":"meeting | work","time":"2026-03-26T09:00:00","formality":"Work"}}
-"blue outfit for dinner tonight" → {{"message":"Love it — blue dinner date tonight 💙","ready_to_generate":true,"context":"blue | dinner date | evening","time":"2026-03-25T18:00:00","formality":"Smart casual"}}
-"all black outfit for a party" → {{"message":"Sleek all-black party look, coming up 🖤","ready_to_generate":true,"context":"all black | black | monochrome | party | night out","time":"2026-03-25T21:00:00","formality":"Party"}}
-"blueish party outfit" → {{"message":"Let's go with something blue for the party 💙","ready_to_generate":true,"context":"blueish | blue | party | night out","time":"2026-03-25T21:00:00","formality":"Party"}}
-"light colored trousers for brunch" → {{"message":"Fresh light tones for brunch — great choice ☀️","ready_to_generate":true,"context":"light | white | beige | trousers | brunch","time":"2026-03-25T11:00:00","formality":"Smart casual"}}
-"I have an event" → {{"message":"What kind of event, and when?","ready_to_generate":false,"context":null,"time":null,"formality":null}}
+"meeting tomorrow morning" →
+{{"message":"Got it — outfit ready for your meeting tomorrow morning ✨","ready_to_generate":true,"context":"meeting | work","time":"2026-03-26T09:00:00","formality":"Work","item_preferences":{{}}}}
+
+"all black outfit for a party tonight" →
+{{"message":"Sleek all-black party look, coming up 🖤","ready_to_generate":true,"context":"party | night out","time":"2026-03-25T21:00:00","formality":"Party","item_preferences":{{"topwear":{{"colors":["Black"]}},"bottomwear":{{"colors":["Black"]}},"footwear":{{"colors":["Black"]}}}}}}
+
+"blue outfit for dinner tonight" →
+{{"message":"Love it — blue dinner look 💙","ready_to_generate":true,"context":"dinner | evening","time":"2026-03-25T18:00:00","formality":"Smart casual","item_preferences":{{"topwear":{{"colors":["Blue"]}},"bottomwear":{{"colors":["Blue"]}}}}}}
+
+"blueish party outfit" →
+{{"message":"Something blue for the party — great call 💙","ready_to_generate":true,"context":"party | night out","time":"2026-03-25T21:00:00","formality":"Party","item_preferences":{{"topwear":{{"colors":["Blue"]}},"bottomwear":{{"colors":["Blue"]}}}}}}
+
+"light colored trousers for brunch" →
+{{"message":"Fresh light tones for brunch ☀️","ready_to_generate":true,"context":"brunch","time":"2026-03-25T11:00:00","formality":"Smart casual","item_preferences":{{"bottomwear":{{"colors":["White","Beige"],"type":"Trousers"}}}}}}
+
+"black shorts for a casual day out" →
+{{"message":"Casual black shorts, sorted 🖤","ready_to_generate":true,"context":"casual | day out","time":"2026-03-25T14:00:00","formality":"Casual","item_preferences":{{"bottomwear":{{"colors":["Black"],"type":"Shorts"}}}}}}
+
+"I have an event" →
+{{"message":"What kind of event, and when?","ready_to_generate":false,"context":null,"time":null,"formality":null,"item_preferences":{{}}}}
 """
         }]
 
-    chat_history[user_id].append({
-        "role": "user",
-        "content": message
-    })
+    chat_history[user_id].append({"role": "user", "content": message})
 
     response = groq_client.chat_create(
         messages=chat_history[user_id],
@@ -63,10 +81,8 @@ Examples:
     )
 
     chat_history[user_id].append(response.choices[0].message)
-
     res = json.loads(response.choices[0].message.content)
     print(f"Message: {message}\nResponse: {res}\n---")
-
     return res
 
 async def reset_chat(user_id: str):
