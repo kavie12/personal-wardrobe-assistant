@@ -3,7 +3,7 @@ import { OUTFIT_LIST_KEY } from '@/constants/query_keys';
 import { useLocation } from '@/context/location-context';
 import { chat, resetChat } from '@/services/assistant-service';
 import { saveOutfit } from '@/services/outfits-service';
-import { getRecommendation } from '@/services/recommendation-service';
+import { getRecommendation, ItemPreferences } from '@/services/recommendation-service';
 import { getForecastWeather } from '@/services/weather-service';
 import { ClothingOccasion, Message } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
@@ -42,7 +42,12 @@ const AssistantScreen = () => {
       if (res.readyToGenerate) {
         if (!res.time || !res.context || !res.formality) throw new Error("Missing data for outfit generation");
 
-        const outfitRes = await generateOutfit(res.time, res.context, res.formality);
+        const outfitRes = await generateOutfit(
+          res.time,
+          res.context,
+          res.formality,
+          res.itemPreferences,
+        );
 
         setMessages(prev => [...prev, {
           type: "outfit",
@@ -58,14 +63,24 @@ const AssistantScreen = () => {
     }
   };
 
-  const generateOutfit = async (timestamp: Date, context: string, formality: string) => {
+  const generateOutfit = async (
+    timestamp: Date,
+    context: string,
+    formality: string,
+    itemPreferences?: ItemPreferences,
+    excludedItemIds?: string[],
+  ) => {
     if (!location.coords) throw new Error("Location data not available.");
-
     const weatherData = await getForecastWeather(location.coords.lat, location.coords.lng, timestamp);
     if (!weatherData) throw new Error("Weather data not available");
 
-    const fullContext = `${context} | ${timestamp.toLocaleString()} | ${formality}`;
-    return await getRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, fullContext);
+    const fullContext = `${context} | ${formality}`;
+    return await getRecommendation(
+      { description: weatherData.description, temperature: weatherData.temperature },
+      fullContext,
+      itemPreferences,
+      excludedItemIds,
+    );
   };
 
   const handleReset = async () => {
