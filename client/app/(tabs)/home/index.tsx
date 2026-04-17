@@ -249,27 +249,16 @@ const OutfitCard = ({ className = "" }: { className: string; }) => {
 const GenerateOutfitMode = () => {
   const {weatherQuery} = useContext(HomeContext)!;
   const [selectedOccasion, setSelectedOccasion] = useState<ClothingOccasion>("Casual");
-  const queryClient = useQueryClient();
 
+  const queryClient = useQueryClient();
   const query = useQuery({
     queryKey: HOME_MANUAL_RECOMMENDATION_KEY,
     queryFn: async () => {
-      if (!weatherQuery.data) throw new Error("Weather data not available");
-
-      // Collect IDs from the previous result to exclude on retry
-      const previous = queryClient.getQueryData<any>(HOME_MANUAL_RECOMMENDATION_KEY);
-      const excludedIds = previous ? Object.values(previous.outfit)
-        .filter(Boolean)
-        .map((item: any) => item.id) : [];
-
+      if (!weatherQuery.data) {
+        throw new Error("Weather data not available");
+      }
       console.log("General recommendation with weather data:", { description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
-
-      return await getRecommendation(
-        { description: weatherQuery.data.description, temperature: weatherQuery.data.temperature },
-        selectedOccasion,
-        undefined,
-        excludedIds,   // ← excluded on retry, empty on first run
-      );
+      return await getRecommendation({ description: weatherQuery.data.description, temperature: weatherQuery.data.temperature }, selectedOccasion);
     },
     staleTime: Infinity,
     gcTime: Infinity,
@@ -333,8 +322,8 @@ const GenerateOutfitMode = () => {
 
 const ScheduleBasedOutfitMode = () => {
   const { latestSchedulesQuery, selectedSchedule } = useContext(HomeContext)!;
+
   const location = useLocation();
-  const queryClient = useQueryClient();
   
   const query = useQuery({
     queryKey: HOME_SCHEDULE_RECOMMENDATION_KEY(selectedSchedule?.id!),
@@ -348,17 +337,7 @@ const ScheduleBasedOutfitMode = () => {
 
       console.log("Recommendation request:", { description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
 
-      const previous = queryClient.getQueryData<any>(HOME_SCHEDULE_RECOMMENDATION_KEY(selectedSchedule.id!));
-      const excludedIds = previous ? Object.values(previous.outfit)
-        .filter(Boolean)
-        .map((item: any) => item.id) : [];
-
-      return await getRecommendation(
-        { description: weatherData.description, temperature: weatherData.temperature },
-        scheduleString,
-        undefined,
-        excludedIds,
-      );
+      return await getRecommendation({ description: weatherData.description, temperature: weatherData.temperature }, scheduleString);
     },
     staleTime: Infinity,
     gcTime: Infinity,
