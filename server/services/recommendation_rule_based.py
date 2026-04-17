@@ -1,7 +1,7 @@
 import uuid
 import base64
 import random
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Set
 
 from config.firebase import db
 from services.wardrobe import collection_ref as wardrobe_ref
@@ -9,85 +9,43 @@ from google.cloud.firestore_v1.base_query import FieldFilter
 
 
 # ---------------------------------------------------------------------------
-# Color compatibility matrix
+# Color compatibility
 # ---------------------------------------------------------------------------
 
 COLOR_GROUPS: Dict[str, str] = {
-    "Black":  "neutral",
-    "White":  "neutral",
-    "Gray":   "neutral",
-    "Beige":  "neutral",
-    "Brown":  "warm",
-    "Red":    "warm",
-    "Orange": "warm",
-    "Yellow": "earthy",
-    "Green":  "earthy",
-    "Blue":   "cool",
-    "Purple": "cool",
-    "Pink":   "cool",
+    "Black": "neutral", "White": "neutral", "Gray": "neutral", "Beige": "neutral",
+    "Brown": "warm",    "Red":   "warm",    "Orange": "warm",
+    "Yellow": "earthy", "Green": "earthy",
+    "Blue":   "cool",   "Purple": "cool",   "Pink": "cool",
 }
 
 COMPATIBLE_PAIRS = {
-    frozenset({"Blue",   "White"}),
-    frozenset({"Blue",   "Gray"}),
-    frozenset({"Blue",   "Beige"}),
-    frozenset({"Blue",   "Brown"}),
-    frozenset({"Black",  "White"}),
-    frozenset({"Black",  "Red"}),
-    frozenset({"Black",  "Pink"}),
-    frozenset({"Black",  "Yellow"}),
-    frozenset({"Green",  "Beige"}),
-    frozenset({"Green",  "Brown"}),
-    frozenset({"Brown",  "Beige"}),
-    frozenset({"White",  "Red"}),
-    frozenset({"White",  "Pink"}),
-    frozenset({"White",  "Green"}),
-    frozenset({"Gray",   "Blue"}),
-    frozenset({"Gray",   "Pink"}),
-    frozenset({"Gray",   "Purple"}),
-    frozenset({"Beige",  "Brown"}),
+    frozenset({"Blue",   "White"}),  frozenset({"Blue",   "Gray"}),
+    frozenset({"Blue",   "Beige"}),  frozenset({"Blue",   "Brown"}),
+    frozenset({"Black",  "White"}),  frozenset({"Black",  "Red"}),
+    frozenset({"Black",  "Pink"}),   frozenset({"Black",  "Yellow"}),
+    frozenset({"Green",  "Beige"}),  frozenset({"Green",  "Brown"}),
+    frozenset({"Brown",  "Beige"}),  frozenset({"White",  "Red"}),
+    frozenset({"White",  "Pink"}),   frozenset({"White",  "Green"}),
+    frozenset({"Gray",   "Blue"}),   frozenset({"Gray",   "Pink"}),
+    frozenset({"Gray",   "Purple"}), frozenset({"Beige",  "Brown"}),
     frozenset({"Purple", "Gray"}),
 }
 
 CLASHING_PAIRS = {
-    frozenset({"Red",    "Pink"}),
-    frozenset({"Red",    "Orange"}),
-    frozenset({"Orange", "Purple"}),
-    frozenset({"Yellow", "Purple"}),
-    frozenset({"Green",  "Red"}),
-}
-
-# Maps fuzzy user-facing color words → canonical wardrobe color labels
-# Supports approximate terms like "blueish", "light blue", "navy", "dark"
-COLOR_ALIASES: Dict[str, str] = {
-    "black": "Black", "all black": "Black", "dark": "Black",
-    "white": "White", "bright": "White", "light": "White",
-    "grey": "Gray", "gray": "Gray",
-    "beige": "Beige", "cream": "Beige", "nude": "Beige", "tan": "Beige", "khaki": "Beige",
-    "brown": "Brown", "chocolate": "Brown", "caramel": "Brown",
-    "red": "Red", "crimson": "Red", "burgundy": "Red", "maroon": "Red",
-    "orange": "Orange", "rust": "Orange", "terracotta": "Orange",
-    "yellow": "Yellow", "mustard": "Yellow", "gold": "Yellow",
-    "green": "Green", "olive": "Green", "forest": "Green", "sage": "Green", "mint": "Green",
-    "blue": "Blue", "navy": "Blue", "cobalt": "Blue", "denim": "Blue", "teal": "Blue",
-    "blueish": "Blue", "bluish": "Blue", "light blue": "Blue", "dark blue": "Blue",
-    "purple": "Purple", "violet": "Purple", "lavender": "Purple", "lilac": "Purple",
-    "pink": "Pink", "rose": "Pink", "blush": "Pink", "fuchsia": "Pink",
+    frozenset({"Red", "Pink"}),    frozenset({"Red",    "Orange"}),
+    frozenset({"Orange", "Purple"}), frozenset({"Yellow", "Purple"}),
+    frozenset({"Green", "Red"}),
 }
 
 
-def color_pair_score(color_a: str, color_b: str) -> float:
-    pair = frozenset({color_a, color_b})
-    if color_a == color_b:
-        return 0.6   # monochrome is fine but not always ideal
-    if pair in CLASHING_PAIRS:
-        return -1.0
-    if pair in COMPATIBLE_PAIRS:
-        return 1.0
-    if COLOR_GROUPS.get(color_a) == "neutral" or COLOR_GROUPS.get(color_b) == "neutral":
-        return 0.8
-    if COLOR_GROUPS.get(color_a) == COLOR_GROUPS.get(color_b):
-        return 0.5
+def color_pair_score(a: str, b: str) -> float:
+    pair = frozenset({a, b})
+    if a == b:                         return 0.6
+    if pair in CLASHING_PAIRS:         return -1.0
+    if pair in COMPATIBLE_PAIRS:       return 1.0
+    if "neutral" in (COLOR_GROUPS.get(a), COLOR_GROUPS.get(b)): return 0.8
+    if COLOR_GROUPS.get(a) == COLOR_GROUPS.get(b):              return 0.5
     return 0.0
 
 
@@ -99,56 +57,21 @@ def item_color_harmony(item_colors: List[str], chosen_colors: List[str]) -> floa
 
 
 # ---------------------------------------------------------------------------
-# Color preference extraction from context string
+# Temperature
 # ---------------------------------------------------------------------------
 
-def extract_color_preferences(context: str) -> List[str]:
-    """
-    Parse canonical color names out of a free-text context string.
-    Handles multi-word aliases ("light blue"), suffix forms ("blueish"),
-    and the special "all <color>" pattern.
-    Longest match wins so "dark blue" beats "blue".
-    """
-    context_lower = context.lower()
-    found: List[str] = []
-
-    # Sort aliases longest-first so multi-word phrases take priority
-    for alias, canonical in sorted(COLOR_ALIASES.items(), key=lambda x: -len(x[0])):
-        if alias in context_lower and canonical not in found:
-            found.append(canonical)
-
-    return found
-
-
-def preference_score(item_colors: List[str], preferred_colors: List[str]) -> float:
-    """
-    Returns 1.0 if the item contains at least one preferred color,
-    0.0 otherwise. This is intentionally binary — a black shirt fully
-    satisfies a "black outfit" request regardless of harmony scores.
-    """
-    if not preferred_colors:
-        return 0.0
-    return 1.0 if any(pc in item_colors for pc in preferred_colors) else 0.0
-
-
-# ---------------------------------------------------------------------------
-# Temperature mapping
-# ---------------------------------------------------------------------------
-
-def weather_to_temp_label(temperature_c: float) -> str:
-    if temperature_c >= 25:
-        return "Hot"
-    if temperature_c >= 15:
-        return "Mild"
+def weather_to_temp_label(t: float) -> str:
+    if t >= 25: return "Hot"
+    if t >= 15: return "Mild"
     return "Cold"
 
 
-def temp_score(item_temperatures: List[str], temp_label: str) -> float:
-    return 1.0 if temp_label in item_temperatures else 0.0
+def temp_score(item_temperatures: List[str], label: str) -> float:
+    return 1.0 if label in item_temperatures else 0.0
 
 
 # ---------------------------------------------------------------------------
-# Occasion / context matching
+# Occasion
 # ---------------------------------------------------------------------------
 
 OCCASION_KEYWORDS: Dict[str, List[str]] = {
@@ -160,7 +83,6 @@ OCCASION_KEYWORDS: Dict[str, List[str]] = {
     "Casual":       ["casual", "errand", "chill", "relaxed", "home", "weekend", "everyday"],
 }
 
-# Items that are too casual for these occasions regardless of temperature
 OCCASION_BLOCKED_TYPES: Dict[str, List[str]] = {
     "Formal":       ["Shorts", "Flip-flops", "Sandals", "T-shirt", "Hoodie", "Joggers", "Leggings"],
     "Work":         ["Shorts", "Flip-flops", "Joggers", "Leggings"],
@@ -172,41 +94,67 @@ OCCASION_BLOCKED_TYPES: Dict[str, List[str]] = {
 
 
 def infer_occasions(context: str) -> List[str]:
-    context_lower = context.lower()
-    matched: Dict[str, int] = {}
-    for occasion, keywords in OCCASION_KEYWORDS.items():
-        hits = sum(1 for kw in keywords if kw in context_lower)
-        if hits:
-            matched[occasion] = hits
-    if not matched:
-        return ["Casual"]
-    return sorted(matched, key=lambda o: matched[o], reverse=True)
+    ctx = context.lower()
+    matched = {
+        occ: sum(1 for kw in kws if kw in ctx)
+        for occ, kws in OCCASION_KEYWORDS.items()
+    }
+    matched = {o: s for o, s in matched.items() if s > 0}
+    return sorted(matched, key=lambda o: matched[o], reverse=True) or ["Casual"]
 
 
-def occasion_score(item_occasions: List[str], inferred_occasions: List[str]) -> float:
-    if not inferred_occasions:
-        return 0.0
-    for rank, occ in enumerate(inferred_occasions):
+def occasion_score(item_occasions: List[str], inferred: List[str]) -> float:
+    for rank, occ in enumerate(inferred):
         if occ in item_occasions:
             return 1.0 / (rank + 1)
     return 0.0
 
 
-def is_blocked_for_occasion(item: Dict[str, Any], top_occasion: str) -> bool:
-    """Hard filter — removes items whose type is inappropriate for the occasion."""
-    blocked = OCCASION_BLOCKED_TYPES.get(top_occasion, [])
-    return item.get("type") in blocked
+def is_blocked(item: Dict[str, Any], top_occasion: str) -> bool:
+    return item.get("type") in OCCASION_BLOCKED_TYPES.get(top_occasion, [])
 
 
 # ---------------------------------------------------------------------------
-# Scoring
+# Per-slot preference scoring
 # ---------------------------------------------------------------------------
 
-# Weights — occasion is the dominant signal; color preference overrides harmony
-WEIGHT_TEMP       = 0.8
-WEIGHT_OCCASION   = 2.0   # raised: occasion must win over temperature
-WEIGHT_COLOR_HARM = 0.6
-WEIGHT_PREFERENCE = 2.5   # raised: explicit user request must win
+def slot_preference_score(item: Dict[str, Any], slot_pref: Optional[Dict]) -> float:
+    """
+    Returns a score in [0, 1] based on how well the item matches the
+    explicit per-slot preference (colors and/or type) the user requested.
+    0.0 means no preference was expressed — neutral, does not penalise.
+    """
+    if not slot_pref:
+        return 0.0
+
+    score = 0.0
+    hits  = 0
+
+    # Color match — partial credit: each preferred color found adds to score
+    pref_colors: List[str] = slot_pref.get("colors") or []
+    if pref_colors:
+        item_colors = item.get("colors", [])
+        matched = sum(1 for pc in pref_colors if pc in item_colors)
+        score += matched / len(pref_colors)   # 0..1
+        hits  += 1
+
+    # Type match — binary
+    pref_type: Optional[str] = slot_pref.get("type")
+    if pref_type:
+        score += 1.0 if item.get("type") == pref_type else 0.0
+        hits  += 1
+
+    return score / hits if hits else 0.0
+
+
+# ---------------------------------------------------------------------------
+# Weights
+# ---------------------------------------------------------------------------
+
+WEIGHT_TEMP        = 0.8
+WEIGHT_OCCASION    = 2.0
+WEIGHT_COLOR_HARM  = 0.6
+WEIGHT_PREFERENCE  = 3.0   # explicit user request wins decisively
 
 
 def score_item(
@@ -214,17 +162,13 @@ def score_item(
     temp_label: str,
     inferred_occasions: List[str],
     chosen_colors: List[str],
-    preferred_colors: List[str],
+    slot_pref: Optional[Dict],
 ) -> float:
-    t  = temp_score(item.get("temperatures", []), temp_label)
-    o  = occasion_score(item.get("occasions", []), inferred_occasions)
-    ch = item_color_harmony(item.get("colors", []), chosen_colors)
-    p  = preference_score(item.get("colors", []), preferred_colors)
     return (
-        WEIGHT_TEMP       * t  +
-        WEIGHT_OCCASION   * o  +
-        WEIGHT_COLOR_HARM * ch +
-        WEIGHT_PREFERENCE * p
+        WEIGHT_TEMP       * temp_score(item.get("temperatures", []), temp_label) +
+        WEIGHT_OCCASION   * occasion_score(item.get("occasions", []), inferred_occasions) +
+        WEIGHT_COLOR_HARM * item_color_harmony(item.get("colors", []), chosen_colors) +
+        WEIGHT_PREFERENCE * slot_preference_score(item, slot_pref)
     )
 
 
@@ -233,24 +177,26 @@ def best_item(
     temp_label: str,
     inferred_occasions: List[str],
     chosen_colors: List[str],
-    preferred_colors: List[str],
+    slot_pref: Optional[Dict],
     top_occasion: str,
-    *,
-    shuffle: bool = True,
+    excluded_ids: Set[str],
 ) -> Optional[Dict[str, Any]]:
-    # Hard filter first
-    allowed = [c for c in candidates if not is_blocked_for_occasion(c, top_occasion)]
-    # Fall back to unfiltered if the wardrobe has nothing appropriate
-    # (better to show something than nothing)
-    pool = allowed if allowed else candidates
+    # Remove previously seen items
+    pool = [c for c in candidates if c["id"] not in excluded_ids]
+
+    # Hard occasion filter
+    allowed = [c for c in pool if not is_blocked(c, top_occasion)]
+    pool = allowed if allowed else pool   # fall back if wardrobe is limited
+
     if not pool:
         return None
-    if shuffle:
-        pool = random.sample(pool, len(pool))
-    return max(
-        pool,
-        key=lambda item: score_item(item, temp_label, inferred_occasions, chosen_colors, preferred_colors),
-    )
+
+    # Add small random jitter to scores so ties never produce the same result
+    def jittered_score(item):
+        return score_item(item, temp_label, inferred_occasions, chosen_colors, slot_pref) \
+               + random.uniform(0, 0.05)
+
+    return max(pool, key=jittered_score)
 
 
 # ---------------------------------------------------------------------------
@@ -264,52 +210,22 @@ REASON_TEMPLATES = [
     "Picked for colour harmony and {occasion_adj} appropriateness given the {temp_desc} forecast.",
 ]
 
-OCCASION_ADJ: Dict[str, str] = {
-    "Formal":       "formal",
-    "Work":         "work-appropriate",
-    "Smart casual": "smart-casual",
-    "Party":        "party-ready",
-    "Sportswear":   "athletic",
-    "Casual":       "casual",
-}
-
-TEMP_DESC: Dict[str, str] = {
-    "Hot":  "warm",
-    "Mild": "mild",
-    "Cold": "cold",
-}
+OCCASION_ADJ  = {"Formal": "formal", "Work": "work-appropriate", "Smart casual": "smart-casual",
+                 "Party": "party-ready", "Sportswear": "athletic", "Casual": "casual"}
+TEMP_DESC     = {"Hot": "warm", "Mild": "mild", "Cold": "cold"}
 
 
-def build_reason(
-    selected_items: List[Dict[str, Any]],
-    inferred_occasions: List[str],
-    temp_label: str,
-    context: str,
-) -> str:
-    all_colors: List[str] = []
-    for item in selected_items:
-        all_colors.extend(item.get("colors", []))
-    unique_colors = list(dict.fromkeys(all_colors))
-
-    top_occasion = inferred_occasions[0] if inferred_occasions else "Casual"
-    occ_adj = OCCASION_ADJ.get(top_occasion, "stylish")
-    temp_desc = TEMP_DESC.get(temp_label, "current")
-
-    words = context.strip().split()
-    context_snippet = " ".join(words[:4]).lower().rstrip(".,;:")
-
-    color_str = (
-        unique_colors[0] if len(unique_colors) == 1
-        else f"{', '.join(unique_colors[:-1])} and {unique_colors[-1]}"
-        if unique_colors else "neutral"
-    )
-
-    template = random.choice(REASON_TEMPLATES)
-    return template.format(
-        occasion_adj=occ_adj,
+def build_reason(items, inferred_occasions, temp_label, context) -> str:
+    colors = list(dict.fromkeys(c for item in items for c in item.get("colors", [])))
+    top    = inferred_occasions[0] if inferred_occasions else "Casual"
+    snippet = " ".join(context.strip().split()[:4]).lower().rstrip(".,;:")
+    color_str = colors[0] if len(colors) == 1 \
+        else f"{', '.join(colors[:-1])} and {colors[-1]}" if colors else "neutral"
+    return random.choice(REASON_TEMPLATES).format(
+        occasion_adj=OCCASION_ADJ.get(top, "stylish"),
         colors=color_str,
-        temp_desc=temp_desc,
-        context_snippet=context_snippet,
+        temp_desc=TEMP_DESC.get(temp_label, "current"),
+        context_snippet=snippet,
     )
 
 
@@ -319,44 +235,39 @@ def build_reason(
 
 async def get_wardrobe_data(user_id: str) -> List[Dict[str, Any]]:
     try:
-        docs = (
-            wardrobe_ref
-            .where(filter=FieldFilter("user_id", "==", user_id))
-            .select(["category", "type", "colors", "occasions", "temperatures"])
-            .get()
-        )
-        return [_convert_doc(doc) for doc in docs]
+        docs = (wardrobe_ref
+                .where(filter=FieldFilter("user_id", "==", user_id))
+                .select(["category", "type", "colors", "occasions", "temperatures"])
+                .get())
+        return [_convert_doc(d) for d in docs]
     except Exception as e:
         print(f"Error fetching wardrobe for {user_id}: {e}")
         return []
 
 
 def _convert_doc(doc) -> Dict[str, Any]:
-    data = doc.to_dict()
+    d = doc.to_dict()
     return {
         "id":           doc.id,
-        "category":     data.get("category"),
-        "type":         data.get("type"),
-        "colors":       data.get("colors", []),
-        "occasions":    data.get("occasions", []),
-        "temperatures": data.get("temperatures", []),
+        "category":     d.get("category"),
+        "type":         d.get("type"),
+        "colors":       d.get("colors", []),
+        "occasions":    d.get("occasions", []),
+        "temperatures": d.get("temperatures", []),
     }
 
 
 async def get_wardrobe_items_images(item_ids: List[str]) -> Dict[str, str]:
     try:
-        valid_ids = [i for i in item_ids if i]
-        if not valid_ids:
+        valid = [i for i in item_ids if i]
+        if not valid:
             return {}
-        doc_refs = [wardrobe_ref.document(i) for i in valid_ids]
-        docs = db.get_all(doc_refs, field_paths=["image"])
-        images_map: Dict[str, str] = {}
-        for doc in docs:
-            if doc.exists:
-                img_bytes = doc.to_dict().get("image")
-                if img_bytes:
-                    images_map[doc.id] = base64.b64encode(img_bytes).decode("utf-8")
-        return images_map
+        docs = db.get_all([wardrobe_ref.document(i) for i in valid], field_paths=["image"])
+        return {
+            doc.id: base64.b64encode(doc.to_dict()["image"]).decode()
+            for doc in docs
+            if doc.exists and doc.to_dict().get("image")
+        }
     except Exception as e:
         print(f"Error fetching images: {e}")
         return {}
@@ -370,100 +281,91 @@ async def get_recommendation(
     user_id: str,
     weather_data: Dict[str, Any],
     context: str,
+    item_preferences: Optional[Dict] = None,
+    excluded_item_ids: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     print(
-        f"Getting recommendation for user {user_id} | "
-        f"{weather_data.get('temperature')}°C {weather_data.get('description')} | "
-        f"context: {context}"
+        f"Recommendation | user={user_id} | "
+        f"{weather_data.get('temperature')}°C | context={context} | "
+        f"prefs={item_preferences} | excluded={excluded_item_ids}"
     )
 
     wardrobe = await get_wardrobe_data(user_id)
     if not wardrobe:
         return {"error": "Wardrobe is empty. Add some clothes first!"}
 
-    temperature_c: float = float(weather_data.get("temperature", 20))
-    temp_label = weather_to_temp_label(temperature_c)
-    inferred_occasions = infer_occasions(context)
-    top_occasion = inferred_occasions[0]
-    preferred_colors = extract_color_preferences(context)
-    needs_outerwear = temperature_c < 15
+    temp_c           = float(weather_data.get("temperature", 20))
+    temp_label       = weather_to_temp_label(temp_c)
+    inferred_occ     = infer_occasions(context)
+    top_occasion     = inferred_occ[0]
+    excluded         = set(excluded_item_ids or [])
+    prefs            = item_preferences or {}
 
-    if preferred_colors:
-        print(f"Color preferences detected: {preferred_colors}")
-
-    by_category: Dict[str, List[Dict[str, Any]]] = {
-        "Topwear":    [],
-        "Bottomwear": [],
-        "Footwear":   [],
-        "Outerwear":  [],
-        "One-piece":  [],
+    by_cat: Dict[str, List] = {
+        "Topwear": [], "Bottomwear": [], "Footwear": [],
+        "Outerwear": [], "One-piece": [],
     }
     for item in wardrobe:
         cat = item.get("category", "")
-        if cat in by_category:
-            by_category[cat].append(item)
+        if cat in by_cat:
+            by_cat[cat].append(item)
 
     chosen_colors: List[str] = []
-    selected: Dict[str, Optional[Dict[str, Any]]] = {}
+    selected: Dict[str, Optional[Dict]] = {}
 
-    def pick(category: str) -> Optional[Dict[str, Any]]:
+    def pick(category: str) -> Optional[Dict]:
         return best_item(
-            by_category[category],
-            temp_label,
-            inferred_occasions,
-            chosen_colors,
-            preferred_colors,
-            top_occasion,
+            by_cat[category], temp_label, inferred_occ,
+            chosen_colors, prefs.get(category.lower()),
+            top_occasion, excluded,
         )
 
-    # --- Topwear (or One-piece fallback) ---
+    # Topwear
     topwear = pick("Topwear")
     if topwear:
         selected["topwear"] = topwear
         chosen_colors.extend(topwear.get("colors", []))
-    elif by_category["One-piece"]:
-        one_piece = pick("One-piece")
-        selected["topwear"] = one_piece
-        if one_piece:
-            chosen_colors.extend(one_piece.get("colors", []))
+    elif by_cat["One-piece"]:
+        op = pick("One-piece")
+        selected["topwear"] = op
+        if op:
+            chosen_colors.extend(op.get("colors", []))
         selected["bottomwear"] = None
 
-    # --- Bottomwear ---
+    # Bottomwear
     if "bottomwear" not in selected:
-        bottomwear = pick("Bottomwear")
-        selected["bottomwear"] = bottomwear
-        if bottomwear:
-            chosen_colors.extend(bottomwear.get("colors", []))
+        bw = pick("Bottomwear")
+        selected["bottomwear"] = bw
+        if bw:
+            chosen_colors.extend(bw.get("colors", []))
 
-    # --- Footwear ---
-    footwear = pick("Footwear")
-    selected["footwear"] = footwear
-    if footwear:
-        chosen_colors.extend(footwear.get("colors", []))
+    # Footwear
+    fw = pick("Footwear")
+    selected["footwear"] = fw
+    if fw:
+        chosen_colors.extend(fw.get("colors", []))
 
-    # --- Outerwear ---
-    selected["outerwear"] = pick("Outerwear") if needs_outerwear else None
+    # Outerwear
+    selected["outerwear"] = pick("Outerwear") if temp_c < 15 else None
 
-    # --- Images ---
-    selected_ids = [item["id"] for item in selected.values() if item]
-    images_map = await get_wardrobe_items_images(selected_ids)
+    # Images
+    ids = [v["id"] for v in selected.values() if v]
+    images_map = await get_wardrobe_items_images(ids)
 
-    def assemble_item(item: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    def assemble(item):
         if not item:
             return None
         item["image"] = images_map.get(item["id"])
         return item
 
     non_null = [v for v in selected.values() if v]
-    reason = build_reason(non_null, inferred_occasions, temp_label, context)
-
     return {
         "id": str(uuid.uuid4()),
         "outfit": {
-            "topwear":    assemble_item(selected.get("topwear")),
-            "bottomwear": assemble_item(selected.get("bottomwear")),
-            "footwear":   assemble_item(selected.get("footwear")),
-            "outerwear":  assemble_item(selected.get("outerwear")),
+            "topwear":    assemble(selected.get("topwear")),
+            "bottomwear": assemble(selected.get("bottomwear")),
+            "footwear":   assemble(selected.get("footwear")),
+            "outerwear":  assemble(selected.get("outerwear")),
         },
-        "reason": reason,
+        "reason": build_reason(non_null, inferred_occ, temp_label, context),
     }
