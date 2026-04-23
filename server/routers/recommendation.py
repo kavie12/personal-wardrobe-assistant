@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from dependencies.auth import get_current_uid
-from server.services import recommendation
+from services import recommendation
 from pydantic import BaseModel
 from typing import Dict, Any, Optional
 
