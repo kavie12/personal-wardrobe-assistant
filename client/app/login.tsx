@@ -22,8 +22,13 @@ const LoginScreen = () => {
       return;
     }
     setLoading(true);
-    await login(email, password);
-    setLoading(false);
+    try {
+      await login(email, password);
+    } catch (err: any) {
+      Alert.alert("Error", err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -106,11 +111,16 @@ const PasswordResetModal = ({ visible, onClose }: { visible: boolean; onClose: (
       return;
     }
     setLoading(true);
-    await resetPassword(email);
-    setLoading(false);
-    Alert.alert("Success", "Password reset email sent. Please check your inbox.", [
-      { text: "OK", onPress: onClose },
-    ]);
+    try {
+      await resetPassword(email);
+      Alert.alert("Success", "Password reset email sent. Please check your inbox.", [
+        { text: "OK", onPress: onClose },
+      ]);
+    } catch (err: any) {
+      Alert.alert("Error", err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
