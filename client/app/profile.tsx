@@ -13,6 +13,14 @@ const ProfileScreen = () => {
 
   const { user, logout } = useAuth();
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (err: any) {
+      Alert.alert("Error", err.message);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1">
       <Header className="mt-4" />
@@ -44,7 +52,7 @@ const ProfileScreen = () => {
             icon="log-out-outline"
             label="Log Out"
             showViewIcon
-            onPress={logout}
+            onPress={handleLogout}
           />
           <SettingsItem
             icon="trash-outline"
@@ -81,8 +89,12 @@ const ChangePasswordModal = ({ visible, onClose }: { visible: boolean; onClose: 
       Alert.alert("Error", "New passwords do not match.");
       return;
     }
-    await changePassword(current, next);
-    onClose();
+    try {
+      await changePassword(current, next);
+      onClose();
+    } catch (err: any) {
+      Alert.alert("Error", err.message);
+    }
   };
 
   return (
@@ -200,8 +212,13 @@ const DeleteAccountModal = ({ visible, onClose }: { visible: boolean, onClose: (
       return;
     }
     setLoading(true);
-    await deleteAccount(password);
-    setLoading(false);
+    try {
+      await deleteAccount(password);
+    } catch (err: any) {
+      Alert.alert("Error", err.message);
+    } finally {
+      setLoading(false);
+    }
     Alert.alert("Success", "Account deleted successfully.", [
       { text: "OK", onPress: onClose },
     ]);

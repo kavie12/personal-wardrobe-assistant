@@ -29,8 +29,13 @@ const RegisterScreen = () => {
       return;
     }
     setLoading(true);
-    await register(email, password, name);
-    setLoading(false);
+    try {
+      await register(email, password, name);
+    } catch (err: any) {
+      Alert.alert("Error", err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
