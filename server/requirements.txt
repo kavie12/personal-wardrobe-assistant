@@ -8,3 +8,4 @@ groq
 cachetools
 pillow
 python-multipart
+pytest
