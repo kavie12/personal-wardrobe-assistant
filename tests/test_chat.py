@@ -164,6 +164,31 @@ def check_turns(taken: int, expected: int) -> CheckResult:
     detail = f"took {taken} turn(s), expected {expected}"
     return CheckResult("no_unnecessary_turns", passed, detail)
 
+def check_preferences_extracted(response: dict, expected: Optional[dict]) -> CheckResult:
+    if not expected:
+        return CheckResult("preferences_extracted", True, "skipped")
+
+    actual = response.get("item_preferences", {})
+    failures = []
+
+    for slot, pref in expected.items():
+        if slot not in actual:
+            failures.append(f"{slot} missing")
+            continue
+
+        if pref.get("colors"):
+            if not all(c in actual[slot].get("colors", []) for c in pref["colors"]):
+                failures.append(f"{slot} colors mismatch")
+
+        if pref.get("type"):
+            if actual[slot].get("type") != pref["type"]:
+                failures.append(f"{slot} type mismatch")
+
+    passed = len(failures) == 0
+    detail = "preferences correct" if passed else "; ".join(failures)
+
+    return CheckResult("preferences_extracted", passed, detail)
+
 # ---------------------------------------------------------------------------
 # Pipeline checks
 # ---------------------------------------------------------------------------
@@ -258,6 +283,7 @@ def run_case(tc: dict) -> CaseResult:
             check_formality_match(final_response, expected.get("expected_formality")),
             check_context_keywords(final_response, expected.get("context_keywords")),
             check_turns(turns_taken, expected.get("expected_turns", max_turns)),
+            check_preferences_extracted(final_response, expected.get("expected_preferences"))
         ]
 
         # Pipeline — forward extracted context to recommendation endpoint
@@ -337,6 +363,7 @@ def print_summary(results: List[CaseResult]):
         "reaches_ready", "context_not_null", "formality_valid",
         "formality_match", "context_keywords", "no_unnecessary_turns",
         "pipeline_outfit_complete", "pipeline_reason_present", "pipeline_outerwear",
+        "preferences_extracted"
     )
     check_pass = {c: 0 for c in check_names}
     check_seen = {c: 0 for c in check_names}

@@ -170,6 +170,34 @@ def check_temperature_match(outfit: dict, expected_temp_label: Optional[str]) ->
     detail = "all items match" if passed else "; ".join(failures)
     return CheckResult("temperature_match", passed, detail)
 
+def check_preference_match(outfit: dict, preferences: Optional[dict]) -> CheckResult:
+    if not preferences:
+        return CheckResult("preference_match", True, "skipped (no preferences)")
+
+    failures = []
+
+    for slot, pref in preferences.items():
+        if not pref:
+            continue
+        item = outfit.get(slot)
+        if not item:
+            continue
+
+        # Check type
+        if pref.get("type") and item.get("type") != pref["type"]:
+            failures.append(f"{slot} type mismatch (expected {pref['type']}, got {item.get('type')})")
+
+        # Check colors
+        if pref.get("colors"):
+            item_colors = item.get("colors", [])
+            if not any(c in item_colors for c in pref["colors"]):
+                failures.append(f"{slot} color mismatch (expected {pref['colors']}, got {item_colors})")
+
+    passed = len(failures) == 0
+    detail = "preferences satisfied" if passed else "; ".join(failures)
+
+    return CheckResult("preference_match", passed, detail)
+
 # ---------------------------------------------------------------------------
 # Run a single test case
 # ---------------------------------------------------------------------------
@@ -199,6 +227,7 @@ def run_case(tc: dict) -> CaseResult:
         check_reason_present(data),
         check_occasion_match(outfit, expected.get("occasion_match")),
         check_temperature_match(outfit, expected.get("temperature_match")),
+        check_preference_match(outfit, tc.get("item_preferences"))
     ]
 
     all_passed = all(c.passed for c in checks)
@@ -244,7 +273,7 @@ def print_summary(results: List[CaseResult]):
 
     # Per-check accuracy
     check_names = ("outfit_complete", "outerwear_rule", "reason_present",
-                   "occasion_match", "temperature_match")
+                   "occasion_match", "temperature_match", "preference_match")
     check_pass = {c: 0 for c in check_names}
     for r in valid:
         for c in r.checks:
