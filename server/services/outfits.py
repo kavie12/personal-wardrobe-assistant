@@ -10,13 +10,14 @@ collection_ref = db.collection("outfits")
 
 def save(user_id: str, items: Dict[str, Any], occasion: str) -> bool:
     try:
-        # We store the IDs and the current timestamp
+        # Store the IDs (string / null), occasion, and the current timestamp
         collection_ref.add({
             "user_id": user_id,
             "topwear_id": items.get("topwear_id"),
             "bottomwear_id": items.get("bottomwear_id"),
+            "onepiece_id": items.get("onepiece_id"),
             "footwear_id": items.get("footwear_id"),
-            "outerwear_id": items.get("outerwear_id"), # Can be None
+            "outerwear_id": items.get("outerwear_id"),
             "occasion": occasion,
             "created_at": datetime.now()
         })
@@ -47,7 +48,7 @@ def list_outfits(user_id: str, page: int = 1, size: int = 10):
             data["id"] = doc.id
             outfits_raw.append(data)
             # Add valid IDs to our set
-            for key in ["topwear_id", "bottomwear_id", "footwear_id", "outerwear_id"]:
+            for key in ["topwear_id", "bottomwear_id", "onepiece_id", "footwear_id", "outerwear_id"]:
                 if data.get(key):
                     all_item_ids.add(data[key])
 
@@ -77,6 +78,7 @@ def list_outfits(user_id: str, page: int = 1, size: int = 10):
                 "items": {
                     "topwear": items_lookup.get(outfit.get("topwear_id")),
                     "bottomwear": items_lookup.get(outfit.get("bottomwear_id")),
+                    "onepiece": items_lookup.get(outfit.get("onepiece_id")),
                     "footwear": items_lookup.get(outfit.get("footwear_id")),
                     "outerwear": items_lookup.get(outfit.get("outerwear_id")),
                 },

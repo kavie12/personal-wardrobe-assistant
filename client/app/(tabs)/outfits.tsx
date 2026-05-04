@@ -77,9 +77,7 @@ const OccasionFilters = ({ selectedOccasion, selectOccasion }: { selectedOccasio
 const OutfitCard = ({ outfit }: { outfit: Outfit }) => {
   const [selected, setSelected] = useState(false);
 
-  // Filter out null outerwear to decide grid layout
-  const items = [outfit.topwear, outfit.bottomwear, outfit.footwear];
-  if (outfit.outerwear) items.push(outfit.outerwear);
+  const items = [outfit.topwear, outfit.bottomwear, outfit.onepiece, outfit.footwear, outfit.outerwear];
 
   const queryClient = useQueryClient();
 
@@ -115,7 +113,7 @@ const OutfitCard = ({ outfit }: { outfit: Outfit }) => {
 
       {/* Grid Layout for Outfit Items */}
       <View className="flex-row flex-wrap gap-2">
-        {items.map(item => (
+        {items.map(item => item && (
           <View key={item.id} className="rounded-lg overflow-hidden flex-1 aspect-square">
             <Image source={item?.image} style={{ width: "100%", height: "100%" }} contentFit="cover" />
             <View className="absolute bottom-0 left-0 right-0 bg-black/20 p-1">

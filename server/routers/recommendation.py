@@ -13,6 +13,7 @@ class SlotPreference(BaseModel):
 class ItemPreferences(BaseModel):
     topwear:    Optional[SlotPreference] = None
     bottomwear: Optional[SlotPreference] = None
+    onepiece:   Optional[SlotPreference] = None
     footwear:   Optional[SlotPreference] = None
     outerwear:  Optional[SlotPreference] = None
 

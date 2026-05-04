@@ -26,7 +26,7 @@ const HomeContext = createContext<{
   latestSchedulesQuery: UseQueryResult<Schedule[], Error>,
   selectedSchedule: Schedule | null,
   setSelectedSchedule: React.Dispatch<React.SetStateAction<Schedule | null>>,
-  weatherQuery: UseQueryResult<Weather | null | undefined, Error>
+  weatherQuery: UseQueryResult<Weather | undefined, Error>
 } | null>(null);
 
 const HomeScreen = () => {
@@ -408,9 +408,10 @@ const GeneratedOutfitItemView = ({ isFetching, data, occasion, handleRetry } : {
 
           {/* Outfit items */}
           <ScrollView horizontal contentContainerClassName="gap-x-4 pb-4" className="mt-4">
-            <OutfitClothingItem item={data.outfit.topwear} />
-            <OutfitClothingItem item={data.outfit.bottomwear} />
-            <OutfitClothingItem item={data.outfit.footwear} />
+            { data.outfit.topwear && <OutfitClothingItem item={data.outfit.topwear} /> }
+            { data.outfit.bottomwear && <OutfitClothingItem item={data.outfit.bottomwear} /> }
+            { data.outfit.onepiece && <OutfitClothingItem item={data.outfit.onepiece} /> }
+            { data.outfit.footwear && <OutfitClothingItem item={data.outfit.footwear} /> }
             { data.outfit.outerwear && <OutfitClothingItem item={data.outfit.outerwear} /> }
           </ScrollView>
 

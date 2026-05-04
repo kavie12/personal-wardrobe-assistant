@@ -2,7 +2,7 @@ import Weather from "@/models/Weather";
 import { titleCase } from "@/utils";
 import axios from "axios";
 
-export const getCurrentWeather = async (lat: number, lon: number): Promise<Weather | null> => {
+export const getCurrentWeather = async (lat: number, lon: number): Promise<Weather> => {
     try {
         // Fetch weather data
         const res = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.EXPO_PUBLIC_OPEN_WEATHER_API_KEY}&units=metric`);
@@ -27,11 +27,15 @@ export const getCurrentWeather = async (lat: number, lon: number): Promise<Weath
         );
     } catch (error) {
         console.error("Error fetching current weather:", error);
-        return null;
+        return new Weather(
+            26,
+            "",
+            ""
+        );
     }
 };
 
-export const getForecastWeather = async (lat: number, lon: number, targetDate: Date): Promise<Weather | null> => {    
+export const getForecastWeather = async (lat: number, lon: number, targetDate: Date): Promise<Weather> => {    
     try {
         // Calculate the number of days from today to the target date
         const daysDiff = Math.floor(
@@ -80,6 +84,10 @@ export const getForecastWeather = async (lat: number, lon: number, targetDate: D
         );
     } catch (error) {
         console.error("Error fetching forecast weather:", error);
-        return null;
+        return new Weather(
+            26,
+            "",
+            ""
+        );
     }
 };
