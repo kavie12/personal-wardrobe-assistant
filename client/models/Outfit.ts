@@ -3,15 +3,17 @@ import ClothingItem from "./ClothingItem";
 
 class Outfit {
     id?: string;
-    topwear: ClothingItem;
-    bottomwear: ClothingItem;
-    footwear: ClothingItem;
+    topwear: ClothingItem | null;
+    bottomwear: ClothingItem | null;
+    onepiece: ClothingItem | null;
+    footwear: ClothingItem | null;
     outerwear: ClothingItem | null;
     occasion?: ClothingOccasion;
 
-    constructor(topwear: ClothingItem, bottomwear: ClothingItem, footwear: ClothingItem, outerwear: ClothingItem | null) {
+    constructor(topwear: ClothingItem | null, bottomwear: ClothingItem | null, onepiece: ClothingItem | null, footwear: ClothingItem | null, outerwear: ClothingItem | null) {
         this.topwear = topwear;
         this.bottomwear = bottomwear;
+        this.onepiece = onepiece;
         this.footwear = footwear;
         this.outerwear = outerwear;
     }

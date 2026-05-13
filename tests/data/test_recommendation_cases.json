@@ -22,7 +22,7 @@
       "_group": "Schedule-dominant (mild neutral weather so weather doesn't override context)",
       "description": "Formal supervisor meeting in the evening",
       "weather_data": { "temperature": 20, "description": "partly cloudy" },
-      "context": "supervisor meeting | 8.00 pm | formal",
+      "context": "supervisor meeting | formal",
       "expected": {
         "outfit_complete":   true,
         "outerwear_rule":    "optional",
@@ -37,7 +37,7 @@
       "_group": "Schedule-dominant",
       "description": "Gym / workout session in the morning",
       "weather_data": { "temperature": 22, "description": "sunny" },
-      "context": "gym session | 6.30 am | sportswear",
+      "context": "gym session | sportswear",
       "expected": {
         "outfit_complete":   true,
         "outerwear_rule":    "optional",
@@ -52,7 +52,7 @@
       "_group": "Schedule-dominant",
       "description": "Casual friend hangout at noon",
       "weather_data": { "temperature": 23, "description": "sunny" },
-      "context": "hanging out with friends | 12.00 pm | casual",
+      "context": "hanging out with friends | casual",
       "expected": {
         "outfit_complete":   true,
         "outerwear_rule":    "optional",
@@ -67,7 +67,7 @@
       "_group": "Schedule-dominant",
       "description": "University lecture in the morning",
       "weather_data": { "temperature": 21, "description": "overcast" },
-      "context": "university lecture | 9.00 am | smart casual",
+      "context": "university lecture | smart casual",
       "expected": {
         "outfit_complete":   true,
         "outerwear_rule":    "optional",
@@ -82,7 +82,7 @@
       "_group": "Schedule-dominant",
       "description": "Birthday dinner party in the evening",
       "weather_data": { "temperature": 24, "description": "clear" },
-      "context": "birthday dinner | 7.00 pm | party",
+      "context": "birthday dinner | party",
       "expected": {
         "outfit_complete":   true,
         "outerwear_rule":    "optional",
@@ -97,7 +97,7 @@
       "_group": "Schedule-dominant",
       "description": "Job interview in the morning",
       "weather_data": { "temperature": 20, "description": "partly cloudy" },
-      "context": "job interview | 10.00 am | formal",
+      "context": "job interview | formal",
       "expected": {
         "outfit_complete":   true,
         "outerwear_rule":    "optional",
@@ -187,7 +187,7 @@
       "_group": "Combined — conflict between formal occasion and hot weather",
       "description": "Formal meeting on a hot day — must balance formality with heat",
       "weather_data": { "temperature": 32, "description": "sunny and hot" },
-      "context": "team meeting | 10.00 am | formal",
+      "context": "team meeting | formal",
       "expected": {
         "outfit_complete":   true,
         "outerwear_rule":    "absent",
@@ -202,7 +202,7 @@
       "_group": "Combined — sportswear in cold weather, outerwear expected",
       "description": "Outdoor gym session on a cold morning",
       "weather_data": { "temperature": 11, "description": "cold and windy" },
-      "context": "outdoor gym | 7.00 am | sportswear",
+      "context": "outdoor gym | sportswear",
       "expected": {
         "outfit_complete":   true,
         "outerwear_rule":    "required",
@@ -217,7 +217,7 @@
       "_group": "Combined — casual outing in rainy mild weather",
       "description": "Casual brunch on a rainy mild day",
       "weather_data": { "temperature": 19, "description": "rainy" },
-      "context": "brunch with friends | 11.00 am | casual",
+      "context": "brunch with friends | casual",
       "expected": {
         "outfit_complete":   true,
         "outerwear_rule":    "optional",
@@ -232,7 +232,7 @@
       "_group": "Combined — party at night in cold weather",
       "description": "Evening party when cold outside — outerwear expected",
       "weather_data": { "temperature": 12, "description": "cold and clear" },
-      "context": "house party | 9.00 pm | party",
+      "context": "house party | party",
       "expected": {
         "outfit_complete":   true,
         "outerwear_rule":    "required",
@@ -247,7 +247,7 @@
       "_group": "Combined — work meeting on a hot day",
       "description": "Office work day in hot humid weather",
       "weather_data": { "temperature": 30, "description": "humid and hot" },
-      "context": "office work | 9.00 am | work",
+      "context": "office work | work",
       "expected": {
         "outfit_complete":   true,
         "outerwear_rule":    "absent",
@@ -322,12 +322,170 @@
       "_group": "Edge — all-day event with time cue only",
       "description": "Context has time of day but no occasion label",
       "weather_data": { "temperature": 21, "description": "partly cloudy" },
-      "context": "event | 6.00 pm",
+      "context": "event",
       "expected": {
         "outfit_complete":   true,
         "outerwear_rule":    "optional",
         "reason_present":    true,
         "occasion_match":    null,
+        "temperature_match": "Mild"
+      }
+    }
+
+    ,
+    {
+      "id": "PF-01",
+      "_group": "Preference-based",
+      "description": "Black topwear preference",
+      "weather_data": { "temperature": 22, "description": "clear" },
+      "context": "casual outing | casual",
+      "item_preferences": {
+        "topwear": { "colors": ["Black"] }
+      },
+      "expected": {
+        "outfit_complete": true,
+        "outerwear_rule": "optional",
+        "reason_present": true,
+        "occasion_match": ["Casual"],
+        "temperature_match": "Mild"
+      }
+    },
+    {
+      "id": "PF-02",
+      "_group": "Preference-based",
+      "description": "Blue jeans preference",
+      "weather_data": { "temperature": 23, "description": "sunny" },
+      "context": "casual day out | casual",
+      "item_preferences": {
+        "bottomwear": { "type": "Jeans", "colors": ["Blue"] }
+      },
+      "expected": {
+        "outfit_complete": true,
+        "outerwear_rule": "optional",
+        "reason_present": true,
+        "occasion_match": ["Casual"],
+        "temperature_match": "Mild"
+      }
+    },
+    {
+      "id": "PF-03",
+      "_group": "Preference-based",
+      "description": "Sneakers preference",
+      "weather_data": { "temperature": 24, "description": "clear" },
+      "context": "walking outside | casual",
+      "item_preferences": {
+        "footwear": { "type": "Sneakers" }
+      },
+      "expected": {
+        "outfit_complete": true,
+        "outerwear_rule": "optional",
+        "reason_present": true,
+        "occasion_match": ["Casual"],
+        "temperature_match": "Mild"
+      }
+    },
+    {
+      "id": "PF-04",
+      "_group": "Preference-based",
+      "description": "Cold weather with jacket preference",
+      "weather_data": { "temperature": 10, "description": "cold" },
+      "context": "going out | casual",
+      "item_preferences": {
+        "outerwear": { "type": "Jacket" }
+      },
+      "expected": {
+        "outfit_complete": true,
+        "outerwear_rule": "required",
+        "reason_present": true,
+        "occasion_match": ["Casual"],
+        "temperature_match": "Cold"
+      }
+    },
+    {
+      "id": "PF-05",
+      "_group": "Preference-based",
+      "description": "Multiple preferences (top + footwear)",
+      "weather_data": { "temperature": 21, "description": "cloudy" },
+      "context": "casual hangout | casual",
+      "item_preferences": {
+        "topwear": { "colors": ["White"] },
+        "footwear": { "type": "Sneakers" }
+      },
+      "expected": {
+        "outfit_complete": true,
+        "outerwear_rule": "optional",
+        "reason_present": true,
+        "occasion_match": ["Casual"],
+        "temperature_match": "Mild"
+      }
+    },
+    {
+      "id": "PF-06",
+      "_group": "Preference-based",
+      "description": "Conflicting preference (jacket in hot weather)",
+      "weather_data": { "temperature": 32, "description": "hot" },
+      "context": "casual outing | casual",
+      "item_preferences": {
+        "outerwear": { "type": "Jacket" }
+      },
+      "expected": {
+        "outfit_complete": true,
+        "outerwear_rule": "absent",
+        "reason_present": true,
+        "occasion_match": ["Casual"],
+        "temperature_match": "Hot"
+      }
+    },
+    {
+      "id": "PF-07",
+      "_group": "Preference-based",
+      "description": "Footwear color preference",
+      "weather_data": { "temperature": 20, "description": "clear" },
+      "context": "meeting friends | casual",
+      "item_preferences": {
+        "footwear": { "colors": ["White"] }
+      },
+      "expected": {
+        "outfit_complete": true,
+        "outerwear_rule": "optional",
+        "reason_present": true,
+        "occasion_match": ["Casual"],
+        "temperature_match": "Mild"
+      }
+    },
+    {
+      "id": "PF-08",
+      "_group": "Preference-based",
+      "description": "All slots preference",
+      "weather_data": { "temperature": 22, "description": "clear" },
+      "context": "smart casual dinner | smart casual",
+      "item_preferences": {
+        "topwear": { "colors": ["Black"] },
+        "bottomwear": { "colors": ["Gray"] },
+        "footwear": { "colors": ["Black"] }
+      },
+      "expected": {
+        "outfit_complete": true,
+        "outerwear_rule": "optional",
+        "reason_present": true,
+        "occasion_match": ["Smart casual"],
+        "temperature_match": "Mild"
+      }
+    },
+    {
+      "id": "PF-09",
+      "_group": "Preference-based",
+      "description": "Preference ignored edge case",
+      "weather_data": { "temperature": 18, "description": "rainy" },
+      "context": "casual outing | casual",
+      "item_preferences": {
+        "topwear": { "colors": ["Purple"] }
+      },
+      "expected": {
+        "outfit_complete": true,
+        "outerwear_rule": "optional",
+        "reason_present": true,
+        "occasion_match": ["Casual"],
         "temperature_match": "Mild"
       }
     }

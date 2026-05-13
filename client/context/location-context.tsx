@@ -20,7 +20,9 @@ export const LocationProvider = ({ children }: { children: React.ReactNode }) =>
             console.log("Location:", location.coords.latitude, location.coords.longitude);
             setCoords({ lat: location.coords.latitude, lng: location.coords.longitude });
         }
-        getCurrentLocation();
+        getCurrentLocation().catch(() => {
+            setCoords({ lat: 6.9271, lng: 79.8612 });
+        });
     }, []);
 
     return <LocationContext.Provider value={{ coords }}>{children}</LocationContext.Provider>;

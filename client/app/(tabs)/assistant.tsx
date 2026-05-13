@@ -40,9 +40,12 @@ const AssistantScreen = () => {
       }]);
 
       if (res.readyToGenerate) {
-        if (!res.time || !res.context || !res.formality) throw new Error("Missing data for outfit generation");
-
-        const outfitRes = await generateOutfit(res.time, res.context, res.formality, res.itemPreferences);
+        const outfitRes = await generateOutfit(
+          res.time ?? new Date(Date.now() + 3600000),
+          res.context ?? "casual",
+          res.formality ?? "Casual",
+          res.itemPreferences
+        );
 
         setMessages(prev => [...prev, {
           type: "outfit",
@@ -206,9 +209,10 @@ const AIOutfitResponse = ({ message }: { message: Message }) => {
         {/* Outfit */}
         <View className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-600 mt-4">
           <ScrollView horizontal contentContainerClassName="gap-x-4 pb-2 px-2" className="mt-4">
-            <OutfitClothingItem item={outfit.topwear} />
-            <OutfitClothingItem item={outfit.bottomwear} />
-            <OutfitClothingItem item={outfit.footwear} />
+            { outfit.topwear && <OutfitClothingItem item={outfit.topwear} /> }
+            { outfit.bottomwear && <OutfitClothingItem item={outfit.bottomwear} /> }
+            { outfit.onepiece && <OutfitClothingItem item={outfit.onepiece} /> }
+            { outfit.footwear && <OutfitClothingItem item={outfit.footwear} /> }
             { outfit.outerwear && <OutfitClothingItem item={outfit.outerwear} /> }
           </ScrollView>
         </View>

@@ -67,6 +67,13 @@
           "enableBackgroundRemoteNotifications": false
         }
       ],
+      [
+        "expo-build-properties", {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ],
       "@react-native-community/datetimepicker",
       "expo-secure-store"
     ],

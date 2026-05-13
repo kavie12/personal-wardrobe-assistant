@@ -365,5 +365,168 @@
       }
     }
 
+    ,
+    {
+      "id": "CH-21",
+      "_group": "Preference extraction",
+      "description": "Black shirt preference",
+      "turns": ["Going out tonight, I want to wear a black shirt"],
+      "expected": {
+        "reaches_ready": true,
+        "expected_formality": "Casual",
+        "context_keywords": ["out"],
+        "expected_preferences": {
+          "topwear": { "colors": ["Black"], "type": "shirt" }
+        },
+        "expected_turns": 1,
+        "max_turns": 2
+      }
+    },
+    {
+      "id": "CH-22",
+      "_group": "Preference extraction",
+      "description": "Blue jeans preference",
+      "turns": ["Meeting friends tomorrow, I prefer blue jeans"],
+      "expected": {
+        "reaches_ready": true,
+        "expected_formality": "Casual",
+        "context_keywords": ["friends"],
+        "expected_preferences": {
+          "bottomwear": { "colors": ["Blue"], "type": "jeans" }
+        },
+        "expected_turns": 1,
+        "max_turns": 2
+      }
+    },
+    {
+      "id": "CH-23",
+      "_group": "Preference extraction",
+      "description": "Sneakers preference",
+      "turns": ["Going out this evening, I want sneakers"],
+      "expected": {
+        "reaches_ready": true,
+        "expected_formality": "Casual",
+        "context_keywords": ["out"],
+        "expected_preferences": {
+          "footwear": { "type": "sneakers" }
+        },
+        "expected_turns": 1,
+        "max_turns": 2
+      }
+    },
+    {
+      "id": "CH-24",
+      "_group": "Preference extraction",
+      "description": "Multiple preferences",
+      "turns": ["Dinner tonight, I want a black shirt and white sneakers"],
+      "expected": {
+        "reaches_ready": true,
+        "expected_formality": "Smart casual",
+        "context_keywords": ["dinner"],
+        "expected_preferences": {
+          "topwear": { "colors": ["Black"] },
+          "footwear": { "colors": ["White"] }
+        },
+        "expected_turns": 1,
+        "max_turns": 2
+      }
+    },
+    {
+      "id": "CH-25",
+      "_group": "Preference refinement",
+      "description": "User changes preference mid conversation",
+      "turns": [
+        "Going out tonight",
+        "Actually I want to wear something blue"
+      ],
+      "expected": {
+        "reaches_ready": true,
+        "expected_formality": "Casual",
+        "context_keywords": ["out"],
+        "expected_preferences": {
+          "topwear": { "colors": ["Blue"] }
+        },
+        "expected_turns": 2,
+        "max_turns": 3
+      }
+    },
+    {
+      "id": "CH-26",
+      "_group": "Preference extraction",
+      "description": "Formal with preference",
+      "turns": ["Business meeting tomorrow, I want a black suit"],
+      "expected": {
+        "reaches_ready": true,
+        "expected_formality": "Work",
+        "context_keywords": ["meeting"],
+        "expected_preferences": {
+          "topwear": { "colors": ["Black"] }
+        },
+        "expected_turns": 1,
+        "max_turns": 2
+      }
+    },
+    {
+      "id": "CH-27",
+      "_group": "Preference extraction",
+      "description": "Footwear color preference",
+      "turns": ["Casual outing this evening, white shoes"],
+      "expected": {
+        "reaches_ready": true,
+        "expected_formality": "Casual",
+        "context_keywords": ["outing"],
+        "expected_preferences": {
+          "footwear": { "colors": ["White"] }
+        },
+        "expected_turns": 1,
+        "max_turns": 2
+      }
+    },
+    {
+      "id": "CH-28",
+      "_group": "Preference extraction",
+      "description": "Outerwear preference",
+      "turns": ["Going out tonight, I want a jacket"],
+      "expected": {
+        "reaches_ready": true,
+        "expected_formality": "Casual",
+        "context_keywords": ["out"],
+        "expected_preferences": {
+          "outerwear": { "type": "jacket" }
+        },
+        "expected_turns": 1,
+        "max_turns": 2
+      }
+    },
+    {
+      "id": "CH-29",
+      "_group": "Edge — invalid color ignored",
+      "description": "User gives unsupported color",
+      "turns": ["Party tonight, I want neon green shirt"],
+      "expected": {
+        "reaches_ready": true,
+        "expected_formality": "Party",
+        "context_keywords": ["party"],
+        "expected_turns": 1,
+        "max_turns": 2
+      }
+    },
+    {
+      "id": "CH-30",
+      "_group": "Complex sentence parsing",
+      "description": "Complex sentence with multiple signals",
+      "turns": ["Going for dinner with friends tomorrow evening, maybe something black and casual"],
+      "expected": {
+        "reaches_ready": true,
+        "expected_formality": "Smart casual",
+        "context_keywords": ["dinner", "friends"],
+        "expected_preferences": {
+          "topwear": { "colors": ["Black"] }
+        },
+        "expected_turns": 1,
+        "max_turns": 2
+      }
+    }
+
   ]
 }

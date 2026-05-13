@@ -180,14 +180,11 @@ def best_item(
     slot_pref: Optional[Dict],
     top_occasion: str,
 ) -> Optional[Dict[str, Any]]:
-    # Remove previously seen items
-    pool = candidates
-
     # Hard occasion filter
-    allowed = [c for c in pool if not is_blocked(c, top_occasion)]
-    pool = allowed if allowed else pool   # fall back if wardrobe is limited
+    allowed = [c for c in candidates if not is_blocked(c, top_occasion)]
+    candidates = allowed if allowed else candidates   # fall back if wardrobe is limited
 
-    if not pool:
+    if not candidates:
         return None
 
     # Add small random jitter to scores so ties never produce the same result
@@ -195,7 +192,7 @@ def best_item(
         return score_item(item, temp_label, inferred_occasions, chosen_colors, slot_pref) \
                + random.uniform(0, 0.05)
 
-    return max(pool, key=jittered_score)
+    return max(candidates, key=jittered_score)
 
 
 # ---------------------------------------------------------------------------
@@ -307,43 +304,64 @@ async def get_recommendation(
         if cat in by_cat:
             by_cat[cat].append(item)
 
-    chosen_colors: List[str] = []
-    selected: Dict[str, Optional[Dict]] = {}
-
-    def pick(category: str) -> Optional[Dict]:
+    def pick(category: str, current_colors: List[str]) -> Optional[Dict]:
         return best_item(
             by_cat[category], temp_label, inferred_occ,
-            chosen_colors, prefs.get(category.lower()),
-            top_occasion,
+            current_colors, prefs.get(category.lower()),
+            top_occasion
         )
 
-    # Topwear
-    topwear = pick("Topwear")
-    if topwear:
-        selected["topwear"] = topwear
-        chosen_colors.extend(topwear.get("colors", []))
-    elif by_cat["One-piece"]:
-        op = pick("One-piece")
-        selected["topwear"] = op
-        if op:
-            chosen_colors.extend(op.get("colors", []))
-        selected["bottomwear"] = None
+    # --- Candidate A: topwear + bottomwear ---
+    candidate_top = pick("Topwear", [])
+    top_colors = candidate_top.get("colors", []) if candidate_top else []
+    candidate_bottom = pick("Bottomwear", top_colors)
 
-    # Bottomwear
-    if "bottomwear" not in selected:
-        bw = pick("Bottomwear")
-        selected["bottomwear"] = bw
-        if bw:
-            chosen_colors.extend(bw.get("colors", []))
+    score_a = 0.0
+    if candidate_top:
+        score_a += score_item(candidate_top, temp_label, inferred_occ, [], prefs.get("topwear"))
+    if candidate_bottom:
+        score_a += score_item(candidate_bottom, temp_label, inferred_occ, top_colors, prefs.get("bottomwear"))
 
-    # Footwear
-    fw = pick("Footwear")
+    # --- Candidate B: one-piece ---
+    candidate_onepiece = pick("One-piece", [])
+    score_b = (
+        score_item(candidate_onepiece, temp_label, inferred_occ, [], prefs.get("onepiece")) * 2
+        if candidate_onepiece else 0.0
+    )
+    # × 2 so it's on the same scale as the two-item combination above
+
+    # --- Pick the better combination ---
+    chosen_colors: List[str] = []
+    selected: Dict[str, Optional[Dict]] = {
+        "topwear": None, "bottomwear": None, "onepiece": None,
+        "footwear": None, "outerwear": None,
+    }
+
+    # Prefer one-piece only if it clearly beats the two-piece combo,
+    # OR if the user explicitly expressed a one-piece preference,
+    # OR if there's nothing in topwear/bottomwear.
+    user_wants_onepiece = bool(prefs.get("onepiece"))
+    no_separates = not candidate_top or not candidate_bottom
+
+    if candidate_onepiece and (user_wants_onepiece or no_separates or score_b > score_a):
+        selected["onepiece"] = candidate_onepiece
+        chosen_colors.extend(candidate_onepiece.get("colors", []))
+    else:
+        selected["topwear"]    = candidate_top
+        selected["bottomwear"] = candidate_bottom
+        if candidate_top:
+            chosen_colors.extend(candidate_top.get("colors", []))
+        if candidate_bottom:
+            chosen_colors.extend(candidate_bottom.get("colors", []))
+
+    # --- Footwear ---
+    fw = pick("Footwear", chosen_colors)
     selected["footwear"] = fw
     if fw:
         chosen_colors.extend(fw.get("colors", []))
 
-    # Outerwear
-    selected["outerwear"] = pick("Outerwear") if temp_c < 15 else None
+    # --- Outerwear ---
+    selected["outerwear"] = pick("Outerwear", chosen_colors) if temp_c < 15 else None
 
     # Images
     ids = [v["id"] for v in selected.values() if v]
@@ -361,8 +379,9 @@ async def get_recommendation(
         "outfit": {
             "topwear":    assemble(selected.get("topwear")),
             "bottomwear": assemble(selected.get("bottomwear")),
+            "onepiece":   assemble(selected.get("onepiece")),
             "footwear":   assemble(selected.get("footwear")),
-            "outerwear":  assemble(selected.get("outerwear")),
+            "outerwear":  assemble(selected.get("outerwear"))
         },
-        "reason": build_reason(non_null, inferred_occ, temp_label, context),
+        "reason": build_reason(non_null, inferred_occ, temp_label, context)
     }
