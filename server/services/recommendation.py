@@ -181,7 +181,7 @@ def best_item(
     if not candidates:
         return None
 
-    # Add small random jitter to scores so ties never produce the same result
+    # Add small random value to scores to give unique results
     def jittered_score(item):
         return score_item(item, temp_label, inferred_occasions, chosen_colors, slot_pref) \
                + random.uniform(0, 0.05)
