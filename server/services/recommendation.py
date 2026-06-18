@@ -8,9 +8,7 @@ from services.wardrobe import collection_ref as wardrobe_ref
 from google.cloud.firestore_v1.base_query import FieldFilter
 
 
-# ---------------------------------------------------------------------------
 # Color compatibility
-# ---------------------------------------------------------------------------
 
 COLOR_GROUPS: Dict[str, str] = {
     "Black": "neutral", "White": "neutral", "Gray": "neutral", "Beige": "neutral",
@@ -56,9 +54,8 @@ def item_color_harmony(item_colors: List[str], chosen_colors: List[str]) -> floa
     return sum(scores) / len(scores)
 
 
-# ---------------------------------------------------------------------------
+
 # Temperature
-# ---------------------------------------------------------------------------
 
 def weather_to_temp_label(t: float) -> str:
     if t >= 25: return "Hot"
@@ -70,9 +67,8 @@ def temp_score(item_temperatures: List[str], label: str) -> float:
     return 1.0 if label in item_temperatures else 0.0
 
 
-# ---------------------------------------------------------------------------
+
 # Occasion
-# ---------------------------------------------------------------------------
 
 OCCASION_KEYWORDS: Dict[str, List[str]] = {
     "Formal":       ["formal", "interview", "suit", "gala", "ceremony", "dinner", "wedding", "black tie"],
@@ -114,9 +110,8 @@ def is_blocked(item: Dict[str, Any], top_occasion: str) -> bool:
     return item.get("type") in OCCASION_BLOCKED_TYPES.get(top_occasion, [])
 
 
-# ---------------------------------------------------------------------------
+
 # Per-slot preference scoring
-# ---------------------------------------------------------------------------
 
 def slot_preference_score(item: Dict[str, Any], slot_pref: Optional[Dict]) -> float:
     """
@@ -147,9 +142,8 @@ def slot_preference_score(item: Dict[str, Any], slot_pref: Optional[Dict]) -> fl
     return score / hits if hits else 0.0
 
 
-# ---------------------------------------------------------------------------
+
 # Weights
-# ---------------------------------------------------------------------------
 
 WEIGHT_TEMP        = 0.8
 WEIGHT_OCCASION    = 2.0
@@ -187,7 +181,7 @@ def best_item(
     if not candidates:
         return None
 
-    # Add small random jitter to scores so ties never produce the same result
+    # Add small random value to scores to give unique results
     def jittered_score(item):
         return score_item(item, temp_label, inferred_occasions, chosen_colors, slot_pref) \
                + random.uniform(0, 0.05)
@@ -195,9 +189,8 @@ def best_item(
     return max(candidates, key=jittered_score)
 
 
-# ---------------------------------------------------------------------------
+
 # Reason builder
-# ---------------------------------------------------------------------------
 
 REASON_TEMPLATES = [
     "A {occasion_adj} outfit in {colors} — perfect for {temp_desc} weather and {context_snippet}.",
@@ -225,9 +218,8 @@ def build_reason(items, inferred_occasions, temp_label, context) -> str:
     )
 
 
-# ---------------------------------------------------------------------------
+
 # Wardrobe helpers
-# ---------------------------------------------------------------------------
 
 async def get_wardrobe_data(user_id: str) -> List[Dict[str, Any]]:
     try:
@@ -269,9 +261,8 @@ async def get_wardrobe_items_images(item_ids: List[str]) -> Dict[str, str]:
         return {}
 
 
-# ---------------------------------------------------------------------------
+
 # Public API
-# ---------------------------------------------------------------------------
 
 async def get_recommendation(
     user_id: str,
